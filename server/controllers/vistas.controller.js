@@ -266,6 +266,7 @@ export function mostrarPlan(req, res) {
       seccion: 'plan',
       plan: obtenerPlan(tecnico.id),
       carrera: obtenerCarrera(tecnico.id),
+      scriptPagina: 'pages/recorrido.js',
     });
   });
 }

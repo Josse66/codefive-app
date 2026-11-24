@@ -1,0 +1,45 @@
+{{!-- Recorrido de primera vez: 4 tarjetas que explican cómo se usa la app. Se puede saltar y volver a abrir. --}}
+<dialog id="recorrido" class="w-[min(92vw,560px)] border-2 border-tinta bg-white p-0 backdrop:bg-tinta/60" aria-labelledby="recorrido-titulo">
+  <div class="grid gap-5 p-6 lg:p-8">
+    <div class="flex items-center justify-between gap-3">
+      <p id="recorrido-cuenta" class="font-narrow text-sm font-bold uppercase tracking-wider text-tinta-3">1 de 4</p>
+      <button id="recorrido-saltar" type="button" class="text-sm text-tinta-2 underline decoration-placa-linea hover:text-tinta">Saltar</button>
+    </div>
+    <div id="recorrido-tarjetas">
+      <section class="grid gap-3" data-tarjeta>
+        <h2 id="recorrido-titulo" class="font-sans text-3xl font-semibold leading-tight tracking-normal">Te damos la bienvenida a tu capacitación</h2>
+        <p class="text-lg text-tinta-2">Aquí aprendes a dar servicio a tu autobús, desde lo básico hasta nivel experto, con los mismos niveles y grupos de función que usa Volvo.</p>
+        <p class="text-tinta-2">Nadie te califica para castigarte: cada respuesta sirve para que tu plan te lleve justo a lo que te falta.</p>
+      </section>
+      <section class="grid gap-3" data-tarjeta hidden>
+        <h2 class="font-sans text-3xl font-semibold leading-tight tracking-normal">Tu plan son misiones</h2>
+        <p class="text-lg text-tinta-2">En <strong>Mi plan</strong> siempre hay un solo botón grande: tu siguiente misión. Cada misión tiene 4 pasos:</p>
+        <ol class="grid gap-2 text-[16px]">
+          <li><strong>1 · ¿Qué sabes?</strong> 2 preguntas antes de empezar.</li>
+          <li><strong>2 · Aprende.</strong> Tarjetas cortas sobre el autobús.</li>
+          <li><strong>3 · Hazlo.</strong> Lo practicas en el autobús 3D.</li>
+          <li><strong>4 · Comprueba.</strong> Apruebas con 91, como en Volvo.</li>
+        </ol>
+      </section>
+      <section class="grid gap-3" data-tarjeta hidden>
+        <h2 class="font-sans text-3xl font-semibold leading-tight tracking-normal">Cómo se mueve el autobús</h2>
+        <ul class="grid gap-2 text-[16px]">
+          <li><strong>Clic sobre una pieza:</strong> la eliges o usas la herramienta en ella.</li>
+          <li><strong>Clic derecho y arrastrar:</strong> giras el autobús.</li>
+          <li><strong>Rueda del mouse:</strong> acercas y alejas.</li>
+          <li><strong>Herramientas:</strong> primero eliges una en la lista y luego haces clic en la pieza.</li>
+        </ul>
+        <p class="text-sm text-tinta-3">Si tu computadora va lenta, usa el botón <strong>Calidad: ligera</strong> en la esquina del autobús.</p>
+      </section>
+      <section class="grid gap-3" data-tarjeta hidden>
+        <h2 class="font-sans text-3xl font-semibold leading-tight tracking-normal">Taller y Mi desempeño</h2>
+        <p class="text-lg text-tinta-2">En el <strong>Taller</strong> atiendes órdenes de clientes para usar lo que aprendes.</p>
+        <p class="text-lg text-tinta-2">En <strong>Mi desempeño</strong> ves tu nivel, lo que aprendiste, lo que retienes y lo que te conviene repasar.</p>
+      </section>
+    </div>
+    <div class="flex items-center justify-between gap-3">
+      <button id="recorrido-anterior" type="button" class="boton-linea px-5 py-3">← Anterior</button>
+      <button id="recorrido-siguiente" type="button" class="boton px-8 py-3">Siguiente →</button>
+    </div>
+  </div>
+</dialog>

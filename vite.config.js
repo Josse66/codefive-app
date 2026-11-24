@@ -25,6 +25,7 @@ export default defineConfig(({ command }) => ({
         taller: ruta('./client/pages/taller.js'),
         aprender: ruta('./client/pages/aprender.js'),
         leccion: ruta('./client/pages/leccion.js'),
+        recorrido: ruta('./client/pages/recorrido.js'),
       },
     },
   },

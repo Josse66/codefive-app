@@ -1,7 +1,11 @@
 <section class="grid gap-6">
+  {{> recorrido}}
   <div class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-stretch">
     <div class="grid content-start gap-3">
-      <p class="font-narrow text-sm font-bold uppercase tracking-wider text-tinta-3">Mi plan de formación</p>
+      <p class="flex flex-wrap items-center justify-between gap-2 font-narrow text-sm font-bold uppercase tracking-wider text-tinta-3">
+        <span>Mi plan de formación</span>
+        <button type="button" data-abrir-recorrido class="font-sans text-sm font-semibold normal-case tracking-normal text-tinta underline decoration-placa-linea hover:decoration-tinta">¿Cómo funciona?</button>
+      </p>
       <h1 class="text-4xl leading-tight lg:text-5xl">Hola, {{plan.tecnico.nombre}}</h1>
       <p class="max-w-2xl text-tinta-2">{{plan.tecnico.taller}} · {{plan.tecnico.anios}} años de experiencia · Nivel {{carrera.nombreNivelGlobal}} · {{plan.avance.lecciones}} de {{plan.avance.total}} lecciones leídas</p>
 
