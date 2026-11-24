@@ -1,0 +1,661 @@
+[
+  {
+    "id": "L-A1-1-MAN",
+    "competencia": "A1-1-MAN",
+    "escenario": "inspeccion-diaria",
+    "minutos": 5,
+    "titulo": "Inspección diaria y mantenimiento preventivo",
+    "objetivo": "Saber qué revisar antes de que la unidad salga a ruta y por qué el preventivo se hace antes de que algo falle.",
+    "conceptos": [
+      "El mantenimiento preventivo atiende el desgaste antes de que se convierta en falla. Se programa por kilómetros, horas de motor o tiempo, según el plan del fabricante.",
+      "La inspección diaria es la primera línea: niveles de fluidos, llantas, luces, fugas visibles y la purga de humedad de los tanques de aire.",
+      "Respetar los intervalos cuida la seguridad de los pasajeros, evita que la unidad se quede en ruta y conserva la garantía."
+    ],
+    "piezas": [
+      {
+        "id": "valvula_purga",
+        "que": "Válvula en la parte baja del tanque de aire para sacar el agua que se condensa.",
+        "falla": "Si nunca se purga, el agua llega a válvulas y frenos y los corroe o congela.",
+        "revisa": "Abrirla en la inspección diaria y observar cuánta agua sale."
+      },
+      {
+        "id": "deposito_aire",
+        "que": "Tanque que almacena el aire comprimido para frenos, suspensión y puertas.",
+        "falla": "Corrosión interna por humedad o fugas en sus conexiones.",
+        "revisa": "Inspección visual de fugas y de la cantidad de agua al purgar."
+      }
+    ],
+    "pasos": [
+      "Revisar niveles de aceite, refrigerante y demás fluidos.",
+      "Revisar presión y estado de las llantas.",
+      "Comprobar luces y testigos del tablero.",
+      "Purgar los tanques de aire y observar cuánta agua sale.",
+      "Reportar cualquier hallazgo antes de liberar la unidad."
+    ],
+    "seguridad": "Una unidad con hallazgos de seguridad no sale a ruta hasta corregirlos.",
+    "fuente": "Guía de tipos de mantenimiento (material del equipo); Bendix BW1231"
+  },
+  {
+    "id": "L-D2-1-MAN",
+    "competencia": "D2-1-MAN",
+    "escenario": null,
+    "minutos": 6,
+    "titulo": "Mantenimiento preventivo del motor diésel",
+    "objetivo": "Conocer los puntos del preventivo del motor diésel y qué indica cada hallazgo.",
+    "conceptos": [
+      "El motor diésel necesita aceite, filtros y combustible limpio. La mayoría de sus fallas caras empiezan por un mantenimiento omitido.",
+      "El filtro separador retiene el agua del combustible: el agua daña la bomba y los inyectores del sistema de alta presión.",
+      "En motores con SCR también se revisa el nivel de urea (DEF o AdBlue); sin urea el sistema limita la potencia."
+    ],
+    "piezas": [
+      {
+        "id": "separador_agua",
+        "nombre": "Filtro separador de agua",
+        "pos": [-4.4, 0.75, 1.33],
+        "tamano": [0.3, 0.45, 0.15],
+        "tipo": "metal",
+        "que": "Filtro que separa el agua del combustible antes de que llegue a la bomba.",
+        "falla": "Si se llena de agua, el agua pasa al sistema de inyección.",
+        "revisa": "Drenar el agua en cada servicio o cuando el testigo lo indique."
+      },
+      {
+        "id": "varilla_aceite",
+        "nombre": "Varilla de nivel de aceite",
+        "pos": [-5.3, 1.35, 1.33],
+        "tamano": [0.1, 0.5, 0.1],
+        "tipo": "metal",
+        "que": "Indica el nivel y el estado del aceite del motor.",
+        "falla": "Aceite bajo, quemado o lechoso (con refrigerante).",
+        "revisa": "Nivel entre las marcas y aspecto del aceite."
+      },
+      {
+        "id": "tanque_urea",
+        "nombre": "Tanque de urea (DEF)",
+        "pos": [-1.6, 0.6, 1.33],
+        "tamano": [0.7, 0.4, 0.2],
+        "tipo": "deposito",
+        "que": "Almacena la urea que el SCR usa para reducir los óxidos de nitrógeno.",
+        "falla": "Nivel bajo o urea contaminada: el sistema advierte y limita la potencia.",
+        "revisa": "Nivel en la inspección y que el líquido sea el especificado."
+      }
+    ],
+    "pasos": [
+      "Revisar nivel y estado del aceite con la varilla.",
+      "Drenar el agua del filtro separador de combustible.",
+      "Revisar el indicador de restricción del filtro de aire.",
+      "Revisar el nivel de urea en motores con SCR.",
+      "Registrar lo hecho en la bitácora de mantenimiento."
+    ],
+    "seguridad": "Trabaja con el motor apagado y frío al revisar niveles; el refrigerante caliente está a presión.",
+    "fuente": "Guía de tipos de mantenimiento (material del equipo)"
+  },
+  {
+    "id": "L-D2-2-COM",
+    "competencia": "D2-2-COM",
+    "escenario": "dpf-regeneracion",
+    "minutos": 6,
+    "titulo": "Postratamiento: DPF y SCR",
+    "objetivo": "Entender qué hacen el filtro de partículas y el sistema SCR y qué es una regeneración.",
+    "conceptos": [
+      "El filtro de partículas (DPF) atrapa el hollín del escape. Cuando se llena, el hollín se quema elevando la temperatura: eso es la regeneración.",
+      "La regeneración pasiva ocurre sola en carretera; la activa la provoca el motor; la forzada se hace con la herramienta de diagnóstico cuando el procedimiento lo indica.",
+      "El SCR reduce los óxidos de nitrógeno (NOx) inyectando urea en el escape."
+    ],
+    "piezas": [
+      {
+        "id": "dpf",
+        "que": "Filtro de cerámica en el escape que atrapa el hollín.",
+        "falla": "Se satura si el motor produce mucho hollín o la unidad no hace recorridos largos.",
+        "revisa": "Presión diferencial, nivel de hollín y historial de regeneraciones."
+      },
+      {
+        "id": "mangueras_sensor",
+        "que": "Mangueras que llevan la presión de antes y después del filtro al sensor diferencial.",
+        "falla": "Una manguera rota o tapada da una lectura falsa de filtro lleno.",
+        "revisa": "Inspección visual y de conexiones antes de condenar el filtro."
+      }
+    ],
+    "pasos": [
+      "Identificar si la unidad hace recorridos que permiten regeneración pasiva.",
+      "Leer el nivel de hollín y la presión diferencial con la herramienta de diagnóstico.",
+      "Distinguir regeneración pasiva, activa y forzada.",
+      "Revisar el nivel y la calidad de la urea del SCR."
+    ],
+    "seguridad": "Durante la regeneración el escape alcanza temperaturas muy altas: área despejada y lejos de material inflamable.",
+    "fuente": "Cummins, Diesel Particulate Filter (publicación 4971424); Bosch, programa de postratamiento"
+  },
+  {
+    "id": "L-D2-3-DIA",
+    "competencia": "D2-3-DIA",
+    "escenario": "dpf-regeneracion",
+    "minutos": 7,
+    "titulo": "Diagnóstico del DPF y regeneración",
+    "objetivo": "Seguir un diagnóstico ordenado ante el testigo del DPF sin condenar piezas de más.",
+    "conceptos": [
+      "El primer paso siempre es registrar testigos, códigos y datos congelados: lo que se borra se pierde.",
+      "Un código de presión diferencial alta puede ser el filtro lleno o una lectura falsa del sensor o sus mangueras.",
+      "Si el filtro se llena muy seguido, el problema está antes: inyección, admisión, EGR o el uso de la unidad."
+    ],
+    "piezas": [
+      {
+        "id": "conector_diagnostico",
+        "que": "Conector donde se enlaza la herramienta de diagnóstico.",
+        "falla": "Sin comunicación por conector dañado o falta de alimentación.",
+        "revisa": "Que la herramienta enlace y lea todos los módulos."
+      },
+      {
+        "id": "mangueras_sensor",
+        "que": "Mangueras del sensor de presión diferencial.",
+        "falla": "Fisuras o tapones que alteran la lectura.",
+        "revisa": "Antes de cambiar el filtro."
+      },
+      {
+        "id": "dpf",
+        "que": "Filtro de partículas.",
+        "falla": "Saturado de hollín o con ceniza acumulada.",
+        "revisa": "Al final del árbol de diagnóstico, no al principio."
+      }
+    ],
+    "pasos": [
+      "Conectar la herramienta y registrar códigos y datos congelados.",
+      "Revisar sensor, mangueras y cableado de presión diferencial.",
+      "Buscar la causa del exceso de hollín si el filtro se satura seguido.",
+      "Hacer regeneración forzada solo si el procedimiento lo indica y en área segura.",
+      "Verificar que el testigo no regrese."
+    ],
+    "seguridad": "No toques el DPF ni el escape después de operar: causan quemaduras graves.",
+    "fuente": "Cummins 4971316; Ficha A, investigación Persona 2"
+  },
+  {
+    "id": "L-D2-3-CR",
+    "competencia": "D2-3-CR",
+    "escenario": null,
+    "minutos": 7,
+    "titulo": "Inyección common rail",
+    "objetivo": "Entender cómo funciona el common rail y diagnosticarlo por partes: baja presión, alta presión y retorno.",
+    "conceptos": [
+      "En el common rail una bomba de alta presión llena un riel común y la computadora abre cada inyector en el momento exacto.",
+      "Si la presión real no alcanza la deseada, primero se revisa el suministro de baja presión: filtros, bomba de transferencia y entradas de aire.",
+      "La prueba de retorno de inyectores muestra si alguno tiene fuga interna."
+    ],
+    "piezas": [
+      {
+        "id": "riel",
+        "nombre": "Riel común",
+        "pos": [-5.0, 1.45, 1.33],
+        "tamano": [0.9, 0.12, 0.12],
+        "tipo": "metal",
+        "que": "Tubo que guarda el combustible a muy alta presión para todos los inyectores.",
+        "falla": "Fugas o un sensor de presión del riel con lectura falsa.",
+        "revisa": "Presión real contra presión deseada con la herramienta."
+      },
+      {
+        "id": "bomba_alta",
+        "nombre": "Bomba de alta presión",
+        "pos": [-5.4, 0.95, 1.33],
+        "tamano": [0.35, 0.3, 0.15],
+        "tipo": "metal",
+        "que": "Genera la presión del riel a partir del combustible de baja presión.",
+        "falla": "Desgaste por combustible sucio o con agua.",
+        "revisa": "Solo después de descartar el suministro de baja presión."
+      },
+      {
+        "id": "inyector",
+        "nombre": "Inyector",
+        "pos": [-4.5, 1.6, 1.33],
+        "tamano": [0.1, 0.3, 0.1],
+        "tipo": "metal",
+        "que": "Pulveriza el combustible en el cilindro cuando la computadora lo ordena.",
+        "falla": "Fuga interna (retorno alto) o pulverización deficiente.",
+        "revisa": "Prueba de retorno de inyectores."
+      }
+    ],
+    "pasos": [
+      "Leer códigos y comparar presión real contra deseada.",
+      "Revisar el suministro de baja presión: filtros, bomba de transferencia y aire en la línea.",
+      "Hacer la prueba de retorno de inyectores.",
+      "Revisar la bomba de alta presión al final."
+    ],
+    "seguridad": "Espera a que baje la presión del riel antes de abrir una línea: el combustible a esa presión puede penetrar la piel.",
+    "fuente": "Bosch, Common Rail System Diagnosis"
+  },
+  {
+    "id": "L-E3-1-SEG",
+    "competencia": "E3-1-SEG",
+    "escenario": "hv-aislamiento",
+    "minutos": 5,
+    "titulo": "Reconocer el alto voltaje y escalar",
+    "objetivo": "Identificar los componentes de alto voltaje y saber qué hacer cuando no estás autorizado.",
+    "conceptos": [
+      "El autobús eléctrico trabaja con cientos de volts en corriente directa: un contacto puede ser mortal.",
+      "El cableado de alto voltaje es naranja y los componentes llevan etiquetas de advertencia.",
+      "Si no estás autorizado, no intervienes: aseguras la unidad, delimitas el área y avisas al responsable de alto voltaje."
+    ],
+    "piezas": [
+      {
+        "id": "desconexion_servicio",
+        "que": "Interruptor que separa la batería del resto del sistema de alto voltaje.",
+        "falla": "Operarlo sin procedimiento expone a arco eléctrico.",
+        "revisa": "Solo personal autorizado y con el procedimiento del fabricante."
+      },
+      {
+        "id": "conector_hv",
+        "que": "Conector naranja del circuito de alto voltaje.",
+        "falla": "Daño, humedad o un conector abierto que activa el HVIL.",
+        "revisa": "Nunca se toca energizado."
+      }
+    ],
+    "pasos": [
+      "Reconocer cableado naranja y etiquetas de advertencia.",
+      "Ante una advertencia de alto voltaje, no tocar nada.",
+      "Asegurar la unidad y delimitar el área.",
+      "Avisar al responsable de alto voltaje."
+    ],
+    "seguridad": "Sin autorización y equipo de protección no se interviene ningún componente de alto voltaje.",
+    "fuente": "NOM-029-STPS-2011; ASE xEV Safety Standards v2.1"
+  },
+  {
+    "id": "L-E3-2-COM",
+    "competencia": "E3-2-COM",
+    "escenario": "hv-aislamiento",
+    "minutos": 7,
+    "titulo": "Arquitectura de alto voltaje: batería, HVIL y aislamiento",
+    "objetivo": "Entender cómo se protege el sistema de alto voltaje: interbloqueo y monitoreo de aislamiento.",
+    "conceptos": [
+      "La batería de tracción alimenta al motor eléctrico a través de contactores y conectores de alto voltaje.",
+      "El HVIL es un lazo de baja tensión que pasa por los conectores: si uno se abre, el sistema desconecta o no permite conectar el alto voltaje.",
+      "El monitor de aislamiento mide la resistencia entre el alto voltaje y el chasis; si baja, advierte y puede inhibir la tracción."
+    ],
+    "piezas": [
+      {
+        "id": "desconexion_servicio",
+        "que": "Separa la batería del resto del sistema.",
+        "falla": "Mal asentada, puede abrir el HVIL.",
+        "revisa": "Según el procedimiento del fabricante."
+      },
+      {
+        "id": "conector_hv",
+        "que": "Conector del circuito de alto voltaje, parte del lazo HVIL.",
+        "falla": "Humedad o daño que baja el aislamiento.",
+        "revisa": "Con el sistema desenergizado y verificado."
+      },
+      {
+        "id": "punto_medicion",
+        "que": "Punto indicado por el fabricante para verificar tensión.",
+        "falla": "—",
+        "revisa": "Con el método probar, medir, volver a probar."
+      }
+    ],
+    "pasos": [
+      "Ubicar la batería, la desconexión de servicio y los conectores de alto voltaje.",
+      "Entender que el HVIL desconecta el sistema si se abre un conector.",
+      "Entender que el monitor de aislamiento vigila fugas a chasis."
+    ],
+    "seguridad": "Nunca se puentea el HVIL ni el monitor de aislamiento: son protecciones de vida.",
+    "fuente": "Volvo Buses México, seguridad eléctrica; ASE xEV Safety Standards v2.1"
+  },
+  {
+    "id": "L-E3-2-SEG",
+    "competencia": "E3-2-SEG",
+    "escenario": "hv-aislamiento",
+    "minutos": 7,
+    "titulo": "Bloqueo, etiquetado y verificación de ausencia de tensión",
+    "objetivo": "Dejar el sistema de alto voltaje seguro para trabajar, en el orden correcto.",
+    "conceptos": [
+      "Bloqueo y etiquetado (LOTO): tu candado personal impide que alguien reenergice el sistema mientras trabajas. Solo lo quita quien lo puso.",
+      "Los capacitores guardan carga después de desconectar: se respeta el tiempo de espera del fabricante.",
+      "Probar, medir, volver a probar: compruebas el medidor en una fuente conocida, mides y vuelves a comprobarlo. Así sabes que el cero es real."
+    ],
+    "piezas": [
+      {
+        "id": "desconexion_servicio",
+        "que": "Donde se desenergiza y se coloca el candado.",
+        "falla": "Sin candado, alguien puede reconectar.",
+        "revisa": "Candado y etiqueta puestos antes de medir."
+      },
+      {
+        "id": "punto_medicion",
+        "que": "Donde se verifica la ausencia de tensión.",
+        "falla": "Medir con un probador dañado da un cero falso.",
+        "revisa": "Probar, medir, volver a probar."
+      },
+      {
+        "id": "fuente_prueba",
+        "que": "Fuente conocida para comprobar que el probador funciona.",
+        "falla": "—",
+        "revisa": "Antes y después de medir."
+      }
+    ],
+    "pasos": [
+      "Ponerse el equipo de protección para alto voltaje.",
+      "Abrir la desconexión de servicio.",
+      "Colocar candado y etiqueta personales.",
+      "Esperar el tiempo de descarga de los capacitores.",
+      "Probar el medidor, medir y volver a probar el medidor."
+    ],
+    "seguridad": "Si el medidor no pasa la prueba antes o después, la medición no vale: no se trabaja.",
+    "fuente": "NOM-029-STPS-2011; ASE xEV Safety Standards v2.1 (live-dead-live)"
+  },
+  {
+    "id": "L-E3-3-DIA",
+    "competencia": "E3-3-DIA",
+    "escenario": "hv-aislamiento",
+    "minutos": 8,
+    "titulo": "Diagnóstico de pérdida de aislamiento y HVIL",
+    "objetivo": "Localizar el componente con falla de aislamiento o el conector abierto del HVIL.",
+    "conceptos": [
+      "La verificación de ausencia de tensión y la prueba de resistencia de aislamiento son pruebas distintas: una confirma que no hay voltaje, la otra mide el estado del aislamiento.",
+      "La falla se localiza dividiendo el sistema: se aísla cada componente y se mide con el megóhmetro según el procedimiento.",
+      "Una falla que aparece solo con humedad apunta a sellos o conectores dañados."
+    ],
+    "piezas": [
+      {
+        "id": "conector_hv",
+        "que": "Candidato típico cuando la falla aparece con lluvia o lavado.",
+        "falla": "Sellos dañados que dejan entrar humedad.",
+        "revisa": "Inspección y prueba de aislamiento por componente."
+      },
+      {
+        "id": "punto_medicion",
+        "que": "Punto para las mediciones del procedimiento.",
+        "falla": "—",
+        "revisa": "Solo con el sistema desenergizado y verificado."
+      }
+    ],
+    "pasos": [
+      "Desenergizar, bloquear y verificar ausencia de tensión.",
+      "Leer códigos de aislamiento y de HVIL.",
+      "Aislar y probar cada componente con el megóhmetro.",
+      "Revisar conectores y continuidad del lazo HVIL.",
+      "Reparar según el manual y repetir la prueba."
+    ],
+    "seguridad": "El HVIL nunca se puentea para que la unidad salga a ruta.",
+    "fuente": "ASE xEV Safety Standards v2.1; Ficha C, investigación Persona 2"
+  },
+  {
+    "id": "L-D4-2-DIA",
+    "competencia": "D4-2-DIA",
+    "escenario": "transmision-marcha",
+    "minutos": 6,
+    "titulo": "Diagnóstico básico de la transmisión automatizada",
+    "objetivo": "Diagnosticar una caja automatizada empezando por los datos y el suministro de aire.",
+    "conceptos": [
+      "La caja automatizada cambia de marcha con actuadores que se mueven con aire, controlados por un módulo electrónico.",
+      "Sin presión de aire suficiente el actuador no completa el cambio: cambios lentos o la marcha no entra.",
+      "El código y sus condiciones son la evidencia: se registran antes de borrar."
+    ],
+    "piezas": [
+      {
+        "id": "conector_diagnostico",
+        "que": "Donde se leen los códigos de la transmisión.",
+        "falla": "—",
+        "revisa": "Primer paso del diagnóstico."
+      },
+      {
+        "id": "actuador_caja",
+        "que": "Línea de aire que alimenta al actuador de cambios.",
+        "falla": "Fisuras o conexiones flojas que bajan la presión.",
+        "revisa": "Con solución jabonosa y la presión de suministro."
+      }
+    ],
+    "pasos": [
+      "Leer y registrar los códigos de la transmisión.",
+      "Revisar la presión de aire de suministro.",
+      "Buscar fugas hacia el actuador.",
+      "Cambiar solo la pieza dañada y probar los cambios."
+    ],
+    "seguridad": "Con la unidad asegurada y calzada antes de revisar debajo de ella.",
+    "fuente": "Mapa temático de capacitación Volvo, Transmisión (mentoría); datos de demostración"
+  },
+  {
+    "id": "L-A5-1-SEG",
+    "competencia": "A5-1-SEG",
+    "escenario": "frenos-fuga",
+    "minutos": 5,
+    "titulo": "Asegurar la unidad antes de intervenir frenos",
+    "objetivo": "Dejar la unidad inmóvil antes de cualquier trabajo en frenos.",
+    "conceptos": [
+      "Para probar o reparar frenos muchas veces hay que liberarlos: en ese momento solo las calzas impiden que la unidad se mueva.",
+      "El resorte de la cámara de freno de estacionamiento guarda mucha energía; se enjaula antes de desarmar.",
+      "Nunca se trabaja debajo de una unidad que no está asegurada, aunque sea rápido."
+    ],
+    "piezas": [
+      {
+        "id": "rueda_trasera",
+        "que": "Donde se colocan las calzas.",
+        "falla": "—",
+        "revisa": "Calzas puestas antes de liberar frenos."
+      },
+      {
+        "id": "camara_freno",
+        "que": "Convierte el aire en fuerza de frenado; la de estacionamiento tiene un resorte.",
+        "falla": "Fugas en el diafragma o resorte dañado.",
+        "revisa": "Con la unidad asegurada y el resorte enjaulado."
+      }
+    ],
+    "pasos": [
+      "Estacionar en piso plano y apagar el motor.",
+      "Colocar calzas en las llantas que no se van a intervenir.",
+      "Enjaular el resorte antes de desarmar una cámara.",
+      "Detener a quien quiera meterse sin asegurar la unidad."
+    ],
+    "seguridad": "Si alguien se mete bajo la unidad sin asegurarla, se detiene la tarea.",
+    "fuente": "Bendix BW1231, Air Brake System Troubleshooting"
+  },
+  {
+    "id": "L-A5-2-COM",
+    "competencia": "A5-2-COM",
+    "escenario": "frenos-fuga",
+    "minutos": 6,
+    "titulo": "Cómo funciona el sistema de frenos neumáticos",
+    "objetivo": "Seguir el camino del aire desde el compresor hasta las cámaras de freno.",
+    "conceptos": [
+      "El compresor llena los tanques; el gobernador corta la carga al llegar a la presión de trabajo y la reactiva cuando baja.",
+      "El secador quita humedad y contaminantes del aire para proteger válvulas y tanques.",
+      "Los frenos de resorte se aplican cuando falta aire: el aire es lo que los mantiene liberados."
+    ],
+    "piezas": [
+      {
+        "id": "deposito_aire",
+        "que": "Almacena el aire comprimido.",
+        "falla": "Agua acumulada o fugas.",
+        "revisa": "Purga diaria y prueba de fugas."
+      },
+      {
+        "id": "conexion_valvula",
+        "que": "Conexión de la válvula relevadora, que aplica rápido los frenos traseros.",
+        "falla": "Sellos dañados que fugan.",
+        "revisa": "Con solución jabonosa."
+      },
+      {
+        "id": "camara_freno",
+        "que": "Convierte la presión del aire en fuerza de frenado.",
+        "falla": "Diafragma roto.",
+        "revisa": "Escuchar fugas al aplicar el freno."
+      }
+    ],
+    "pasos": [
+      "Compresor → secador → tanques.",
+      "Tanques → válvula del pedal → válvula relevadora → cámaras de freno.",
+      "Si el compresor cicla cada vez más seguido, algo pierde presión."
+    ],
+    "seguridad": "Sin aire, los frenos de resorte se aplican: no se liberan a la fuerza sin procedimiento.",
+    "fuente": "Bendix BW1231"
+  },
+  {
+    "id": "L-A5-2-DIA",
+    "competencia": "A5-2-DIA",
+    "escenario": "frenos-fuga",
+    "minutos": 6,
+    "titulo": "Localizar una fuga neumática",
+    "objetivo": "Hacer la prueba de fugas, localizar la fuga y comprobar la reparación.",
+    "conceptos": [
+      "Con el motor apagado y los frenos liberados, la presión no debe caer más de lo permitido en un minuto.",
+      "La fuga se localiza por partes con solución jabonosa: conexiones, válvulas, cámaras y tanques.",
+      "Si la fuga aparece solo al pisar el pedal, está en el circuito de servicio."
+    ],
+    "piezas": [
+      {
+        "id": "conexion_valvula",
+        "que": "Conexión de la válvula relevadora.",
+        "falla": "Fuga en el sello.",
+        "revisa": "Solución jabonosa: las burbujas marcan la fuga."
+      },
+      {
+        "id": "deposito_aire",
+        "que": "Tanque de aire.",
+        "falla": "Fuga en conexiones o purga.",
+        "revisa": "Solución jabonosa."
+      }
+    ],
+    "pasos": [
+      "Asegurar la unidad con calzas.",
+      "Hacer la prueba de caída de presión.",
+      "Localizar con solución jabonosa.",
+      "Cambiar solo lo que fuga.",
+      "Repetir la prueba antes de liberar."
+    ],
+    "seguridad": "Las calzas van puestas antes de liberar frenos para la prueba.",
+    "fuente": "Bendix BW1231; Ficha B, investigación Persona 2"
+  },
+  {
+    "id": "L-A6-1-MAN",
+    "competencia": "A6-1-MAN",
+    "escenario": "direccion-juego",
+    "minutos": 5,
+    "titulo": "Inspección de dirección y suspensión delantera",
+    "objetivo": "Detectar holgura en la dirección y saber qué hacer después de corregirla.",
+    "conceptos": [
+      "La dirección no tiene holgura permitida fuera de lo que indica el fabricante: es riesgo de perder el control.",
+      "Con un ayudante moviendo el volante se observan terminales y articulaciones.",
+      "Cambiar una terminal cambia la geometría: se aprieta al torque indicado y se verifica la alineación."
+    ],
+    "piezas": [
+      {
+        "id": "terminal_direccion",
+        "que": "Articulación que une las barras de la dirección.",
+        "falla": "Holgura por desgaste.",
+        "revisa": "Con el volante en movimiento, buscando juego."
+      },
+      {
+        "id": "rueda_trasera",
+        "que": "Donde se colocan las calzas.",
+        "falla": "—",
+        "revisa": "Unidad asegurada antes de revisar."
+      }
+    ],
+    "pasos": [
+      "Asegurar la unidad.",
+      "Con un ayudante, mover el volante y observar terminales.",
+      "Reportar y reemplazar lo que tenga holgura.",
+      "Apretar al torque del manual y verificar la alineación."
+    ],
+    "seguridad": "La unidad no sale con holgura en la dirección.",
+    "fuente": "Mapa temático de capacitación Volvo, Suspensión y dirección (mentoría)"
+  },
+  {
+    "id": "L-A7-2-DIA",
+    "competencia": "A7-2-DIA",
+    "escenario": "altura-suspension",
+    "minutos": 6,
+    "titulo": "Control de altura de la suspensión neumática",
+    "objetivo": "Diagnosticar una unidad que pierde altura de un lado.",
+    "conceptos": [
+      "Las bolsas de aire sostienen la carrocería; la válvula niveladora o el sensor de altura llenan o vacían las bolsas para mantener la altura.",
+      "Si un lado baja estacionado, hay una fuga en la bolsa, sus conexiones o la válvula de ese lado.",
+      "La altura correcta cuida la geometría del tren motriz, el desgaste de llantas y el acceso de pasajeros."
+    ],
+    "piezas": [
+      {
+        "id": "bolsa_aire",
+        "que": "Resorte de aire que sostiene la carrocería.",
+        "falla": "Fisuras por edad o roce.",
+        "revisa": "Solución jabonosa."
+      },
+      {
+        "id": "valvula_niveladora",
+        "que": "Ajusta el aire de las bolsas según la altura.",
+        "falla": "Fuga o ajuste incorrecto.",
+        "revisa": "Solución jabonosa y altura especificada."
+      }
+    ],
+    "pasos": [
+      "Confirmar qué lado está bajo.",
+      "Buscar fugas en bolsas, conexiones y válvula niveladora.",
+      "Cambiar la pieza que fuga.",
+      "Verificar la altura especificada."
+    ],
+    "seguridad": "Nunca te metas bajo la carrocería apoyada solo en las bolsas de aire.",
+    "fuente": "Mapa temático de capacitación Volvo, Bastidor y control de altura (mentoría)"
+  },
+  {
+    "id": "L-A8-2-DIA",
+    "competencia": "A8-2-DIA",
+    "escenario": "puerta-servicio",
+    "minutos": 6,
+    "titulo": "Puertas de servicio y rampa de accesibilidad",
+    "objetivo": "Diagnosticar puertas y rampa trabajando con el sistema sin presión.",
+    "conceptos": [
+      "El cilindro de la puerta tiene fuerza suficiente para lesionar: se descarga el aire antes de meter la mano.",
+      "La rampa de accesibilidad solo funciona con sus condiciones de habilitación: puerta, freno de estacionamiento y seguros.",
+      "La velocidad de cierre se regula según el manual."
+    ],
+    "piezas": [
+      {
+        "id": "llave_emergencia",
+        "que": "Descarga el aire del sistema de la puerta.",
+        "falla": "—",
+        "revisa": "Antes de intervenir el mecanismo."
+      },
+      {
+        "id": "mecanismo_puerta",
+        "que": "Cilindro y varillaje que abren y cierran la puerta.",
+        "falla": "Sellos que fugan o ajuste incorrecto.",
+        "revisa": "Con el sistema descargado."
+      }
+    ],
+    "pasos": [
+      "Descargar el aire con la llave de emergencia.",
+      "Revisar el mecanismo y buscar fugas.",
+      "Cambiar sellos o piezas según el manual.",
+      "Probar apertura, cierre y velocidad."
+    ],
+    "seguridad": "No metas la mano al mecanismo con el sistema presurizado.",
+    "fuente": "Mapa temático de capacitación Volvo, Carrocería e interior (mentoría)"
+  },
+  {
+    "id": "L-A9-1-SEG",
+    "competencia": "A9-1-SEG",
+    "escenario": "supresion-incendios",
+    "minutos": 5,
+    "titulo": "Sistema de detección y supresión de incendios",
+    "objetivo": "Saber cómo responder a una advertencia del sistema contra incendios.",
+    "conceptos": [
+      "El sistema detecta temperatura o fuego en el compartimiento del motor y descarga agente supresor.",
+      "Ante una advertencia se revisa el panel y el detector según el manual: el sistema nunca se desactiva.",
+      "Si el sistema se descargó, se investiga la causa y se recarga antes de liberar la unidad."
+    ],
+    "piezas": [
+      {
+        "id": "panel_supresion",
+        "que": "Panel en el puesto del conductor que indica el estado del sistema.",
+        "falla": "—",
+        "revisa": "Primero, para saber qué componente reporta falla."
+      },
+      {
+        "id": "detector_incendio",
+        "que": "Detector en el compartimiento del motor.",
+        "falla": "Humedad en el conector después del lavado.",
+        "revisa": "Inspección y prueba según el manual."
+      }
+    ],
+    "pasos": [
+      "Leer el panel del sistema.",
+      "Inspeccionar el detector indicado.",
+      "Corregir según el manual y probar el sistema.",
+      "No liberar la unidad con el sistema en falla."
+    ],
+    "seguridad": "El sistema contra incendios protege a los pasajeros: nunca se desactiva.",
+    "fuente": "Mapa temático de capacitación Volvo, Detección y supresión de incendios (mentoría)"
+  }
+]
