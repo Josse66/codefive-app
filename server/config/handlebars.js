@@ -1,5 +1,6 @@
 import path from 'node:path';
 import { engine } from 'express-handlebars';
+import { viteAssets } from '#helpers/viteAssets.js';
 
 const carpetaVistas = path.resolve('server', 'views');
 
@@ -14,6 +15,7 @@ export function configurarHandlebars(app) {
       helpers: {
         anio: () => new Date().getFullYear(),
         igual: (a, b) => a === b,
+        viteAssets,
       },
     }),
   );

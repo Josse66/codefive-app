@@ -1,8 +1,9 @@
 import http from 'node:http';
-import app from '#app';
+import { crearApp } from '#app';
 import logger from '#config/logger.js';
 
 const port = Number(process.env.PORT) || 3000;
+const app = await crearApp();
 app.set('port', port);
 
 const server = http.createServer(app);
