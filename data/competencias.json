@@ -1,5 +1,25 @@
 [
   {
+    "id": "A0-1-COM",
+    "nombre": "Conocer el autobús: sistemas principales, controles y seguridad general",
+    "tecnologia": "ambas",
+    "grupo": 0,
+    "nivel": 1,
+    "habilidad": "comprension",
+    "prerequisito": null,
+    "critica": false
+  },
+  {
+    "id": "A0-2-SEG",
+    "nombre": "Operación segura, remolque y recuperación de la unidad",
+    "tecnologia": "ambas",
+    "grupo": 0,
+    "nivel": 2,
+    "habilidad": "seguridad",
+    "prerequisito": "A0-1-COM",
+    "critica": true
+  },
+  {
     "id": "A1-1-MAN",
     "nombre": "Inspección y mantenimiento preventivo general",
     "tecnologia": "ambas",

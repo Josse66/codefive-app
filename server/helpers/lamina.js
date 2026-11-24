@@ -2,6 +2,7 @@
 // Cada grupo de función tiene un recuadro de referencia (x, y) y el punto del autobús al que señala (ax, ay).
 const LADO = 32;
 const POSICIONES = {
+  0: { x: 944, y: 8, ax: 930, ay: 120 },
   1: { x: 944, y: 356, ax: 930, ay: 250 },
   2: { x: 36, y: 356, ax: 104, ay: 232 },
   3: { x: 404, y: 8, ax: 420, ay: 50 },

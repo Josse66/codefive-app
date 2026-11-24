@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS competencias (
   id            TEXT PRIMARY KEY,
   nombre        TEXT NOT NULL,
   tecnologia    TEXT NOT NULL CHECK (tecnologia IN ('diesel', 'electrica', 'ambas')),
-  grupo         INTEGER NOT NULL CHECK (grupo BETWEEN 1 AND 9),
+  grupo         INTEGER NOT NULL CHECK (grupo BETWEEN 0 AND 9),
   nivel         INTEGER NOT NULL CHECK (nivel BETWEEN 1 AND 3),
   habilidad     TEXT NOT NULL CHECK (habilidad IN ('comprension', 'diagnostico', 'mantenimiento', 'reparacion', 'seguridad')),
   prerequisito  TEXT REFERENCES competencias (id),

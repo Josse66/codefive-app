@@ -14,7 +14,7 @@ const c = (id, pSaber, extra = {}) => ({
 });
 
 test('las dominadas no entran a la ruta', () => {
-  const ruta = armarRuta([c('A', 0.9), c('B', 0.3)]);
+  const ruta = armarRuta([c('A', 0.95), c('B', 0.3)]);
   assert.deepEqual(
     ruta.map((p) => p.competencia.id),
     ['B'],
@@ -47,7 +47,7 @@ test('el prerrequisito pendiente va antes que lo que depende de él', () => {
 test('modo de ayuda se retira conforme sube el dominio', () => {
   assert.equal(modoDeAyuda(0.2), 'guiado');
   assert.equal(modoDeAyuda(0.6), 'con_pistas');
-  assert.equal(modoDeAyuda(0.9), 'autonomo');
+  assert.equal(modoDeAyuda(0.95), 'autonomo');
 });
 
 test('con la misma prioridad, primero el nivel más básico', () => {

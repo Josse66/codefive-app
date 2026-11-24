@@ -24,7 +24,7 @@ test('BKT sube con aciertos y baja con errores', () => {
 });
 
 test('estado del dominio por umbral', () => {
-  assert.equal(estadoDominio(0.9), 'dominada');
+  assert.equal(estadoDominio(0.95), 'dominada');
   assert.equal(estadoDominio(0.5), 'en_desarrollo');
   assert.equal(estadoDominio(0.1), 'brecha');
 });

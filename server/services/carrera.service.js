@@ -1,6 +1,6 @@
 import db from '#db/conexion.js';
 import { errorHttp } from '#helpers/errores.js';
-import { nombreGrupo } from '#helpers/formato.js';
+import { NUMEROS_GRUPO, nombreGrupo } from '#helpers/formato.js';
 import { obtenerTecnico } from '#services/tecnicos.service.js';
 import { asegurarDominio, obtenerPerfil } from '#services/dominio.service.js';
 import { aplicaAlModelo, modeloDelTecnico } from '#services/modelos.service.js';
@@ -82,7 +82,7 @@ export function obtenerCarrera(tecnicoId) {
     .filter((c) => aplicaAlModelo(c.tecnologia, modelo))
     .map((c) => ({ ...c, alerta: conAlerta.has(c.id), dominio: Math.round(c.pSaber * 100) }));
 
-  const grupos = [1, 2, 3, 4, 5, 6, 7, 8, 9].map((grupo) => {
+  const grupos = NUMEROS_GRUPO.map((grupo) => {
     const delGrupo = competencias.filter((c) => c.grupo === grupo);
     const niveles = NIVELES.map(({ nivel, nombre }) => {
       const delNivel = delGrupo.filter((c) => c.nivel === nivel);

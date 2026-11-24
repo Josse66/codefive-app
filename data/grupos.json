@@ -1,39 +1,52 @@
 {
-  "1": {
-    "nombre": "Grupos de función",
-    "corto": "Grupos de función",
-    "descripcion": "Conoce el autobús y sus grupos de función; inspección diaria y servicio general."
+  "0": {
+    "nombre": "General",
+    "corto": "General",
+    "descripcion": "Conocer el autobús, sus sistemas principales, la operación segura y la recuperación de la unidad."
   },
-  "2": { "nombre": "Motor", "corto": "Motor", "descripcion": "Todo lo que tiene que ver con el motor." },
+  "1": {
+    "nombre": "Servicio y mantenimiento",
+    "corto": "Servicio",
+    "descripcion": "Inspecciones, mantenimiento preventivo, lubricación e intervalos de servicio."
+  },
+  "2": {
+    "nombre": "Motor",
+    "corto": "Motor",
+    "descripcion": "Funcionamiento del motor o del tren motriz eléctrico, gestión electrónica y emisiones."
+  },
   "3": {
     "nombre": "Sistema eléctrico",
     "corto": "Eléctrico",
-    "descripcion": "Todo el sistema eléctrico, incluido el alto voltaje de los autobuses eléctricos."
+    "descripcion": "Arquitectura eléctrica, redes multiplexadas, baterías, carga y alta tensión."
   },
   "4": {
     "nombre": "Transmisión",
     "corto": "Transmisión",
-    "descripcion": "Todo lo que tiene que ver con la transmisión."
+    "descripcion": "Caja de cambios o reductor, tren motriz, ejes y su diagnóstico."
   },
-  "5": { "nombre": "Frenos", "corto": "Frenos", "descripcion": "Frenos neumáticos y ABS." },
+  "5": {
+    "nombre": "Frenos",
+    "corto": "Frenos",
+    "descripcion": "Frenos neumáticos y electrónicos, ABS, control de estabilidad y desgaste."
+  },
   "6": {
     "nombre": "Suspensión y dirección",
     "corto": "Susp. y dirección",
-    "descripcion": "Todo lo que tiene que ver con la suspensión y la dirección."
+    "descripcion": "Dirección, suspensión y ejes direccionales."
   },
   "7": {
-    "nombre": "Soportería",
-    "corto": "Soportería",
-    "descripcion": "Todo lo que tiene que ver con la soportería: bastidor, resortes, bolsas de aire y ruedas."
+    "nombre": "Bastidor, resortes, amortiguadores y ruedas",
+    "corto": "Bastidor y ruedas",
+    "descripcion": "Suspensión electrónica, control de altura, bastidor y ruedas."
   },
   "8": {
-    "nombre": "Carrocería, asientos y volantes",
+    "nombre": "Carrocería e interior",
     "corto": "Carrocería",
-    "descripcion": "Carrocería, asientos, volantes, puertas e interior."
+    "descripcion": "Puertas, climatización, accesibilidad y equipo interior."
   },
   "9": {
-    "nombre": "Misceláneos",
-    "corto": "Misceláneos",
-    "descripcion": "Todo lo misceláneo, como la detección y supresión de incendios."
+    "nombre": "Temas diversos",
+    "corto": "Diversos",
+    "descripcion": "Sistemas de detección y supresión de incendios."
   }
 }

@@ -2130,5 +2130,109 @@
     "correcta": "b",
     "explicacion": "Una falla de circuito suele ser un cable abierto o un conector suelto.",
     "fuente": "Mapa temático Volvo (mentoría, foto_23); guías públicas de sistemas de supresión de incendios en autobuses"
+  },
+  {
+    "id": "P-A0-1-01",
+    "competencia_id": "A0-1-COM",
+    "enunciado": "¿Cómo organiza Volvo los sistemas del autobús en sus manuales y refacciones?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Por color"
+      },
+      {
+        "id": "b",
+        "texto": "En grupos de función del 0 al 9"
+      },
+      {
+        "id": "c",
+        "texto": "Por año del modelo"
+      },
+      {
+        "id": "d",
+        "texto": "Por proveedor"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Los grupos de función ordenan manuales, refacciones y capacitación.",
+    "fuente": "Asesoría Volvo HackaTec 2026 (FG 0 – General); guías públicas de operación segura de autobuses"
+  },
+  {
+    "id": "P-A0-1-02",
+    "competencia_id": "A0-1-COM",
+    "enunciado": "En un autobús eléctrico ves un cable naranja. ¿Qué significa?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Que es nuevo"
+      },
+      {
+        "id": "b",
+        "texto": "Que es de alto voltaje y no se toca sin autorización"
+      },
+      {
+        "id": "c",
+        "texto": "Que es de la radio"
+      },
+      {
+        "id": "d",
+        "texto": "Nada"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "El naranja identifica el alto voltaje.",
+    "fuente": "Asesoría Volvo HackaTec 2026 (FG 0 – General); guías públicas de operación segura de autobuses"
+  },
+  {
+    "id": "P-A0-2-01",
+    "competencia_id": "A0-2-SEG",
+    "enunciado": "¿Por qué un eléctrico no se remolca con las ruedas motrices girando si el fabricante no lo permite?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Porque se descarga"
+      },
+      {
+        "id": "b",
+        "texto": "Porque el motor genera voltaje al girar y puede dañarse o ser peligroso"
+      },
+      {
+        "id": "c",
+        "texto": "Porque se ensucia"
+      },
+      {
+        "id": "d",
+        "texto": "No hay problema"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "El motor de tracción funciona como generador al girar.",
+    "fuente": "Asesoría Volvo HackaTec 2026 (FG 0 – General); guías públicas de operación segura de autobuses"
+  },
+  {
+    "id": "P-A0-2-02",
+    "competencia_id": "A0-2-SEG",
+    "enunciado": "Mueves una unidad dentro del taller. ¿Qué es obligatorio?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Ir rápido"
+      },
+      {
+        "id": "b",
+        "texto": "Un guía y nadie entre la unidad y un obstáculo"
+      },
+      {
+        "id": "c",
+        "texto": "Llevar pasajeros"
+      },
+      {
+        "id": "d",
+        "texto": "Nada"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "El guía evita atropellos y golpes.",
+    "fuente": "Asesoría Volvo HackaTec 2026 (FG 0 – General); guías públicas de operación segura de autobuses"
   }
 ]

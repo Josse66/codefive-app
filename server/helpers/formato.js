@@ -30,8 +30,9 @@ const HABILIDADES = {
   reparacion: 'Reparación',
   seguridad: 'Seguridad',
 };
-// Grupos de función de Volvo (Impact), con los nombres que usan los técnicos: data/grupos.json.
+// Grupos de función oficiales de Volvo, FG 0 a FG 9 (asesoría HackaTec 2026): data/grupos.json.
 const GRUPOS = JSON.parse(fs.readFileSync(path.resolve('data', 'grupos.json'), 'utf8'));
+export const NUMEROS_GRUPO = Object.keys(GRUPOS).map(Number);
 const MODOS = { guiado: 'Guiado', con_pistas: 'Con pistas', autonomo: 'Autónomo' };
 
 export const porcentaje = (p) => Math.round(Number(p) * 100);

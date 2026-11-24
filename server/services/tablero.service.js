@@ -3,6 +3,7 @@ import { listarCompetencias, obtenerPerfil } from '#services/dominio.service.js'
 import { UMBRALES } from '#services/modelo.js';
 import { listarEscenarios, obtenerEscenario } from '#services/escenarios.js';
 import { resumenTaller } from '#services/taller.service.js';
+import { NUMEROS_GRUPO } from '#helpers/formato.js';
 
 // Tablero de capacitación y postventa de Volvo: avance, dominio, errores recurrentes y retención
 // de todos los técnicos. Todo sale de la bitácora de eventos, del dominio y de las evaluaciones.
@@ -246,7 +247,7 @@ function erroresPorTaller() {
 
 // Mapa de calor: dominio promedio de cada técnico en cada grupo de función (1 a 9).
 function mapaDeCalor() {
-  const grupos = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+  const grupos = NUMEROS_GRUPO;
   const filas = db
     .prepare(
       `SELECT d.tecnico_id, c.grupo, AVG(d.p_saber) AS p

@@ -37,6 +37,7 @@ const COLOR_PIEZA = {
 
 // Recuadro de referencia de cada grupo sobre el autobús (lado derecho, +z).
 export const POSICION_GRUPO = {
+  0: [5.6, 2.7, 1.45],
   1: [5.6, 1.0, 1.45],
   2: [-5.5, 1.1, 1.45],
   3: [0, 3.95, 0.4],

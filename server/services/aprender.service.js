@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import db from '#db/conexion.js';
 import { errorHttp } from '#helpers/errores.js';
-import { nombreGrupo } from '#helpers/formato.js';
+import { NUMEROS_GRUPO, nombreGrupo } from '#helpers/formato.js';
 import { obtenerTecnico } from '#services/tecnicos.service.js';
 import { asegurarDominio, obtenerPerfil } from '#services/dominio.service.js';
 import { obtenerRuta } from '#services/ruta.service.js';
@@ -58,7 +58,7 @@ export function obtenerTemario(tecnicoId) {
   const vistasTecnico = vistas(tecnico.id);
   const sugerida = recomendada(tecnico.id);
 
-  const grupos = [1, 2, 3, 4, 5, 6, 7, 8, 9].map((grupo) => ({
+  const grupos = NUMEROS_GRUPO.map((grupo) => ({
     grupo,
     nombre: nombreGrupo(grupo),
     lecciones: temario

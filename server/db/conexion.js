@@ -23,6 +23,21 @@ if (
   db.exec("ALTER TABLE preguntas ADD COLUMN banco TEXT NOT NULL DEFAULT 'practica'");
 }
 db.exec(fs.readFileSync(path.resolve('server', 'db', 'schema.sql'), 'utf8'));
+// Migración: Volvo usa los grupos de función FG 0 a FG 9; las bases viejas solo aceptaban 1 a 9.
+// SQLite no cambia un CHECK en su lugar: se recrea la tabla con los mismos datos.
+const sqlCompetencias = db
+  .prepare("SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'competencias'")
+  .get()?.sql;
+if (sqlCompetencias?.includes('BETWEEN 1 AND 9')) {
+  db.exec('PRAGMA foreign_keys = OFF');
+  db.exec(`BEGIN;
+    ${sqlCompetencias.replace('CREATE TABLE competencias', 'CREATE TABLE competencias_fg').replace('BETWEEN 1 AND 9', 'BETWEEN 0 AND 9')};
+    INSERT INTO competencias_fg SELECT * FROM competencias;
+    DROP TABLE competencias;
+    ALTER TABLE competencias_fg RENAME TO competencias;
+    COMMIT;`);
+  db.exec('PRAGMA foreign_keys = ON');
+}
 if (
   !db
     .prepare('PRAGMA table_info(tecnicos)')

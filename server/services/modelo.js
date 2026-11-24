@@ -11,8 +11,8 @@ export const PARAMETROS_BKT = {
   aprender: 0.15, // en práctica; en el diagnóstico se usa 0 porque solo se mide
 };
 
-// Umbrales del prototipo, no criterios oficiales de Volvo.
-export const UMBRALES = { dominada: 0.8, enDesarrollo: 0.4 };
+// Dominada desde 0.91: la misma calificación mínima aprobatoria (91) de los cursos de Volvo.
+export const UMBRALES = { dominada: 0.91, enDesarrollo: 0.4 };
 
 /**
  * Actualiza la probabilidad de dominio después de una respuesta.

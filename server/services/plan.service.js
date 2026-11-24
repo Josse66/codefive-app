@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import db from '#db/conexion.js';
 import { errorHttp } from '#helpers/errores.js';
-import { descripcionGrupo, nombreGrupo } from '#helpers/formato.js';
+import { NUMEROS_GRUPO, descripcionGrupo, nombreGrupo } from '#helpers/formato.js';
 import { obtenerTecnico } from '#services/tecnicos.service.js';
 import { asegurarDominio, obtenerPerfil } from '#services/dominio.service.js';
 import { obtenerRuta } from '#services/ruta.service.js';
@@ -65,7 +65,7 @@ export function obtenerPlan(tecnicoId) {
   );
   const escenarios = listarEscenarios().filter((e) => aplicaAlModelo(e.tecnologia, modelo));
 
-  const modulos = [1, 2, 3, 4, 5, 6, 7, 8, 9].map((grupo) => {
+  const modulos = NUMEROS_GRUPO.map((grupo) => {
     const delGrupo = competencias.filter((c) => c.grupo === grupo && aplicaAlModelo(c.tecnologia, modelo));
     const lecciones = delGrupo
       .map((c) => leccionDe.get(c.id))

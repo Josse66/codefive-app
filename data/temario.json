@@ -1557,5 +1557,80 @@
     ],
     "seguridad": "Antes de trabajar, el cilindro se asegura con su seguro para evitar una descarga accidental.",
     "fuente": "Mapa temático Volvo (mentoría, foto_23); guías públicas de sistemas de supresión de incendios en autobuses"
+  },
+  {
+    "id": "L-A0-1-COM",
+    "competencia": "A0-1-COM",
+    "escenario": null,
+    "minutos": 5,
+    "titulo": "Conoce tu autobús",
+    "objetivo": "Ubicar los sistemas principales del autobús y los controles de seguridad antes de trabajar en él.",
+    "conceptos": [
+      "Todo autobús Volvo se organiza en grupos de función, del 0 al 9: así se ordenan los manuales, las refacciones y esta capacitación.",
+      "Antes de tocar una unidad identifica su tipo (diésel o eléctrico), dónde está el interruptor maestro y dónde están las salidas de emergencia.",
+      "En un eléctrico, todo lo naranja es alto voltaje: se mira, no se toca sin autorización."
+    ],
+    "piezas": [
+      {
+        "id": "conector_diagnostico",
+        "pos": [5.3, 1.3, 1.32],
+        "tipo": "tablero",
+        "tamano": [0.35, 0.25, 0.1],
+        "que": "Puerto de diagnóstico junto al puesto del conductor.",
+        "falla": "Sin acceso a él no se pueden leer las fallas.",
+        "revisa": "Ubicarlo y verificar que la tapa cierre."
+      },
+      {
+        "id": "llave_emergencia",
+        "pos": [4.1, 2.2, 1.33],
+        "tipo": "tablero",
+        "tamano": [0.2, 0.2, 0.1],
+        "que": "Abre la puerta en una emergencia.",
+        "falla": "Si está trabada, nadie puede salir.",
+        "revisa": "Ubicarla en cada unidad que atiendas."
+      }
+    ],
+    "pasos": [
+      "Identifica el modelo y si es diésel o eléctrico.",
+      "Ubica el interruptor maestro de baterías.",
+      "Ubica salidas y llaves de emergencia.",
+      "Ubica el puerto de diagnóstico.",
+      "Reconoce las etiquetas de alto voltaje."
+    ],
+    "seguridad": "Si no sabes qué es un componente, pregunta antes de tocarlo.",
+    "fuente": "Asesoría Volvo HackaTec 2026 (FG 0 – General); guías públicas de operación segura de autobuses"
+  },
+  {
+    "id": "L-A0-2-SEG",
+    "competencia": "A0-2-SEG",
+    "escenario": null,
+    "minutos": 6,
+    "titulo": "Mover y recuperar la unidad con seguridad",
+    "objetivo": "Mover, remolcar o recuperar un autobús sin dañarlo ni poner en riesgo a nadie.",
+    "conceptos": [
+      "Para remolcar se sigue el procedimiento del fabricante: en muchos casos hay que desacoplar el eje motriz o levantarlo para no dañar la transmisión o el motor de tracción.",
+      "Un autobús eléctrico no se remolca con las ruedas motrices en el piso si el fabricante no lo permite: el motor puede generar voltaje al girar.",
+      "Al mover la unidad en el taller siempre hay alguien que guía y nadie entre la unidad y un obstáculo."
+    ],
+    "piezas": [
+      {
+        "id": "rueda_trasera",
+        "pos": [-3.8, 0.55, 1.42],
+        "tipo": "rueda",
+        "tamano": [1.1, 1.1, 0.2],
+        "que": "Ruedas motrices.",
+        "falla": "Si giran remolcando sin el procedimiento correcto pueden dañar el tren motriz.",
+        "revisa": "Verificar el método de remolque del fabricante."
+      }
+    ],
+    "pasos": [
+      "Consulta el método de remolque del modelo.",
+      "Desacopla o levanta el eje motriz si se indica.",
+      "Libera frenos solo con la unidad sujeta.",
+      "Coordina con un guía al mover.",
+      "Registra el traslado."
+    ],
+    "seguridad": "Nunca te pongas entre la unidad y un obstáculo mientras se mueve.",
+    "fuente": "Asesoría Volvo HackaTec 2026 (FG 0 – General); guías públicas de operación segura de autobuses"
   }
 ]

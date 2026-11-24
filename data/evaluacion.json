@@ -2130,5 +2130,109 @@
     "correcta": "b",
     "explicacion": "El sistema debe quedar completo y en servicio.",
     "fuente": "Mapa temático Volvo (mentoría, foto_23); guías públicas de sistemas de supresión de incendios en autobuses"
+  },
+  {
+    "id": "V-A0-1-01",
+    "competencia_id": "A0-1-COM",
+    "enunciado": "Te asignan una unidad que nunca has visto. ¿Qué haces primero?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Empezar a desarmar"
+      },
+      {
+        "id": "b",
+        "texto": "Identificar el modelo, el interruptor maestro y las salidas de emergencia"
+      },
+      {
+        "id": "c",
+        "texto": "Encender el motor"
+      },
+      {
+        "id": "d",
+        "texto": "Pedir refacciones"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Conocer la unidad es el primer paso de un trabajo seguro.",
+    "fuente": "Asesoría Volvo HackaTec 2026 (FG 0 – General); guías públicas de operación segura de autobuses"
+  },
+  {
+    "id": "V-A0-1-02",
+    "competencia_id": "A0-1-COM",
+    "enunciado": "¿Para qué sirve el puerto de diagnóstico?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Para cargar la batería"
+      },
+      {
+        "id": "b",
+        "texto": "Para conectar la herramienta que lee fallas y datos"
+      },
+      {
+        "id": "c",
+        "texto": "Para la radio"
+      },
+      {
+        "id": "d",
+        "texto": "Para inflar llantas"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Ahí se conecta la herramienta de diagnóstico.",
+    "fuente": "Asesoría Volvo HackaTec 2026 (FG 0 – General); guías públicas de operación segura de autobuses"
+  },
+  {
+    "id": "V-A0-2-01",
+    "competencia_id": "A0-2-SEG",
+    "enunciado": "Antes de remolcar un autobús, ¿qué consultas?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "El color"
+      },
+      {
+        "id": "b",
+        "texto": "El método de remolque del fabricante para ese modelo"
+      },
+      {
+        "id": "c",
+        "texto": "El kilometraje"
+      },
+      {
+        "id": "d",
+        "texto": "El clima"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Cada modelo indica cómo remolcarlo sin dañarlo.",
+    "fuente": "Asesoría Volvo HackaTec 2026 (FG 0 – General); guías públicas de operación segura de autobuses"
+  },
+  {
+    "id": "V-A0-2-02",
+    "competencia_id": "A0-2-SEG",
+    "enunciado": "Un compañero se para entre el autobús que se mueve y la pared. ¿Qué haces?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Sigues"
+      },
+      {
+        "id": "b",
+        "texto": "Detienes la maniobra"
+      },
+      {
+        "id": "c",
+        "texto": "Tocas el claxon y sigues"
+      },
+      {
+        "id": "d",
+        "texto": "Nada"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Es un riesgo de aplastamiento: se detiene la maniobra.",
+    "fuente": "Asesoría Volvo HackaTec 2026 (FG 0 – General); guías públicas de operación segura de autobuses"
   }
 ]
