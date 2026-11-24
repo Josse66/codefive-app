@@ -32,12 +32,33 @@
     </aside>
   </div>
 
-  <div class="grid gap-3">
+  <div class="grid gap-4">
     <div class="flex flex-wrap items-baseline justify-between gap-2">
-      <h2 class="text-3xl">Los 9 módulos de tu autobús</h2>
-      <p class="text-sm text-tinta-3">Cada módulo es un grupo de función. Solo ves lo que aplica a {{plan.modelo.nombre}}.</p>
+      <h2 class="text-3xl">Tu camino a experto</h2>
+      <p class="text-tinta-2"><strong>{{carrera.avanceExperto}} %</strong> recorrido · {{carrera.dominadas}} de {{carrera.total}} competencias · faltan unas {{carrera.horasRestantes}} h</p>
     </div>
-    <ol class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+    <ol class="grid gap-2 sm:grid-cols-5" aria-label="Niveles de tu carrera">
+      {{#each carrera.escalones}}
+        <li class="grid content-start gap-1.5 border-2 p-3 {{#if actual}}border-tinta bg-white{{else if logrado}}border-ok bg-ok-suave{{else}}border-placa-linea bg-placa{{/if}}" {{#if actual}}aria-current="step"{{/if}}>
+          <p class="font-narrow text-xs font-bold uppercase tracking-wider {{#if actual}}text-tinta{{else if logrado}}text-ok{{else}}text-tinta-3{{/if}}">{{#if actual}}Vas aquí{{else if logrado}}Logrado ✓{{else}}Siguiente{{/if}}</p>
+          <p class="font-sans text-xl font-semibold leading-tight">{{nombre}}</p>
+          <p class="text-sm text-tinta-2">{{enfoque}}</p>
+          {{#if total}}
+            <div class="mt-1 h-1.5 bg-placa-2" aria-hidden="true"><div class="h-1.5 {{#if logrado}}bg-ok{{else}}bg-tinta{{/if}}" style="width: {{proporcion dominadas total}}%"></div></div>
+            <p class="codigo text-xs text-tinta-3">{{dominadas}} de {{total}} competencias</p>
+          {{/if}}
+        </li>
+      {{/each}}
+    </ol>
+    {{> matriz-carrera carrera=carrera}}
+  </div>
+
+  <details class="group grid gap-3">
+    <summary class="flex cursor-pointer list-none flex-wrap items-baseline justify-between gap-2 border-t border-placa-linea pt-4">
+      <span class="text-2xl font-semibold">Lecciones y prácticas por módulo <span class="text-tinta-3 group-open:hidden" aria-hidden="true">+</span><span class="hidden text-tinta-3 group-open:inline" aria-hidden="true">−</span></span>
+      <span class="text-sm text-tinta-3">Cada módulo es un grupo de función. Solo ves lo que aplica a {{plan.modelo.nombre}}.</span>
+    </summary>
+    <ol class="mt-3 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
       {{#each plan.modulos}}
         <li class="grid content-start border {{#if aplica}}border-tinta bg-white{{else}}border-placa-linea bg-placa{{/if}}">
           <header class="grid gap-2 border-b {{#if aplica}}border-tinta{{else}}border-placa-linea{{/if}} p-4">
@@ -80,5 +101,5 @@
         </li>
       {{/each}}
     </ol>
-  </div>
+  </details>
 </section>
