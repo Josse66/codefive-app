@@ -4,6 +4,15 @@
   "description": "CodeFive: entrenamiento adaptativo para técnicos de autobuses (Reto Volvo, HackaTec 2026)",
   "private": true,
   "type": "module",
+  "imports": {
+    "#app": "./server/app.js",
+    "#config/*": "./server/config/*",
+    "#db/*": "./server/db/*",
+    "#routes/*": "./server/routes/*",
+    "#controllers/*": "./server/controllers/*",
+    "#services/*": "./server/services/*",
+    "#helpers/*": "./server/helpers/*"
+  },
   "scripts": {
     "dev": "nodemon server/bin/www.js",
     "start": "node server/bin/www.js"
