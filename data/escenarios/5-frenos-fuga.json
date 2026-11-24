@@ -149,6 +149,57 @@
       }
     },
     {
+      "id": "reemplazar",
+      "tipo": "reemplazo",
+      "pieza": "conexion_valvula",
+      "pregunta": "Encontraste la fuga en la conexión de la válvula relevadora. ¿Qué refacción cambias?",
+      "opciones": [
+        {
+          "id": "conexion",
+          "texto": "Conexión y sello de la válvula relevadora",
+          "costo": 180
+        },
+        {
+          "id": "valvula",
+          "texto": "Válvula relevadora completa",
+          "costo": 2400
+        },
+        {
+          "id": "camara",
+          "texto": "Cámara de freno",
+          "costo": 1900
+        },
+        {
+          "id": "compresor",
+          "texto": "Compresor de aire",
+          "costo": 18500
+        }
+      ],
+      "correcta": "conexion",
+      "explicacion": "La fuga estaba en la conexión: se cambia la conexión y su sello, no la válvula completa.",
+      "pista": "Cambia solo lo que está fallando.",
+      "errores": {
+        "valvula": {
+          "codigo": null,
+          "critico": false,
+          "consecuencia": "reintentar",
+          "mensaje": "La válvula estaba bien: cambiaste una pieza cara que no hacía falta."
+        },
+        "compresor": {
+          "codigo": null,
+          "critico": false,
+          "consecuencia": "reintentar",
+          "mensaje": "El compresor no tiene la fuga; trabaja de más porque se pierde aire en otro lado."
+        },
+        "*": {
+          "codigo": null,
+          "critico": false,
+          "consecuencia": "reintentar",
+          "mensaje": "Esa pieza no tiene la fuga."
+        }
+      }
+    },
+    {
       "id": "verificar",
       "tipo": "hipotesis",
       "pregunta": "Ya reparaste la conexión. ¿Qué sigue antes de liberar la unidad?",

@@ -90,6 +90,45 @@
           "mensaje": "Ahí no hay burbujas."
         }
       }
+    },
+    {
+      "id": "reemplazar",
+      "tipo": "reemplazo",
+      "pieza": "bolsa_aire",
+      "pregunta": "La bolsa de aire tiene una fisura. ¿Qué refacción cambias?",
+      "opciones": [
+        {
+          "id": "bolsa",
+          "texto": "Bolsa de aire de la suspensión",
+          "costo": 3200
+        },
+        {
+          "id": "niveladora",
+          "texto": "Válvula niveladora",
+          "costo": 1500
+        },
+        {
+          "id": "amortiguador",
+          "texto": "Amortiguador",
+          "costo": 2100
+        },
+        {
+          "id": "compresor",
+          "texto": "Compresor de aire",
+          "costo": 18500
+        }
+      ],
+      "correcta": "bolsa",
+      "explicacion": "Con la bolsa nueva la suspensión vuelve a sostener la altura.",
+      "pista": "¿Dónde salieron las burbujas?",
+      "errores": {
+        "*": {
+          "codigo": null,
+          "critico": false,
+          "consecuencia": "reintentar",
+          "mensaje": "Esa pieza no tenía la fuga."
+        }
+      }
     }
   ],
   "datosDemo": true

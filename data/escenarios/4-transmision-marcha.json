@@ -110,6 +110,51 @@
           "mensaje": "Ahí no hay burbujas. Sigue la línea de aire del actuador."
         }
       }
+    },
+    {
+      "id": "reemplazar",
+      "tipo": "reemplazo",
+      "pieza": "actuador_caja",
+      "pregunta": "La línea de aire del actuador tiene una fisura. ¿Qué refacción cambias?",
+      "opciones": [
+        {
+          "id": "linea",
+          "texto": "Línea de aire del actuador",
+          "costo": 350
+        },
+        {
+          "id": "actuador",
+          "texto": "Actuador de cambios",
+          "costo": 9800
+        },
+        {
+          "id": "modulo",
+          "texto": "Módulo de control de la caja",
+          "costo": 15000
+        },
+        {
+          "id": "caja",
+          "texto": "Caja de velocidades completa",
+          "costo": 120000
+        }
+      ],
+      "correcta": "linea",
+      "explicacion": "Con la línea nueva el actuador recibe presión y la caja vuelve a cambiar.",
+      "pista": "La falla era de suministro de aire, no del actuador.",
+      "errores": {
+        "caja": {
+          "codigo": null,
+          "critico": false,
+          "consecuencia": "reintentar",
+          "mensaje": "Cambiar la caja completa por una línea de aire rota es el error más caro del taller."
+        },
+        "*": {
+          "codigo": null,
+          "critico": false,
+          "consecuencia": "reintentar",
+          "mensaje": "Esa pieza no estaba dañada."
+        }
+      }
     }
   ],
   "datosDemo": true

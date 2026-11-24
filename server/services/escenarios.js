@@ -5,6 +5,7 @@ import path from 'node:path';
 // es escribir su archivo, no programar otra escena.
 //
 // Paso de hipótesis: el técnico elige una opción; `correcta` es la letra.
+// Paso de reemplazo: elige qué refacción cambiar (cada una con su costo); `pieza` es la del autobús.
 // Paso de acción:   el técnico aplica una herramienta a una pieza ("candado>desconexion_servicio");
 //                   `correcta` es la secuencia de acciones en orden.
 // `errores` asocia una opción o acción equivocada con su código, si es crítica y su consecuencia;
@@ -16,7 +17,7 @@ function validar(escenario, archivo) {
   const falta = ['id', 'grupo', 'competencia', 'titulo', 'pasos'].filter((campo) => !escenario[campo]);
   if (falta.length) throw new Error(`${archivo}: faltan los campos ${falta.join(', ')}`);
   escenario.pasos.forEach((paso) => {
-    if (!['hipotesis', 'accion'].includes(paso.tipo)) {
+    if (!['hipotesis', 'reemplazo', 'accion'].includes(paso.tipo)) {
       throw new Error(`${archivo}: el paso ${paso.id} tiene un tipo desconocido`);
     }
     if (paso.tipo === 'accion' && !Array.isArray(paso.correcta)) {
@@ -67,9 +68,13 @@ export function paraCliente(escenario) {
       opciones: p.opciones ?? null,
       acciones: p.tipo === 'accion' ? p.correcta.length : null,
       pista: p.pista ?? null,
+      pieza: p.pieza ?? null,
     })),
   };
 }
+
+// Hipótesis y cambio de refacción se contestan eligiendo una opción; la acción se hace en el autobús.
+export const deEleccion = (paso) => paso.tipo !== 'accion';
 
 export const progresoInicial = () => ({ paso: 0, subpaso: 0, terminado: false, errores: 0, criticos: 0 });
 
@@ -86,12 +91,12 @@ export function evaluarIntento(escenario, progreso, { pasoId, accion, opcion }) 
     return { invalido: `Ahora toca el paso "${paso.id}"` };
   }
 
-  const respuesta = paso.tipo === 'hipotesis' ? opcion : accion;
+  const respuesta = deEleccion(paso) ? opcion : accion;
   if (!respuesta) return { invalido: 'Falta la opción o la acción' };
-  const esperada = paso.tipo === 'hipotesis' ? paso.correcta : paso.correcta[progreso.subpaso];
+  const esperada = deEleccion(paso) ? paso.correcta : paso.correcta[progreso.subpaso];
 
   if (respuesta === esperada) {
-    const ultimoSubpaso = paso.tipo === 'hipotesis' || progreso.subpaso + 1 >= paso.correcta.length;
+    const ultimoSubpaso = deEleccion(paso) || progreso.subpaso + 1 >= paso.correcta.length;
     const siguiente = { ...progreso };
     if (ultimoSubpaso) {
       siguiente.paso += 1;

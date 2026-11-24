@@ -79,6 +79,45 @@
           "mensaje": "Ahí no hay burbujas."
         }
       }
+    },
+    {
+      "id": "reemplazar",
+      "tipo": "reemplazo",
+      "pieza": "mecanismo_puerta",
+      "pregunta": "El sello del cilindro de la puerta fuga. ¿Qué refacción cambias?",
+      "opciones": [
+        {
+          "id": "sellos",
+          "texto": "Juego de sellos del cilindro",
+          "costo": 450
+        },
+        {
+          "id": "cilindro",
+          "texto": "Cilindro completo",
+          "costo": 2800
+        },
+        {
+          "id": "valvula",
+          "texto": "Electroválvula de la puerta",
+          "costo": 2200
+        },
+        {
+          "id": "puerta",
+          "texto": "Hoja de puerta completa",
+          "costo": 35000
+        }
+      ],
+      "correcta": "sellos",
+      "explicacion": "El cilindro está bien; solo sus sellos fugan.",
+      "pista": "Cambia lo mínimo que resuelve la falla.",
+      "errores": {
+        "*": {
+          "codigo": null,
+          "critico": false,
+          "consecuencia": "reintentar",
+          "mensaje": "Esa no es la pieza que fuga."
+        }
+      }
     }
   ],
   "datosDemo": true

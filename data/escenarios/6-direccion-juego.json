@@ -80,6 +80,45 @@
       }
     },
     {
+      "id": "reemplazar",
+      "tipo": "reemplazo",
+      "pieza": "terminal_direccion",
+      "pregunta": "La terminal de dirección tiene holgura. ¿Qué refacción cambias?",
+      "opciones": [
+        {
+          "id": "terminal",
+          "texto": "Terminal de dirección",
+          "costo": 1200
+        },
+        {
+          "id": "pitman",
+          "texto": "Brazo pitman",
+          "costo": 3500
+        },
+        {
+          "id": "caja_direccion",
+          "texto": "Caja de dirección",
+          "costo": 28000
+        },
+        {
+          "id": "llanta",
+          "texto": "Llanta delantera",
+          "costo": 7800
+        }
+      ],
+      "correcta": "terminal",
+      "explicacion": "La holgura estaba en la terminal: se cambia la terminal.",
+      "pista": "¿Dónde viste la holgura?",
+      "errores": {
+        "*": {
+          "codigo": null,
+          "critico": false,
+          "consecuencia": "reintentar",
+          "mensaje": "Esa pieza no tenía holgura."
+        }
+      }
+    },
+    {
       "id": "despues",
       "tipo": "hipotesis",
       "pregunta": "Reemplazaste la terminal. ¿Qué sigue?",

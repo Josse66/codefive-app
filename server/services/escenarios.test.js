@@ -17,7 +17,7 @@ function avanzarHasta(escenario, pasoId) {
   while (escenario.pasos[progreso.paso].id !== pasoId) {
     const paso = escenario.pasos[progreso.paso];
     const intento =
-      paso.tipo === 'hipotesis'
+      paso.tipo !== 'accion'
         ? { pasoId: paso.id, opcion: paso.correcta }
         : { pasoId: paso.id, accion: paso.correcta[progreso.subpaso] };
     progreso = evaluarIntento(escenario, progreso, intento).progreso;
@@ -39,7 +39,7 @@ test('todos los escenarios se pueden completar contestando bien', () => {
     while (!progreso.terminado && vueltas < 50) {
       const paso = escenario.pasos[progreso.paso];
       const intento =
-        paso.tipo === 'hipotesis'
+        paso.tipo !== 'accion'
           ? { pasoId: paso.id, opcion: paso.correcta }
           : { pasoId: paso.id, accion: paso.correcta[progreso.subpaso] };
       const resultado = evaluarIntento(escenario, progreso, intento);
@@ -100,4 +100,14 @@ test('cada competencia de los escenarios apunta a su escenario', () => {
   assert.equal(mapa['E3-2-SEG'], 'hv-aislamiento');
   assert.equal(mapa['A5-1-SEG'], 'frenos-fuga');
   assert.equal(mapa['A9-1-SEG'], 'supresion-incendios');
+});
+
+test('cambiar una refacción que no era es un error que no bloquea', () => {
+  const frenos = obtenerEscenario('frenos-fuga');
+  const progreso = avanzarHasta(frenos, 'reemplazar');
+  const malo = evaluarIntento(frenos, progreso, { pasoId: 'reemplazar', opcion: 'compresor' });
+  assert.equal(malo.correcta, false);
+  assert.equal(malo.error.critico, false);
+  const bueno = evaluarIntento(frenos, progreso, { pasoId: 'reemplazar', opcion: 'conexion' });
+  assert.equal(bueno.completaPaso, true);
 });
