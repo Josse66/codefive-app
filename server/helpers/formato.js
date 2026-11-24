@@ -49,3 +49,6 @@ export const rellenoEstado = (e) => RELLENO_ESTADO[e] ?? RELLENO_ESTADO.sin_eval
 export const nombreHabilidad = (h) => HABILIDADES[h] ?? h;
 export const nombreGrupo = (g) => GRUPOS[g] ?? `Grupo ${g}`;
 export const nombreModo = (m) => MODOS[m] ?? m;
+
+// Competencias del sistema de tracción de 600 V: llevan la marca naranja de alto voltaje.
+export const altoVoltaje = (tecnologia, grupo) => tecnologia === 'electrica' && Number(grupo) === 3;

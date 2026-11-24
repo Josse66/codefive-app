@@ -5,7 +5,7 @@ const { tecnicoId, competenciaId } = raiz.dataset;
 const $ = (id) => document.getElementById(id);
 
 const TECNOLOGIA = { diesel: 'Diésel', electrica: 'Eléctrico', ambas: 'Diésel y eléctrico' };
-const MODO = { guiado: 'Modo guiado', con_pistas: 'Modo con pistas', autonomo: 'Modo autónomo' };
+const MODO = { guiado: 'Guiado', con_pistas: 'Con pistas', autonomo: 'Autónomo' };
 const ESTADO = { dominada: 'Dominada', en_desarrollo: 'En desarrollo', brecha: 'Brecha' };
 const CLASE_OPCION =
   'flex w-full items-start gap-3 border border-placa-linea bg-white p-4 text-left text-[16px] transition-colors duration-150 hover:border-tinta aria-checked:border-tinta aria-checked:bg-placa-2 aria-checked:shadow-[inset_0_0_0_1px_#141c24] disabled:cursor-default disabled:hover:border-placa-linea';
@@ -35,7 +35,10 @@ function mostrarError(mensaje) {
 
 function mostrarDominio(pSaber, modo) {
   const porcentaje = Math.round(pSaber * 100);
-  $('dominio-texto').textContent = `${porcentaje} %`;
+  let estadoTexto = ESTADO.brecha;
+  if (porcentaje >= 80) estadoTexto = ESTADO.dominada;
+  else if (porcentaje >= 40) estadoTexto = ESTADO.en_desarrollo;
+  $('dominio-texto').textContent = `${porcentaje} % · ${estadoTexto}`;
   $('dominio-barra').style.width = `${porcentaje}%`;
   $('modo-texto').textContent = MODO[modo];
 }
@@ -214,7 +217,7 @@ pedir(`/api/tecnicos/${tecnicoId}/practica/${competenciaId}`)
           const li = document.createElement('li');
           li.className = 'flex items-start gap-3 text-[17px] leading-relaxed';
           const numero = document.createElement('span');
-          numero.className = 'recuadro mt-0.5 bg-ref';
+          numero.className = 'recuadro mt-0.5';
           numero.textContent = indice + 1;
           const contenido = document.createElement('span');
           contenido.textContent = texto;
@@ -223,6 +226,11 @@ pedir(`/api/tecnicos/${tecnicoId}/practica/${competenciaId}`)
         }),
       );
       $('leccion-fuente').textContent = `Fuente: ${leccion.fuente}`;
+      // Lecciones del sistema de tracción de 600 V: marco y marca naranja de alto voltaje.
+      if (competencia.tecnologia === 'electrica' && competencia.grupo === 3) {
+        $('leccion').classList.replace('border-tinta', 'border-hv');
+        $('leccion-hv').hidden = false;
+      }
       $('leccion').hidden = false;
     } else {
       mostrarPregunta();

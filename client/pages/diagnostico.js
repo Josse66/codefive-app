@@ -97,7 +97,6 @@ function mostrarPregunta(pregunta, progreso) {
   el.siguiente.disabled = true;
   el.tarjeta.hidden = false;
   mostrarProgreso(progreso);
-  el.opciones.querySelector('button')?.focus();
 }
 
 el.confianza.querySelectorAll('button').forEach((boton) => {

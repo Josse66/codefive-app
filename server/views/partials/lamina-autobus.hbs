@@ -3,8 +3,9 @@
   <!-- Carrocería con arcos de rueda; frente a la derecha -->
   <path d="M64 300 L170 300 A60 60 0 0 1 290 300 L730 300 A60 60 0 0 1 850 300 L966 300 L950 104 Q944 72 912 70 L96 70 Q64 72 64 104 Z" fill="#ffffff" stroke-width="2.5"/>
   <!-- Módulo de techo -->
-  <rect x="210" y="46" width="420" height="24" rx="3" fill="#e3e8ec" stroke-width="1.5"/>
-  <path d="M280 46 V70 M350 46 V70 M420 46 V70 M490 46 V70 M560 46 V70" stroke-width="1"/>
+  <rect x="210" y="46" width="420" height="24" rx="3" fill="#fbe9df" stroke="#d9480f" stroke-width="2"/>
+  <path d="M280 46 V70 M350 46 V70 M490 46 V70 M560 46 V70" stroke="#d9480f" stroke-width="1"/>
+  <text x="420" y="63" text-anchor="middle" fill="#a63a0d" stroke="none" font-family="'Archivo Narrow', Archivo, sans-serif" font-weight="700" font-size="12" letter-spacing="1">BATERÍAS 600 V</text>
   <!-- Ventanas -->
   <g fill="#e3e8ec" stroke-width="1.5">
     <rect x="88" y="92" width="88" height="84" rx="4"/><rect x="184" y="92" width="88" height="84" rx="4"/>
@@ -47,7 +48,7 @@
        {{#if competencias.length}}tabindex="0" role="button" aria-pressed="{{#if seleccionado}}true{{else}}false{{/if}}" aria-controls="grupo-{{numero}}"{{else}}aria-disabled="true"{{/if}}
        aria-label="Grupo {{numero}}, {{nombre}}: {{nombreEstado estado}}">
       <title>Grupo {{numero}} · {{nombre}} · {{nombreEstado estado}}</title>
-      <rect class="anillo" x="{{sx}}" y="{{sy}}" width="{{sl}}" height="{{sl}}" rx="2" fill="none" stroke="#b3121f" stroke-width="3" {{#unless seleccionado}}visibility="hidden"{{/unless}}/>
+      <rect class="anillo" x="{{sx}}" y="{{sy}}" width="{{sl}}" height="{{sl}}" rx="2" fill="none" stroke="#141c24" stroke-width="3" {{#unless seleccionado}}visibility="hidden"{{/unless}}/>
       <rect x="{{x}}" y="{{y}}" width="{{lado}}" height="{{lado}}" rx="2" fill="{{rellenoEstado estado}}" stroke="#141c24" stroke-width="1.5"/>
       <text x="{{cx}}" y="{{cy}}" dy="6.5" text-anchor="middle" fill="#ffffff" stroke="none" font-family="'Archivo Narrow', Archivo, sans-serif" font-weight="700" font-size="18">{{numero}}</text>
     </g>

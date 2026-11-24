@@ -7,16 +7,16 @@
   {{#if siguiente}}
     <article class="grid gap-6 border border-tinta bg-white p-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:p-8">
       <div class="grid gap-3">
-        <p class="text-sm font-semibold text-tinta-2">Siguiente pieza</p>
-        <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1">
-          <span class="codigo text-4xl lg:text-5xl">{{siguiente.competencia.id}}</span>
-          <h2 class="font-sans text-2xl font-semibold tracking-normal">{{siguiente.competencia.nombre}}</h2>
-        </div>
+        <h2 class="flex flex-wrap items-baseline gap-x-4 gap-y-1 font-sans text-2xl font-semibold tracking-normal">
+          <span class="codigo text-4xl lg:text-5xl">Sigue {{siguiente.competencia.id}}</span>
+          <span>{{siguiente.competencia.nombre}}</span>
+        </h2>
         <p class="text-tinta-2">{{nombreGrupo siguiente.competencia.grupo}} · {{nombreTecnologia siguiente.competencia.tecnologia}} · Nivel {{siguiente.competencia.nivel}}</p>
         <div class="flex flex-wrap gap-2">
           <span class="chip {{claseEstado siguiente.competencia.estado}}">{{porcentaje siguiente.competencia.pSaber}} % · {{nombreEstado siguiente.competencia.estado}}</span>
           <span class="chip border-tinta-3 text-tinta-2">Modo {{nombreModo siguiente.modo}}</span>
           {{#if siguiente.obligatoria}}<span class="chip border-mal bg-mal text-white">Obligatoria</span>{{/if}}
+          {{#if (altoVoltaje siguiente.competencia.tecnologia siguiente.competencia.grupo)}}<span class="marca-hv">Alto voltaje 600 V</span>{{/if}}
         </div>
         <p class="text-[15px]">{{siguiente.motivo}}{{#if siguiente.bloqueadaPor}} · primero: {{siguiente.bloqueadaPor.nombre}}{{/if}}</p>
       </div>
@@ -42,6 +42,7 @@
                   <td>
                     {{competencia.nombre}}
                     <span class="mt-1 block text-xs text-tinta-3">{{nombreGrupo competencia.grupo}} · Nivel {{competencia.nivel}}{{#if escenario}} · escenario 3D{{/if}}</span>
+                    {{#if (altoVoltaje competencia.tecnologia competencia.grupo)}}<span class="marca-hv mt-1.5">Alto voltaje 600 V</span>{{/if}}
                   </td>
                   <td><span class="chip {{claseEstado competencia.estado}}">{{porcentaje competencia.pSaber}} %</span></td>
                   <td class="whitespace-nowrap">{{nombreModo modo}}</td>

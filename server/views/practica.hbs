@@ -12,9 +12,10 @@
 
   <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start">
     <div class="grid gap-6">
-      <article id="leccion" class="grid gap-4 border border-tinta bg-white p-6 lg:p-8" hidden>
+      <article id="leccion" class="grid gap-4 border-2 border-tinta bg-white p-6 lg:p-8" hidden>
+        <span id="leccion-hv" class="marca-hv w-fit" hidden>Alto voltaje 600 V · solo personal autorizado</span>
         <h2 id="leccion-titulo" class="text-3xl"></h2>
-        <ol id="leccion-puntos" class="grid gap-3"></ol>
+        <ol id="leccion-puntos" class="grid max-w-[70ch] gap-3"></ol>
         <p id="leccion-fuente" class="border-t border-placa-linea pt-3 text-sm text-tinta-3"></p>
         <button id="boton-empezar" type="button" class="boton w-fit px-8">Ya lo leí, practicar</button>
       </article>
@@ -55,17 +56,20 @@
       <p id="mensaje-error" class="aviso-critico" hidden></p>
     </div>
 
-    <aside class="grid gap-3 border border-placa-linea bg-white p-5 lg:sticky lg:top-6" aria-label="Dominio de la competencia">
-      <p class="text-sm font-semibold text-tinta-2">Dominio estimado</p>
-      <p class="codigo text-5xl" id="dominio-texto">—</p>
-      <div class="relative h-3 bg-placa-2">
-        <div id="dominio-barra" class="h-3 bg-tinta transition-[width] duration-700 ease-out" style="width: 0%"></div>
-        <span class="absolute inset-y-[-4px] left-[40%] w-px bg-tinta-3" aria-hidden="true"></span>
-        <span class="absolute inset-y-[-4px] left-[80%] w-px bg-tinta-3" aria-hidden="true"></span>
+    <aside class="grid gap-3 border border-placa-linea bg-white p-5 lg:sticky lg:top-6" aria-label="Estado de la competencia">
+      <table class="tabla-partes">
+        <tbody>
+          <tr><th scope="row" class="w-28 !border-b !border-placa-linea !py-3 !normal-case !tracking-normal">Código</th><td class="codigo">{{competenciaId}}</td></tr>
+          <tr><th scope="row" class="!border-b !border-placa-linea !py-3 !normal-case !tracking-normal">Dominio</th><td><span id="dominio-texto" class="codigo">—</span></td></tr>
+          <tr><th scope="row" class="!border-b !border-placa-linea !py-3 !normal-case !tracking-normal">Ayuda</th><td id="modo-texto"></td></tr>
+        </tbody>
+      </table>
+      <div class="relative h-2 bg-placa-2" aria-hidden="true">
+        <div id="dominio-barra" class="h-2 bg-tinta transition-[width] duration-700 ease-out" style="width: 0%"></div>
+        <span class="absolute inset-y-[-4px] left-[40%] w-px bg-tinta-3"></span>
+        <span class="absolute inset-y-[-4px] left-[80%] w-px bg-tinta-3"></span>
       </div>
-      <div class="flex justify-between text-xs text-tinta-3"><span>Brecha</span><span class="pl-6">En desarrollo</span><span>Dominada</span></div>
-      <p id="modo-texto" class="chip w-fit border-tinta-3 text-tinta-2"></p>
-      <p class="text-sm text-tinta-3">La ayuda se retira conforme mejoras: guiado, con pistas y autónomo.</p>
+      <p class="text-sm text-tinta-3">Marcas en 40 % y 80 %: en desarrollo y dominada. La ayuda se retira conforme mejoras: guiado, con pistas y autónomo.</p>
     </aside>
   </div>
 </section>

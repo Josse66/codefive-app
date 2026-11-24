@@ -9,7 +9,27 @@
       <h2 class="text-3xl">Técnicos</h2>
       <p class="text-sm text-tinta-3">Datos ficticios de demostración</p>
     </div>
-    <div class="overflow-x-auto border border-placa-linea bg-white">
+    <ul class="grid gap-3 sm:hidden">
+      {{#each tecnicos}}
+        <li class="grid gap-3 border border-placa-linea bg-white p-4">
+          <div class="flex items-baseline justify-between gap-3">
+            <p class="font-semibold">{{nombre}}</p>
+            <span class="codigo text-tinta-3">{{id}}</span>
+          </div>
+          <p class="text-sm text-tinta-2">{{taller}} · {{anios_experiencia}} años · {{nombreTecnologia tecnologia}}</p>
+          <p class="text-sm">{{#if diagnosticado}}{{dominadas}} de {{total}} competencias dominadas{{else}}<span class="chip border-nada bg-nada-suave text-tinta-3">Sin diagnóstico</span>{{/if}}</p>
+          {{#if diagnosticado}}
+            <div class="grid grid-cols-2 gap-2">
+              <a href="/tecnicos/{{id}}/perfil" class="boton px-3">Competencias</a>
+              <a href="/tecnicos/{{id}}/diagnostico" class="boton-linea px-3">Repetir</a>
+            </div>
+          {{else}}
+            <a href="/tecnicos/{{id}}/diagnostico" class="boton">Hacer diagnóstico</a>
+          {{/if}}
+        </li>
+      {{/each}}
+    </ul>
+    <div class="hidden overflow-x-auto border border-placa-linea bg-white sm:block">
       <table class="tabla-partes min-w-[860px]">
         <thead>
           <tr>

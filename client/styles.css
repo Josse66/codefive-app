@@ -57,7 +57,7 @@
   body {
     @apply bg-placa font-sans text-tinta antialiased;
     font-variant-numeric: tabular-nums;
-    caret-color: #b3121f;
+    caret-color: #141c24;
   }
   ::selection {
     background: #141c24;
@@ -74,8 +74,11 @@
     text-underline-offset: 3px;
   }
   :focus-visible {
-    outline: 2px solid #b3121f;
+    outline: 2px solid #141c24;
     outline-offset: 2px;
+  }
+  .bg-tinta :focus-visible {
+    outline-color: #ffffff;
   }
 }
 
@@ -92,9 +95,14 @@
   .codigo {
     @apply font-narrow font-bold tracking-wide;
   }
-  /* Recuadro de referencia del manual: número de grupo en cuadro. */
+  /* Recuadro de referencia del manual: número de grupo en cuadro de tinta.
+     El rojo queda reservado para brecha y alertas críticas. */
   .recuadro {
-    @apply inline-flex h-7 w-7 shrink-0 items-center justify-center font-narrow text-[15px] font-bold text-white;
+    @apply inline-flex h-7 w-7 shrink-0 items-center justify-center bg-tinta font-narrow text-[15px] font-bold text-white;
+  }
+  /* Marca de alto voltaje (600 V): solo para lo eléctrico de tracción. */
+  .marca-hv {
+    @apply inline-flex items-center gap-1 border border-hv bg-hv-suave px-2 py-0.5 text-xs font-semibold text-hv-texto;
   }
   .chip {
     @apply inline-flex items-center gap-1 border px-2 py-0.5 text-xs font-semibold;
