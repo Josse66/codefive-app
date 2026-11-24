@@ -186,7 +186,7 @@ function agregarExtras(bus, tipo, techo, biblioteca) {
   return extras;
 }
 
-function construirAutobus(tipo) {
+function construirAutobus(tipo, alCargar = () => {}) {
   const bus = new THREE.Group();
   // Autobús de bloques: se ve mientras carga el modelo y se queda si el modelo no carga.
   const bloques = new THREE.Group();
@@ -231,6 +231,7 @@ function construirAutobus(tipo) {
       bus.remove(bloques, extras);
       bus.add(copia);
       extras = agregarExtras(bus, tipo, TECHO, biblioteca);
+      alCargar();
     })
     .catch(() => {});
   return bus;
@@ -242,22 +243,34 @@ function construirAutobus(tipo) {
  * @param {{ autobus: 'electrico'|'diesel', piezas?: any[], enfoque?: {objetivo, distancia}, grupos?: boolean }} opciones
  */
 export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos = false }) {
-  const renderer = new THREE.WebGLRenderer({ antialias: true });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  // Calidad: "normal" (sombras, resolución hasta 1.5) o "ligero" (sin sombras, resolución 1).
+  // Se guarda en el navegador; si la computadora va lenta se cambia sola a ligero.
+  let calidad = localStorage.getItem('calidad3d') ?? 'normal';
+  const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  // Las sombras no cambian solas: se recalculan solo cuando algo se carga o se mueve.
+  renderer.shadowMap.autoUpdate = false;
   contenedor.append(renderer.domElement);
   renderer.domElement.style.touchAction = 'none';
 
+  // Se dibuja solo cuando algo cambia (cámara, carga, animación o puntero), no 60 veces por segundo.
+  let pendiente = true;
+  const pedirCuadro = (sombras = false) => {
+    pendiente = true;
+    if (sombras) renderer.shadowMap.needsUpdate = true;
+  };
+
   const escena = new THREE.Scene();
-  escena.background = new THREE.Color(COLOR.papel);
+  // Fondo liso del color del taller con neblina para que el piso se pierda en el horizonte.
+  escena.background = new THREE.Color(0xd3d8dc);
+  escena.fog = new THREE.Fog(0xd3d8dc, 28, 60);
   escena.add(new THREE.HemisphereLight(0xffffff, 0x8a959f, 0.6));
   // Lámpara del techo del taller: da las sombras del autobús y las piezas sobre el piso.
   const sol = new THREE.DirectionalLight(0xffffff, 1.8);
   sol.position.set(4, 14, 7);
   sol.castShadow = true;
-  sol.shadow.mapSize.set(2048, 2048);
+  sol.shadow.mapSize.set(1024, 1024);
   Object.assign(sol.shadow.camera, { left: -9, right: 9, top: 9, bottom: -9, near: 1, far: 40 });
   sol.shadow.bias = -0.0005;
   escena.add(sol);
@@ -281,6 +294,7 @@ export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos 
       piso.material.normalMap = t;
       piso.material.normalScale.set(0.6, 0.6);
       piso.material.needsUpdate = true;
+      pedirCuadro();
     })
     .catch(() => {});
   [-2.4, 2.4].forEach((z) => {
@@ -294,16 +308,25 @@ export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos 
     escena.add(linea);
   });
 
-  // El HDRI da reflejos de taller a los metales y queda de fondo, desenfocado.
+  // El HDRI solo da los reflejos de taller a los metales (de fondo cuesta mucho).
   cargarAmbiente()
     .then((textura) => {
       escena.environment = textura;
       escena.environmentIntensity = 0.9;
-      escena.background = textura;
-      escena.backgroundBlurriness = 0.35;
-      escena.backgroundIntensity = 0.7;
+      pedirCuadro();
     })
     .catch(() => {});
+
+  // Aplica la calidad: resolución y sombras.
+  function aplicarCalidad() {
+    const normal = calidad === 'normal';
+    renderer.setPixelRatio(normal ? Math.min(window.devicePixelRatio, 1.5) : 1);
+    renderer.shadowMap.enabled = normal;
+    escena.traverse((n) => {
+      if (n.material) Object.assign(n.material, { needsUpdate: true });
+    });
+    pedirCuadro(true);
+  }
 
   const camara = new THREE.PerspectiveCamera(38, 1, 0.1, 200);
   const objetivo = new THREE.Vector3(...(enfoque?.objetivo ?? [0, 1.6, 0]));
@@ -322,6 +345,7 @@ export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos 
   controles.addEventListener('start', () => {
     llegada.t = 1;
   });
+  controles.addEventListener('change', () => pedirCuadro());
   controles.enableDamping = true;
   controles.target.copy(objetivo);
   // Clic izquierdo = usar la herramienta o elegir; derecho gira la vista; la rueda acerca.
@@ -332,7 +356,7 @@ export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos 
   controles.maxPolarAngle = Math.PI * 0.49;
   controles.update();
 
-  const bus = construirAutobus(autobus);
+  const bus = construirAutobus(autobus, () => pedirCuadro(true));
   escena.add(bus);
 
   // Piezas del escenario: se pueden señalar y reciben herramientas.
@@ -348,7 +372,11 @@ export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos 
             new THREE.BoxGeometry(...pieza.tamano),
             new THREE.MeshStandardMaterial({ color: COLOR_PIEZA[pieza.tipo] ?? COLOR.metal, roughness: 0.6 }),
           );
-    if (pieza.tipo === 'rueda') malla.rotation.x = Math.PI / 2;
+    if (pieza.tipo === 'rueda') {
+      // Solo sirve para señalar: no se dibuja, pero el rayo la sigue encontrando.
+      malla.rotation.x = Math.PI / 2;
+      malla.material.visible = false;
+    }
     malla.position.set(...pieza.pos);
     malla.userData.pieza = pieza;
     // La rueda es del modelo del autobús; su caja invisible no lleva aristas.
@@ -367,9 +395,8 @@ export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos 
         if (!original) return;
         const modelo = copiaDe(original);
         const m = malla;
-        m.material.transparent = true;
-        m.material.opacity = 0;
-        m.material.depthWrite = false;
+        // La caja ya no se dibuja (sigue respondiendo al rayo para señalar la pieza).
+        m.material.visible = false;
         m.castShadow = false;
         m.children.forEach((hijo) => {
           const h = hijo;
@@ -378,6 +405,7 @@ export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos 
         m.add(modelo);
         m.userData.modelo = modelo;
       });
+      pedirCuadro(true);
     })
     .catch(() => {});
 
@@ -510,6 +538,7 @@ export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos 
         modelo.scale.setScalar(2);
         mano.clear();
         mano.add(modelo);
+        pedirCuadro();
       })
       .catch(() => {});
   }
@@ -573,35 +602,60 @@ export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos 
     malla.add(marca);
   }
 
-  // Polvo en el aire del taller: puntos muy tenues alrededor del autobús.
-  const polvo = (() => {
-    const n = 400;
-    const posiciones = new Float32Array(n * 3);
-    for (let i = 0; i < n; i += 1) {
-      posiciones[i * 3] = (Math.random() - 0.5) * 22;
-      posiciones[i * 3 + 1] = Math.random() * 6;
-      posiciones[i * 3 + 2] = (Math.random() - 0.5) * 14;
-    }
-    const geometria = new THREE.BufferGeometry();
-    geometria.setAttribute('position', new THREE.BufferAttribute(posiciones, 3));
-    return new THREE.Points(
-      geometria,
-      new THREE.PointsMaterial({
-        color: 0xffffff,
-        size: 0.025,
-        transparent: true,
-        opacity: 0.35,
-        depthWrite: false,
-      }),
-    );
-  })();
-  escena.add(polvo);
+  // Botón de calidad en la esquina del lienzo.
+  if (getComputedStyle(contenedor).position === 'static') contenedor.classList.add('relative');
+  const botonCalidad = document.createElement('button');
+  botonCalidad.type = 'button';
+  botonCalidad.className =
+    'absolute right-2 top-2 z-10 border border-placa-linea bg-white/90 px-2 py-1 text-xs font-semibold text-tinta hover:border-tinta';
+  const rotularCalidad = () => {
+    botonCalidad.textContent = calidad === 'normal' ? 'Calidad: normal' : 'Calidad: ligera';
+    botonCalidad.title = 'Cambia entre calidad normal y ligera (sin sombras, para computadoras lentas)';
+  };
+  botonCalidad.addEventListener('click', () => {
+    calidad = calidad === 'normal' ? 'ligero' : 'normal';
+    localStorage.setItem('calidad3d', calidad);
+    localStorage.setItem('calidad3dElegida', '1');
+    rotularCalidad();
+    aplicarCalidad();
+  });
+  rotularCalidad();
+  contenedor.append(botonCalidad);
+  aplicarCalidad();
+
+  // Medición de la entrada de cámara: si va a menos de ~30 cuadros por segundo, pasa a ligero
+  // (solo si la persona no eligió la calidad a mano).
+  const medicion = { cuadros: 0, tiempo: 0, lista: localStorage.getItem('calidad3dElegida') === '1' };
 
   const reloj = new THREE.Clock();
   let activo = true;
   function cuadro() {
     if (!activo) return;
+    requestAnimationFrame(cuadro);
     const dt = Math.min(reloj.getDelta(), 0.05);
+    const animando =
+      particulas.length > 0 ||
+      sacudir > 0 ||
+      llegada.t < 1 ||
+      uso < 1 ||
+      [...mallasPieza.values()].some((m) => m.userData.cambio != null);
+    // El amortiguado de la cámara también pide cuadros mientras se mueve.
+    const camaraMovida = controles.update();
+    if (!animando && !camaraMovida && !pendiente) return;
+    pendiente = false;
+    if (!medicion.lista && llegada.t < 1) {
+      medicion.cuadros += 1;
+      medicion.tiempo += dt;
+      if (medicion.cuadros >= 40) {
+        medicion.lista = true;
+        if (calidad === 'normal' && medicion.tiempo / medicion.cuadros > 1 / 30) {
+          calidad = 'ligero';
+          localStorage.setItem('calidad3d', calidad);
+          rotularCalidad();
+          aplicarCalidad();
+        }
+      }
+    }
     for (let i = particulas.length - 1; i >= 0; i -= 1) {
       const p = particulas[i];
       p.userData.edad += dt;
@@ -615,17 +669,14 @@ export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos 
     }
     if (sacudir > 0) {
       sacudir -= dt;
-      bus.position.set((Math.random() - 0.5) * 0.12 * sacudir, 0, 0);
-    } else {
-      bus.position.set(0, 0, 0);
+      bus.position.set(sacudir > 0 ? (Math.random() - 0.5) * 0.12 * sacudir : 0, 0, 0);
     }
-    const ahora = reloj.elapsedTime;
     mallasPieza.forEach((malla, id) => {
       const m = malla;
       const { modelo } = m.userData;
       if (m.userData.cambio == null) {
-        // Pieza resaltada: brillo que late.
-        if (id === resaltada) tenir(m, 0x3a3020, 0.6 + 0.4 * Math.sin(ahora * 6));
+        // Pieza resaltada: brillo fijo (latir obligaría a redibujar todo el tiempo).
+        if (id === resaltada) tenir(m, 0x3a3020, 0.9);
         return;
       }
       m.userData.cambio += dt;
@@ -665,27 +716,22 @@ export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos 
         modelo.scale.setScalar(1);
         tenir(m, 0x000000);
         m.userData.cambio = null;
+        renderer.shadowMap.needsUpdate = true;
       }
     });
-    // Herramienta: flota un poco en la mano y al usarla empuja hacia la pieza.
-    if (herramienta.visible) {
+    // Herramienta: al usarla empuja hacia la pieza y regresa.
+    if (uso < 1) {
       uso = Math.min(1, uso + dt / 0.45);
-      const empuje = Math.sin(uso * Math.PI) * 0.3;
-      mano.position.set(0, Math.sin(ahora * 2.4) * 0.03, -empuje);
-      mano.rotation.z = Math.sin(ahora * 1.7) * 0.05;
+      mano.position.set(0, 0, -Math.sin(uso * Math.PI) * 0.3);
     }
-    // Polvo del taller que flota en la luz.
-    polvo.rotation.y += dt * 0.01;
-    polvo.position.y = Math.sin(ahora * 0.2) * 0.15;
     // Entrada de la cámara.
     if (llegada.t < 1) {
       llegada.t = Math.min(1, llegada.t + dt / 1.8);
       const k = 1 - (1 - llegada.t) ** 3;
       camara.position.lerpVectors(llegada.desde, llegada.hasta, k);
+      controles.update();
     }
-    controles.update();
     renderer.render(escena, camara);
-    requestAnimationFrame(cuadro);
   }
 
   function ajustarTamano() {
@@ -696,21 +742,31 @@ export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos 
     renderer.domElement.style.height = '100%';
     camara.aspect = ancho / alto;
     camara.updateProjectionMatrix();
+    pedirCuadro();
   }
   new ResizeObserver(ajustarTamano).observe(contenedor);
   ajustarTamano();
   cuadro();
 
+  // Todo lo que las páginas cambian en la escena pide un cuadro nuevo.
+  const yRedibujar =
+    (fn, sombras = false) =>
+    (...args) => {
+      const r = fn(...args);
+      pedirCuadro(sombras);
+      return r;
+    };
+
   return {
     lienzo: renderer.domElement,
     piezaEn,
     grupoEn,
-    resaltar,
-    marcarGrupo,
-    marcarPieza,
-    moverHerramienta,
-    elegirHerramienta,
-    efecto,
+    resaltar: yRedibujar(resaltar),
+    marcarGrupo: yRedibujar(marcarGrupo),
+    marcarPieza: yRedibujar(marcarPieza),
+    moverHerramienta: yRedibujar(moverHerramienta),
+    elegirHerramienta: yRedibujar(elegirHerramienta),
+    efecto: yRedibujar(efecto, true),
     nombrePieza: (id) => mallasPieza.get(id)?.userData.pieza.nombre ?? id,
     destruir() {
       activo = false;
