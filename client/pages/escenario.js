@@ -292,9 +292,7 @@ function terminar() {
             : ''
         }. Repite el escenario o pasa a la evaluación de después.`;
   if (!$('enlace-evaluacion').dataset.mision) {
-    if (!$('enlace-evaluacion').dataset.mision) {
-      $('enlace-evaluacion').href = `/tecnicos/${tecnicoId}/evaluacion/${competencia}`;
-    }
+    $('enlace-evaluacion').href = `/tecnicos/${tecnicoId}/evaluacion/${competencia}`;
   }
   $('final').hidden = false;
 }

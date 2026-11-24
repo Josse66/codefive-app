@@ -154,7 +154,9 @@ export function mostrarEvaluacion(req, res) {
       competenciaId: req.params.competenciaId,
       mision,
       claveMision,
-      siguienteMision: pasoDespues(mision, claveMision),
+      // Si todavía no practica, el siguiente paso es Hazlo aunque ya haya hecho "¿Qué sabes?".
+      siguienteMision:
+        pasoDespues(mision, claveMision) ?? (mision?.actual?.clave === 'hazlo' ? mision.actual : null),
       scriptPagina: 'pages/evaluacion.js',
     });
   });
