@@ -336,6 +336,28 @@ function construirAutobus(tipo, alCargar = () => {}) {
       const factor = TECHO / new THREE.Box3().setFromObject(copia).max.y;
       copia.children.forEach((parte) => {
         const p = parte;
+        if (p.name === 'sombra_piso') {
+          // Sombra horneada en Blender (blanco = sombra): plano negro que la usa como transparencia.
+          const textura = p.material.map;
+          p.material = new THREE.MeshBasicMaterial({
+            color: 0x000000,
+            alphaMap: textura,
+            transparent: true,
+            opacity: 0.85,
+            depthWrite: false,
+          });
+          p.position.y = 0.006;
+          p.castShadow = false;
+          p.receiveShadow = false;
+          p.renderOrder = -1;
+          return;
+        }
+        // La carrocería ya trae su luz horneada (oclusión ambiental) y su sombra en el piso:
+        // ya no proyecta sombras en tiempo real, que era lo más pesado de la escena.
+        p.traverse((n) => {
+          const nodo = n;
+          if (nodo.isMesh) nodo.castShadow = false;
+        });
         if (p.name.startsWith('rueda')) {
           p.scale.multiplyScalar(factor);
           p.position.y *= factor;
