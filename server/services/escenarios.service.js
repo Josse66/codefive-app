@@ -1,5 +1,6 @@
 import { errorHttp } from '#helpers/errores.js';
 import { obtenerTecnico } from '#services/tecnicos.service.js';
+import { modeloDelTecnico } from '#services/modelos.service.js';
 import { registrarEvento } from '#services/eventos.service.js';
 import { asegurarDominio, guardarDominio, obtenerDominio, obtenerPerfil } from '#services/dominio.service.js';
 import { actualizarBKT, estadoDominio } from '#services/modelo.js';
@@ -33,8 +34,8 @@ function validar(tecnicoId, escenarioId) {
 }
 
 // El autobús del escenario; si sirve para ambos, el de la tecnología del técnico.
-const autobusDe = (escenario, tecnico) =>
-  escenario.autobus ?? (tecnico.tecnologia === 'electrica' ? 'electrico' : 'diesel');
+// El autobús del escenario; si sirve para ambos, el del modelo que atiende el técnico.
+const autobusDe = (escenario, tecnico) => escenario.autobus ?? modeloDelTecnico(tecnico).autobus;
 
 export function iniciarEscenario(tecnicoId, escenarioId) {
   const { tecnico, escenario } = validar(tecnicoId, escenarioId);

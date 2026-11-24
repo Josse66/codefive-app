@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto';
 import db from '#db/conexion.js';
 import { errorHttp } from '#helpers/errores.js';
 import { obtenerTecnico } from '#services/tecnicos.service.js';
+import { aplicaAlModelo, modeloDelTecnico } from '#services/modelos.service.js';
 import { registrarEvento } from '#services/eventos.service.js';
 import {
   asegurarDominio,
@@ -22,13 +23,17 @@ const sesiones = new Map();
 
 const INFERENCIA = { dominaAbajo: 0.8, brechaArriba: 0.2 };
 
-function armarAreas() {
+// Solo las áreas que aplican al autobús del técnico.
+function armarAreas(tecnico) {
+  const modelo = modeloDelTecnico(tecnico);
   const areas = new Map();
-  listarCompetencias().forEach((c) => {
-    const clave = `${c.tecnologia}-${c.grupo}`;
-    if (!areas.has(clave)) areas.set(clave, { clave, competencias: [] });
-    areas.get(clave).competencias.push(c);
-  });
+  listarCompetencias()
+    .filter((c) => aplicaAlModelo(c.tecnologia, modelo))
+    .forEach((c) => {
+      const clave = `${c.tecnologia}-${c.grupo}`;
+      if (!areas.has(clave)) areas.set(clave, { clave, competencias: [] });
+      areas.get(clave).competencias.push(c);
+    });
   return [...areas.values()].map((area) => {
     const niveles = [...new Set(area.competencias.map((c) => c.nivel))].sort();
     return {
@@ -100,7 +105,7 @@ export function iniciarDiagnostico(tecnicoId) {
   const sesion = {
     id: randomUUID(),
     tecnicoId,
-    areas: armarAreas(),
+    areas: armarAreas(tecnico),
     usadas: new Set(),
     respondidas: 0,
     pendiente: null,

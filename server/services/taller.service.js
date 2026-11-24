@@ -2,6 +2,7 @@ import db, { transaccion } from '#db/conexion.js';
 import { errorHttp } from '#helpers/errores.js';
 import { avisar } from '#config/envivo.js';
 import { obtenerTecnico } from '#services/tecnicos.service.js';
+import { aplicaAlModelo, modeloDelTecnico } from '#services/modelos.service.js';
 import { asegurarDominio, obtenerPerfil } from '#services/dominio.service.js';
 import { obtenerRuta } from '#services/ruta.service.js';
 import { listarEscenarios, obtenerEscenario } from '#services/escenarios.js';
@@ -40,8 +41,8 @@ function validarTecnico(tecnicoId) {
   return tecnico;
 }
 
-const autobusDe = (escenario, tecnico) =>
-  escenario.autobus ?? (tecnico.tecnologia === 'electrica' ? 'electrico' : 'diesel');
+// El autobús del escenario; si sirve para ambos, el del modelo que atiende el técnico.
+const autobusDe = (escenario, tecnico) => escenario.autobus ?? modeloDelTecnico(tecnico).autobus;
 
 function nivelDelTecnico(tecnicoId) {
   const { xp: ganada } = db
@@ -110,7 +111,12 @@ function llenarBahia(tecnico, indiceNivel) {
   );
 
   const candidatos = listarEscenarios()
-    .filter((e) => desbloqueado(e.nivel, indiceNivel) && !ocupados.has(e.id))
+    .filter(
+      (e) =>
+        desbloqueado(e.nivel, indiceNivel) &&
+        !ocupados.has(e.id) &&
+        aplicaAlModelo(e.tecnologia, modeloDelTecnico(tecnico)),
+    )
     .map((e) => {
       const competencias = [e.competencia, ...e.pasos.map((p) => p.competencia).filter(Boolean)];
       const enRuta = competencias.map((c) => lugarEnRuta.get(c)).filter(Boolean);
@@ -177,7 +183,7 @@ export function obtenerTaller(tecnicoId) {
     .reverse()
     .map((o) => paraCliente(o, tecnico));
   const bloqueados = listarEscenarios()
-    .filter((e) => !desbloqueado(e.nivel, indice))
+    .filter((e) => !desbloqueado(e.nivel, indice) && aplicaAlModelo(e.tecnologia, modeloDelTecnico(tecnico)))
     .map((e) => ({
       grupo: e.grupo,
       titulo: e.titulo,

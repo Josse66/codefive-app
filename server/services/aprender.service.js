@@ -7,6 +7,7 @@ import { obtenerTecnico } from '#services/tecnicos.service.js';
 import { asegurarDominio, obtenerPerfil } from '#services/dominio.service.js';
 import { obtenerRuta } from '#services/ruta.service.js';
 import { obtenerEscenario } from '#services/escenarios.js';
+import { aplicaAlModelo, modeloDelTecnico } from '#services/modelos.service.js';
 
 // Modo Aprender: el temario por grupo de función y nivel, una lección por competencia.
 // Cada lección se apoya en el autobús 3D: sus piezas son las del escenario que la practica
@@ -61,7 +62,11 @@ export function obtenerTemario(tecnicoId) {
     grupo,
     nombre: nombreGrupo(grupo),
     lecciones: temario
-      .filter((l) => competencias.get(l.competencia)?.grupo === grupo)
+      .filter(
+        (l) =>
+          competencias.get(l.competencia)?.grupo === grupo &&
+          aplicaAlModelo(competencias.get(l.competencia).tecnologia, modeloDelTecnico(tecnico)),
+      )
       .map((l) => {
         const c = competencias.get(l.competencia);
         return {
