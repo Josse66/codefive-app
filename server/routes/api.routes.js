@@ -3,6 +3,7 @@ import * as tecnicos from '#controllers/tecnicos.controller.js';
 import * as diagnostico from '#controllers/diagnostico.controller.js';
 import * as practica from '#controllers/practica.controller.js';
 import * as evaluacion from '#controllers/evaluacion.controller.js';
+import * as escenarios from '#controllers/escenarios.controller.js';
 import { obtenerTablero } from '#services/tablero.service.js';
 
 const router = Router();
@@ -23,6 +24,11 @@ router.post('/tecnicos/:id/practica/respuestas', practica.responder);
 router.get('/tecnicos/:id/evaluacion/:competenciaId', evaluacion.obtener);
 router.post('/tecnicos/:id/evaluacion/:competenciaId', evaluacion.responder);
 router.post('/tecnicos/:id/simular-dias', evaluacion.simular);
+
+router.get('/escenarios', escenarios.listar);
+router.get('/tecnicos/:id/escenarios', escenarios.delTecnico);
+router.get('/tecnicos/:id/escenarios/:escenarioId', escenarios.iniciar);
+router.post('/eventos', escenarios.evento);
 
 router.get('/tablero', (_req, res) => res.json(obtenerTablero()));
 

@@ -8,14 +8,6 @@
 
 import { UMBRALES } from './modelo.js';
 
-// Competencias que ya tienen escenario de práctica (los JSON los arma el equipo de hardware y contenido).
-export const ESCENARIOS = {
-  'E3-2-SEG': 'hv-aislamiento',
-  'E3-3-DIA': 'hv-aislamiento',
-  'A5-2-DIA': 'frenos-fuga',
-  'D2-3-DIA': 'dpf-regeneracion',
-};
-
 export function modoDeAyuda(pSaber) {
   if (pSaber < UMBRALES.enDesarrollo) return 'guiado';
   if (pSaber < UMBRALES.dominada) return 'con_pistas';
@@ -25,8 +17,9 @@ export function modoDeAyuda(pSaber) {
 /**
  * @param {Array<{id, nombre, critica, pSaber, estado, prerequisito?}>} competencias
  * @param {Array<{competenciaId}>} alertas competencias con "seguro pero equivocado"
+ * @param {Record<string, string>} escenarios competencia → escenario 3D que la practica
  */
-export function armarRuta(competencias, alertas = []) {
+export function armarRuta(competencias, alertas = [], escenarios = {}) {
   const porId = new Map(competencias.map((c) => [c.id, c]));
   const conAlerta = new Set(alertas.map((a) => a.competenciaId));
   const dominada = (id) => porId.get(id)?.estado === 'dominada';
@@ -67,7 +60,7 @@ export function armarRuta(competencias, alertas = []) {
       obligatoria: conAlerta.has(c.id) || c.critica,
       modo: modoDeAyuda(c.pSaber),
       bloqueadaPor: bloqueadaPor ? { id: bloqueadaPor.id, nombre: bloqueadaPor.nombre } : null,
-      escenario: ESCENARIOS[c.id] ?? null,
+      escenario: escenarios[c.id] ?? null,
     };
   });
 }

@@ -33,6 +33,14 @@ export function registrarEvento(evento) {
   );
   const id = Number(lastInsertRowid);
   // Los tableros abiertos se actualizan con cada respuesta o acción.
-  avisar('evento', { id, tecnicoId: fila.tecnico_id, fase: fila.fase, competenciaId: fila.competencia_id });
+  avisar('evento', {
+    id,
+    tecnicoId: fila.tecnico_id,
+    fase: fila.fase,
+    competenciaId: fila.competencia_id,
+    escenarioId: fila.escenario_id,
+    critico: fila.critico === 1,
+    codigoError: fila.codigo_error,
+  });
   return id;
 }
