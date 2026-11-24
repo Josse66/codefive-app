@@ -15,6 +15,7 @@ export default defineConfig(({ command }) => ({
     rollupOptions: {
       input: {
         main: ruta('./client/main.js'),
+        diagnostico: ruta('./client/pages/diagnostico.js'),
       },
     },
   },

@@ -1,0 +1,36 @@
+<section id="diagnostico" class="mx-auto grid max-w-3xl gap-6" data-tecnico-id="{{tecnico.id}}">
+  <div>
+    <p class="etiqueta">Diagnóstico inicial</p>
+    <h1 class="mt-1 text-4xl">{{tecnico.nombre}}</h1>
+    <p class="text-acero-600">{{tecnico.taller}} · {{tecnico.anios_experiencia}} años · {{tecnico.tecnologia}}</p>
+  </div>
+
+  <div>
+    <div class="flex justify-between text-sm text-acero-600">
+      <span id="progreso-texto">Preparando…</span>
+      <span>No se muestra si acertaste: solo estamos ubicando tu nivel</span>
+    </div>
+    <div class="mt-2 h-2 rounded bg-acero-100">
+      <div id="progreso-barra" class="h-2 rounded bg-hv-500 transition-all" style="width: 0%"></div>
+    </div>
+  </div>
+
+  <div id="tarjeta-pregunta" class="tarjeta grid gap-5" hidden>
+    <p id="pregunta-area" class="etiqueta"></p>
+    <h2 id="pregunta-enunciado" class="font-sans text-xl font-semibold tracking-normal"></h2>
+    <div id="pregunta-opciones" class="grid gap-3" role="radiogroup" aria-labelledby="pregunta-enunciado"></div>
+
+    <fieldset id="confianza" class="grid gap-2" disabled>
+      <legend class="font-semibold">¿Qué tan seguro estás?</legend>
+      <div class="grid gap-2 sm:grid-cols-3">
+        <button type="button" class="opcion-confianza" data-valor="1">No estoy seguro</button>
+        <button type="button" class="opcion-confianza" data-valor="2">Creo que sí</button>
+        <button type="button" class="opcion-confianza" data-valor="3">Estoy seguro</button>
+      </div>
+    </fieldset>
+
+    <button id="boton-siguiente" type="button" class="boton" disabled>Siguiente</button>
+  </div>
+
+  <p id="mensaje-error" class="rounded border-l-4 border-hv-500 bg-hv-100 p-3" hidden></p>
+</section>
