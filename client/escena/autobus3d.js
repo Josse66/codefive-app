@@ -336,10 +336,14 @@ export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos 
   const direccion = new THREE.Vector3(0.35, 0.5, 1).normalize();
   camara.position.copy(objetivo).addScaledVector(direccion, distancia * 1.6);
   // Entrada: la cámara llega desde lejos y de lado hasta su lugar.
+  // El mismo vuelo sirve para enfocar una pieza después (mueve cámara y punto de mira).
   const llegada = {
     t: 0,
+    duracion: 1.8,
     desde: objetivo.clone().addScaledVector(new THREE.Vector3(1.1, 0.7, 0.9).normalize(), distancia * 3.2),
     hasta: camara.position.clone(),
+    miraDesde: objetivo.clone(),
+    miraHasta: objetivo.clone(),
   };
   camara.position.copy(llegada.desde);
   const controles = new OrbitControls(camara, renderer.domElement);
@@ -592,6 +596,21 @@ export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos 
   }
 
   // Marca una pieza ya atendida (por ejemplo, el candado puesto).
+  // Vuela la cámara hacia una pieza (o a la vista general si no hay id) y la deja de frente.
+  function enfocar(id, cerca = 4.2) {
+    const malla = mallasPieza.get(id);
+    const mira = malla ? malla.position.clone() : objetivo.clone();
+    const lejos = malla ? cerca : distancia * 1.6;
+    Object.assign(llegada, {
+      t: 0,
+      duracion: 0.9,
+      desde: camara.position.clone(),
+      hasta: mira.clone().addScaledVector(direccion, lejos),
+      miraDesde: controles.target.clone(),
+      miraHasta: mira,
+    });
+  }
+
   function marcarPieza(id, tipo = 'ok') {
     const malla = mallasPieza.get(id);
     if (!malla) return;
@@ -727,9 +746,10 @@ export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos 
     }
     // Entrada de la cámara.
     if (llegada.t < 1) {
-      llegada.t = Math.min(1, llegada.t + dt / 1.8);
+      llegada.t = Math.min(1, llegada.t + dt / llegada.duracion);
       const k = 1 - (1 - llegada.t) ** 3;
       camara.position.lerpVectors(llegada.desde, llegada.hasta, k);
+      controles.target.lerpVectors(llegada.miraDesde, llegada.miraHasta, k);
       controles.update();
     }
     renderer.render(escena, camara);
@@ -765,6 +785,7 @@ export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos 
     resaltar: yRedibujar(resaltar),
     marcarGrupo: yRedibujar(marcarGrupo),
     marcarPieza: yRedibujar(marcarPieza),
+    enfocar: yRedibujar(enfocar),
     moverHerramienta: yRedibujar(moverHerramienta),
     elegirHerramienta: yRedibujar(elegirHerramienta),
     efecto: yRedibujar(efecto, true),

@@ -9,27 +9,28 @@
           <span id="grupo" class="recuadro h-7 w-7 text-base"></span>
           <span id="grupo-nombre"></span> · <span id="nivel"></span> · <span id="minutos"></span>
         </p>
-        <h1 id="titulo" class="font-sans text-4xl font-semibold leading-tight tracking-normal">Cargando…</h1>
-        <p id="objetivo" class="max-w-[70ch] text-lg text-tinta-2"></p>
+        <h1 id="titulo" class="font-sans text-3xl font-semibold leading-tight tracking-normal lg:text-4xl">Cargando…</h1>
       </header>
 
-      <div id="conceptos" class="grid max-w-[70ch] gap-4 text-[17px] leading-relaxed"></div>
+      {{! Tarjetas: una idea a la vez; la cámara del autobús viaja a la pieza de cada tarjeta. }}
+      <div class="grid gap-2">
+        <div class="flex items-baseline justify-between text-sm">
+          <span id="tarjeta-cuenta" class="font-semibold"></span>
+          <span class="text-tinta-3">Avanza con los botones o las flechas del teclado</span>
+        </div>
+        <div class="h-1.5 bg-placa-2" aria-hidden="true"><div id="tarjeta-barra" class="h-1.5 bg-tinta transition-[width] duration-300 ease-out" style="width: 0%"></div></div>
+      </div>
+      <article id="tarjeta" class="grid min-h-[260px] content-start gap-4 border-2 border-tinta bg-white p-6 lg:p-8" aria-live="polite"></article>
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <button id="tarjeta-anterior" type="button" class="boton-linea px-6 py-3">← Anterior</button>
+        <button id="tarjeta-siguiente" type="button" class="boton px-8 py-3">Siguiente →</button>
+      </div>
 
-      <section class="grid gap-3">
-        <h2 class="text-2xl">Las piezas</h2>
-        <p class="text-sm text-tinta-3">Elige una pieza aquí o haz clic sobre ella en el autobús.</p>
-        <div id="lista-piezas" class="flex flex-wrap gap-2"></div>
-      </section>
-
-      <section class="grid gap-3">
-        <h2 class="text-2xl">Procedimiento</h2>
-        <ol id="pasos" class="grid max-w-[70ch] gap-3"></ol>
-      </section>
-
-      <p id="seguridad" class="aviso-critico max-w-[70ch] font-semibold"></p>
+      {{! Lista de piezas para elegir sin usar el 3D (también la usa la tarjeta "Toca las piezas"). }}
+      <div id="lista-piezas" class="hidden"></div>
       <p id="fuente" class="text-sm text-tinta-3"></p>
 
-      <div id="cierre" class="grid gap-3 border-t-2 border-tinta pt-5">
+      <div id="cierre" class="grid gap-3 border-t-2 border-tinta pt-5" hidden>
         <button id="boton-termine" type="button" class="boton w-fit px-8 py-4 text-base">Terminé la lección</button>
         {{#if siguienteMision}}
           {{! Dentro de una misión hay un solo camino: el siguiente paso. }}
