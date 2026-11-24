@@ -121,3 +121,27 @@ CREATE TABLE IF NOT EXISTS lecciones_vistas (
   vista_en     TEXT NOT NULL DEFAULT (datetime('now')),
   PRIMARY KEY (tecnico_id, leccion_id)
 );
+
+-- Acceso: cada técnico entra con su cuenta; Volvo (capacitación) ve el panel y a todos.
+CREATE TABLE IF NOT EXISTS cuentas (
+  id          INTEGER PRIMARY KEY AUTOINCREMENT,
+  correo      TEXT NOT NULL UNIQUE,
+  nombre      TEXT NOT NULL,
+  rol         TEXT NOT NULL CHECK (rol IN ('tecnico', 'volvo')),
+  tecnico_id  TEXT REFERENCES tecnicos (id),
+  hash        TEXT NOT NULL,
+  creado_en   TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS sesiones (
+  token      TEXT PRIMARY KEY,
+  cuenta_id  INTEGER NOT NULL REFERENCES cuentas (id),
+  expira     TEXT NOT NULL
+);
+
+-- Códigos que la empresa entrega para que un técnico nuevo se registre.
+CREATE TABLE IF NOT EXISTS codigos_registro (
+  codigo        TEXT PRIMARY KEY,
+  organizacion  TEXT NOT NULL,
+  activo        INTEGER NOT NULL DEFAULT 1
+);

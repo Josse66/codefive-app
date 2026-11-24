@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import logger from '#config/logger.js';
 import { transaccion } from '#db/conexion.js';
+import { crearCuenta } from '#services/cuentas.service.js';
 
 // Dificultad inicial (escala Elo) según el nivel Volvo de la competencia.
 const DIFICULTAD_POR_NIVEL = { 1: -1, 2: 0, 3: 1 };
@@ -36,6 +37,28 @@ export function sembrarEvaluacion(db) {
     });
   });
   if (nuevas) logger.info(`Banco de evaluación: ${nuevas} preguntas nuevas`);
+}
+
+// Cuentas y códigos de registro de la demostración (data/cuentas.json). No duplica.
+export function sembrarCuentas(db) {
+  const { contrasenaDemo, codigosRegistro, cuentas } = leerJson('cuentas.json');
+  const insertarCodigo = db.prepare(
+    'INSERT OR IGNORE INTO codigos_registro (codigo, organizacion) VALUES (?, ?)',
+  );
+  codigosRegistro.forEach((c) => insertarCodigo.run(c.codigo, c.organizacion));
+  const existe = db.prepare('SELECT 1 FROM cuentas WHERE correo = ?');
+  const hayTecnico = db.prepare('SELECT 1 FROM tecnicos WHERE id = ?');
+  cuentas
+    .filter((c) => !existe.get(c.correo) && (!c.tecnico || hayTecnico.get(c.tecnico)))
+    .forEach((c) =>
+      crearCuenta({
+        correo: c.correo,
+        nombre: c.nombre,
+        rol: c.rol,
+        tecnicoId: c.tecnico,
+        contrasena: contrasenaDemo,
+      }),
+    );
 }
 
 export function baseVacia(db) {
@@ -92,6 +115,9 @@ export function sembrar(db) {
     tecnicos.forEach((t) =>
       insertarTecnico.run(t.id, t.nombre, t.taller, t.anios_experiencia, t.tecnologia, t.perfil),
     );
+    // El autobús de cada técnico de la demo, sin pisar el que ya haya elegido.
+    const ponerModelo = db.prepare('UPDATE tecnicos SET modelo_id = ? WHERE id = ? AND modelo_id IS NULL');
+    tecnicos.filter((t) => t.modelo_id).forEach((t) => ponerModelo.run(t.modelo_id, t.id));
   });
 
   logger.info(

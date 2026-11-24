@@ -1,0 +1,15 @@
+{
+  "nota": "Cuentas y códigos de DEMOSTRACIÓN para el HackaTec. Todas usan la misma contraseña de prueba; no son cuentas reales.",
+  "contrasenaDemo": "Taller2026",
+  "codigosRegistro": [
+    { "codigo": "VOLVO-MX-2026", "organizacion": "Volvo Buses México (PSV y WSI)" },
+    { "codigo": "FLOTA-2026", "organizacion": "Flotas de clientes" }
+  ],
+  "cuentas": [
+    { "correo": "capacitacion@volvo.demo", "nombre": "Capacitación Volvo", "rol": "volvo", "tecnico": null },
+    { "correo": "ana.ruiz@codefive.demo", "nombre": "Ana Ruiz", "rol": "tecnico", "tecnico": "T-01" },
+    { "correo": "luis.mendoza@codefive.demo", "nombre": "Luis Mendoza", "rol": "tecnico", "tecnico": "T-02" },
+    { "correo": "marco.perez@codefive.demo", "nombre": "Marco Pérez", "rol": "tecnico", "tecnico": "T-03" },
+    { "correo": "sofia.torres@codefive.demo", "nombre": "Sofía Torres", "rol": "tecnico", "tecnico": "T-04" }
+  ]
+}

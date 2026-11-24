@@ -23,6 +23,14 @@ if (
   db.exec("ALTER TABLE preguntas ADD COLUMN banco TEXT NOT NULL DEFAULT 'practica'");
 }
 db.exec(fs.readFileSync(path.resolve('server', 'db', 'schema.sql'), 'utf8'));
+if (
+  !db
+    .prepare('PRAGMA table_info(tecnicos)')
+    .all()
+    .some((c) => c.name === 'modelo_id')
+) {
+  db.exec('ALTER TABLE tecnicos ADD COLUMN modelo_id TEXT');
+}
 logger.debug(`Base de datos lista en ${rutaBaseDatos}`);
 
 // Ejecuta varias operaciones como una sola: si algo falla, no se guarda nada.

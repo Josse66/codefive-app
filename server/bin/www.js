@@ -3,11 +3,12 @@ import { crearApp } from '#app';
 import logger from '#config/logger.js';
 import { conectarEnVivo } from '#config/envivo.js';
 import db from '#db/conexion.js';
-import { sembrar, sembrarEvaluacion } from '#db/semilla.js';
+import { sembrar, sembrarCuentas, sembrarEvaluacion } from '#db/semilla.js';
 
 // La base se llena sola la primera vez y recibe el contenido nuevo en cada arranque.
 sembrar(db);
 sembrarEvaluacion(db);
+sembrarCuentas(db);
 
 const port = Number(process.env.PORT) || 3000;
 const app = await crearApp();
