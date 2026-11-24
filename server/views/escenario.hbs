@@ -1,4 +1,15 @@
-<section id="escenario" class="relative grid gap-5" data-tecnico-id="{{tecnico.id}}" data-escenario-id="{{escenarioId}}">
+<section id="escenario" class="relative grid gap-5" data-tecnico-id="{{tecnico.id}}" data-escenario-id="{{escenarioId}}" data-orden-id="{{ordenId}}">
+  {{! Orden de trabajo del Taller: folio, cliente, reloj y gasto en refacciones. }}
+  <div id="orden-barra" class="flex flex-wrap items-center gap-x-6 gap-y-2 border-2 border-tinta bg-tinta px-4 py-3 text-white" hidden>
+    <span class="codigo text-2xl" id="orden-folio"></span>
+    <span id="orden-cliente" class="text-sm text-placa-linea"></span>
+    <span class="ml-auto flex items-center gap-6 text-sm">
+      <span>Tiempo <span id="orden-reloj" class="codigo text-xl text-white">0:00</span></span>
+      <span>Refacciones <span id="orden-gasto" class="codigo text-xl text-white">$0</span></span>
+      <a href="/tecnicos/{{tecnico.id}}/taller" class="text-white underline decoration-placa-linea">Salir al taller</a>
+    </span>
+  </div>
+
   <div class="flex flex-wrap items-end justify-between gap-4">
     <div class="grid gap-2">
       <p class="font-narrow text-sm font-bold uppercase tracking-wider text-tinta-3">Práctica en el autobús · <span id="profundidad"></span></p>
@@ -82,6 +93,27 @@
       <div id="lienzo" class="absolute inset-0"></div>
       <p id="etiqueta-pieza" class="pointer-events-none absolute left-3 top-3 border border-tinta bg-white px-2 py-1 text-sm font-semibold" hidden></p>
       <p class="pointer-events-none absolute bottom-3 left-3 bg-white/90 px-2 py-1 text-xs text-tinta-3">Clic derecho y arrastrar: girar · rueda: acercar</p>
+    </div>
+  </div>
+
+  {{! Entrega de la unidad: calificación de la orden. }}
+  <div id="entrega" class="fixed inset-0 z-40 grid place-items-center bg-tinta/80 p-6" role="dialog" aria-modal="true" aria-labelledby="entrega-titulo" hidden>
+    <div class="grid w-full max-w-lg gap-4 border-2 border-tinta bg-white p-8">
+      <p class="font-narrow text-sm font-bold uppercase tracking-wider text-tinta-3">Unidad entregada</p>
+      <div class="flex items-baseline justify-between gap-4">
+        <h2 id="entrega-titulo" class="text-5xl text-med"><span id="entrega-estrellas"></span></h2>
+        <span id="entrega-xp" class="codigo text-4xl"></span>
+      </div>
+      <ul id="entrega-desglose" class="grid text-[15px]"></ul>
+      <p id="entrega-datos" class="text-sm text-tinta-3"></p>
+      <div class="grid gap-1">
+        <p id="entrega-nivel" class="font-semibold"></p>
+        <div class="h-3 bg-placa-2"><div id="entrega-barra" class="h-3 bg-tinta transition-[width] duration-1000 ease-out" style="width: 0%"></div></div>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <a id="entrega-volver" href="/tecnicos/{{tecnico.id}}/taller" class="boton">Volver al taller</a>
+        <a id="entrega-evaluacion" href="#" class="boton-linea">Evaluación de después</a>
+      </div>
     </div>
   </div>
 

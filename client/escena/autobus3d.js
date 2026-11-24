@@ -317,6 +317,12 @@ export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos 
       agua: { color: 0x3b6e8f, n: 26, vel: 0.6, gravedad: -4, vida: 1.2 },
       calor: { color: 0xc98a00, n: 24, vel: 0.4, gravedad: 0.9, vida: 1.8 },
     }[tipo];
+    if (tipo === 'cambio') {
+      // La pieza sale y entra la nueva: se encoge, cambia a verde y regresa.
+      const malla = mallasPieza.get(piezaId);
+      if (malla) malla.userData.cambio = 0;
+      return;
+    }
     if (tipo === 'golpe') {
       sacudir = 0.5;
       return;
@@ -377,6 +383,19 @@ export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos 
     } else {
       bus.position.set(0, 0, 0);
     }
+    mallasPieza.forEach((malla) => {
+      if (malla.userData.cambio == null) return;
+      const m = malla;
+      m.userData.cambio += dt;
+      const t = Math.min(1, m.userData.cambio / 1.2);
+      const escala = t < 0.5 ? 1 - t * 1.6 : 0.2 + (t - 0.5) * 1.6;
+      m.scale.setScalar(Math.max(0.05, escala));
+      if (t >= 0.5) m.material.color.setHex(COLOR.ok);
+      if (t >= 1) {
+        m.scale.setScalar(1);
+        m.userData.cambio = null;
+      }
+    });
     controles.update();
     renderer.render(escena, camara);
     requestAnimationFrame(cuadro);

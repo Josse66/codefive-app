@@ -6,7 +6,7 @@ import { InputBus } from '../entradas/inputBus.js';
 import { SerialGlove } from '../entradas/serialGlove.js';
 
 const raiz = document.getElementById('escenario');
-const { tecnicoId, escenarioId } = raiz.dataset;
+const { tecnicoId, escenarioId, ordenId } = raiz.dataset;
 const $ = (id) => document.getElementById(id);
 
 const PROFUNDIDAD = { completo: 'escenario completo', ligero: 'escenario ligero' };
@@ -98,6 +98,59 @@ function elegirHerramienta(id) {
     .forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.id === id)));
 }
 
+const TIPO_PASO = {
+  hipotesis: 'Formula tu hipótesis',
+  reemplazo: 'Elige la refacción',
+  accion: 'Hazlo en el autobús',
+};
+const pesos = (n) => `${Number(n).toLocaleString('es-MX')}`;
+const reloj = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+
+function mostrarGasto(gasto) {
+  $('orden-gasto').textContent = pesos(gasto);
+}
+
+// Reloj de la orden: se pone en ámbar al pasar el tiempo objetivo.
+function iniciarReloj(minutosLimite) {
+  const inicio = performance.now();
+  setInterval(() => {
+    if (estado.entrega) return;
+    const segundos = (performance.now() - inicio) / 1000;
+    $('orden-reloj').textContent = `${reloj(segundos)} / ${minutosLimite}:00`;
+    $('orden-reloj').classList.toggle('text-med-texto', segundos > minutosLimite * 60);
+  }, 500);
+}
+
+function mostrarEntrega(entrega) {
+  $('paso').hidden = true;
+  elegirHerramienta(null);
+  $('entrega-estrellas').textContent = '★'.repeat(entrega.estrellas) + '☆'.repeat(3 - entrega.estrellas);
+  $('entrega-xp').textContent = `+${entrega.xp} XP`;
+  $('entrega-desglose').replaceChildren(
+    ...entrega.desglose.map((d) => {
+      const fila = el('li', 'flex justify-between gap-4 border-b border-placa-linea py-1.5 last:border-b-0');
+      fila.append(
+        el('span', '', d.concepto),
+        el('span', `codigo ${d.puntos < 0 ? 'text-mal' : ''}`, `${d.puntos > 0 ? '+' : ''}${d.puntos}`),
+      );
+      return fila;
+    }),
+  );
+  $('entrega-datos').textContent =
+    `Tiempo ${reloj(entrega.segundos)} de ${entrega.minutosLimite}:00 · refacciones ${pesos(entrega.gasto)}${
+      entrega.gasto > entrega.gastoNecesario ? ` (necesarias: ${pesos(entrega.gastoNecesario)})` : ''
+    }`;
+  const { nivelDespues: nivel } = entrega;
+  $('entrega-nivel').textContent = entrega.subioNivel
+    ? `¡Subiste a ${nivel.nombre}!`
+    : `${nivel.nombre} · ${nivel.xp} XP`;
+  $('entrega-nivel').classList.toggle('text-ok', entrega.subioNivel);
+  $('entrega-barra').style.width = `${Math.round(nivel.avance * 100)}%`;
+  $('entrega-evaluacion').href = `/tecnicos/${tecnicoId}/evaluacion/${estado.datos.escenario.competencia}`;
+  $('entrega').hidden = false;
+  $('entrega-volver').focus();
+}
+
 // ---------- Intentos ----------
 
 async function enviar(intento, inputDevice) {
@@ -113,13 +166,17 @@ async function enviar(intento, inputDevice) {
         escenarioId,
         pasoId: paso.id,
         ...intento,
+        ordenId: ordenId || undefined,
         pista: estado.pista,
         inputDevice,
         ms: Math.round(performance.now() - estado.inicio),
       }),
     });
     mostrarDominio(r.dominio.despues, r.dominio.competenciaId);
-    const pieza = intento.accion?.split('>')[1];
+    if (r.gasto != null) mostrarGasto(r.gasto);
+    if (r.entrega) estado.entrega = r.entrega;
+    // En un cambio de refacción la pieza del autobús es la del paso.
+    const pieza = intento.accion?.split('>')[1] ?? (paso.tipo === 'reemplazo' ? paso.pieza : undefined);
 
     if (r.correcta) {
       if (r.efecto) estado.escena.efecto(r.efecto, pieza);
@@ -129,7 +186,8 @@ async function enviar(intento, inputDevice) {
         retro('neutro', 'Bien', `${estado.escena.nombrePieza(pieza)}: hecho. Sigue con la siguiente acción.`);
         return;
       }
-      if (pieza) estado.escena.marcarPieza(pieza, intento.accion.startsWith('candado') ? 'candado' : 'ok');
+      if (paso.tipo === 'reemplazo' && pieza) estado.escena.efecto('cambio', pieza);
+      if (pieza) estado.escena.marcarPieza(pieza, intento.accion?.startsWith('candado') ? 'candado' : 'ok');
       retro('ok', 'Correcto', r.explicacion);
       estado.paso = r.progreso.paso;
       estado.subpaso = 0;
@@ -137,7 +195,8 @@ async function enviar(intento, inputDevice) {
       $('opciones')
         .querySelectorAll('button')
         .forEach((b) => b.setAttribute('disabled', ''));
-      $('boton-continuar').textContent = r.terminado ? 'Ver resultado' : 'Continuar';
+      const final = ordenId ? 'Entregar la unidad' : 'Ver resultado';
+      $('boton-continuar').textContent = r.terminado ? final : 'Continuar';
       $('boton-continuar').hidden = false;
       $('boton-continuar').focus();
       if (r.terminado) estado.terminado = true;
@@ -168,16 +227,14 @@ function pintarPaso() {
   const paso = pasos[estado.paso];
   Object.assign(estado, { pista: false, inicio: performance.now(), esperandoContinuar: false });
   pintarPasos();
-  $('paso-numero').textContent = `Paso ${estado.paso + 1} de ${pasos.length} · ${
-    paso.tipo === 'hipotesis' ? 'Formula tu hipótesis' : 'Hazlo en el autobús'
-  }`;
-  $('paso-texto').textContent = paso.tipo === 'hipotesis' ? paso.pregunta : paso.instruccion;
+  $('paso-numero').textContent = `Paso ${estado.paso + 1} de ${pasos.length} · ${TIPO_PASO[paso.tipo]}`;
+  $('paso-texto').textContent = paso.tipo === 'accion' ? paso.instruccion : paso.pregunta;
   $('retro').hidden = true;
   $('pista').hidden = true;
   $('boton-continuar').hidden = true;
   $('boton-pista').hidden = !paso.pista;
 
-  if (paso.tipo === 'hipotesis') {
+  if (paso.tipo !== 'accion') {
     $('herramientas').hidden = true;
     $('subpaso').hidden = true;
     elegirHerramienta(null);
@@ -191,8 +248,11 @@ function pintarPaso() {
             'codigo flex h-6 w-6 shrink-0 items-center justify-center border border-tinta text-sm',
             'ABCD'[posicion],
           ),
-          el('span', '', opcion.texto),
+          el('span', 'flex-1', opcion.texto),
         );
+        // Las refacciones muestran su precio: cambiar la que no era cuesta.
+        if (opcion.costo != null)
+          boton.append(el('span', 'codigo whitespace-nowrap text-tinta-2', pesos(opcion.costo)));
         boton.addEventListener('click', () => enviar({ opcion: opcion.id }, 'mouse'));
         return boton;
       }),
@@ -236,7 +296,8 @@ function terminar() {
 }
 
 $('boton-continuar').addEventListener('click', () => {
-  if (estado.terminado) terminar();
+  if (estado.terminado && estado.entrega) mostrarEntrega(estado.entrega);
+  else if (estado.terminado) terminar();
   else pintarPaso();
 });
 
@@ -317,9 +378,21 @@ $('boton-camara').addEventListener('click', async () => {
 
 // ---------- Carga ----------
 
-pedir(`/api/tecnicos/${tecnicoId}/escenarios/${escenarioId}`)
+const carga = ordenId
+  ? pedir(`/api/tecnicos/${tecnicoId}/taller/ordenes/${ordenId}/iniciar`, { method: 'POST' })
+  : pedir(`/api/tecnicos/${tecnicoId}/escenarios/${escenarioId}`);
+
+carga
   .then((datos) => {
     estado.datos = datos;
+    if (datos.orden) {
+      const { orden } = datos;
+      $('orden-folio').textContent = orden.folio;
+      $('orden-cliente').textContent = `${orden.cliente} · ${orden.unidad}`;
+      $('orden-barra').hidden = false;
+      mostrarGasto(0);
+      iniciarReloj(orden.minutosLimite);
+    }
     const { escenario } = datos;
     $('titulo').textContent = escenario.titulo;
     $('grupo').textContent = escenario.grupo;
