@@ -1,0 +1,67 @@
+<section id="leccion" class="grid gap-5" data-tecnico-id="{{tecnico.id}}" data-leccion-id="{{leccionId}}">
+  <a href="/tecnicos/{{tecnico.id}}/aprender" class="w-fit text-sm underline">← Temario</a>
+
+  <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,520px)] lg:items-start">
+    <article class="grid gap-6">
+      <header class="grid gap-2">
+        <p class="flex flex-wrap items-center gap-2 font-narrow text-sm font-bold uppercase tracking-wider text-tinta-3">
+          <span id="grupo" class="recuadro h-7 w-7 text-base"></span>
+          <span id="grupo-nombre"></span> · <span id="nivel"></span> · <span id="minutos"></span>
+        </p>
+        <h1 id="titulo" class="font-sans text-4xl font-semibold leading-tight tracking-normal">Cargando…</h1>
+        <p id="objetivo" class="max-w-[70ch] text-lg text-tinta-2"></p>
+      </header>
+
+      <div id="conceptos" class="grid max-w-[70ch] gap-4 text-[17px] leading-relaxed"></div>
+
+      <section class="grid gap-3">
+        <h2 class="text-2xl">Las piezas</h2>
+        <p class="text-sm text-tinta-3">Elige una pieza aquí o haz clic sobre ella en el autobús.</p>
+        <div id="lista-piezas" class="flex flex-wrap gap-2"></div>
+      </section>
+
+      <section class="grid gap-3">
+        <h2 class="text-2xl">Procedimiento</h2>
+        <ol id="pasos" class="grid max-w-[70ch] gap-3"></ol>
+      </section>
+
+      <p id="seguridad" class="aviso-critico max-w-[70ch] font-semibold"></p>
+      <p id="fuente" class="text-sm text-tinta-3"></p>
+
+      <div id="cierre" class="grid gap-3 border-t-2 border-tinta pt-5">
+        <button id="boton-termine" type="button" class="boton w-fit px-8 py-4 text-base">Terminé la lección</button>
+        <div id="siguientes" class="grid gap-3 sm:grid-cols-3" hidden>
+          <a id="enlace-comprobar" href="#" class="grid gap-1 border border-tinta bg-white p-4 no-underline hover:bg-placa">
+            <span class="font-semibold">Comprueba lo aprendido</span>
+            <span class="text-sm text-tinta-2">Preguntas con explicación y fuente. Tu dominio se actualiza.</span>
+          </a>
+          <a id="enlace-taller" href="#" class="grid gap-1 border-2 border-tinta bg-white p-4 no-underline hover:bg-placa">
+            <span class="font-semibold">Practícalo en el autobús</span>
+            <span id="enlace-taller-texto" class="text-sm text-tinta-2"></span>
+          </a>
+          <a id="enlace-siguiente" href="#" class="grid gap-1 border border-placa-linea bg-white p-4 no-underline hover:bg-placa">
+            <span class="font-semibold">Siguiente lección</span>
+            <span id="siguiente-titulo" class="text-sm text-tinta-2"></span>
+          </a>
+        </div>
+      </div>
+      <p id="mensaje-error" class="aviso-critico" hidden></p>
+    </article>
+
+    <aside class="grid gap-3 lg:sticky lg:top-6">
+      <div class="relative h-[380px] border border-tinta bg-placa lg:h-[440px]">
+        <div id="lienzo" class="absolute inset-0"></div>
+        <p id="etiqueta-pieza" class="pointer-events-none absolute left-3 top-3 border border-tinta bg-white px-2 py-1 text-sm font-semibold" hidden></p>
+        <p class="pointer-events-none absolute bottom-3 left-3 bg-white/90 px-2 py-1 text-xs text-tinta-3">Clic: ver la pieza · clic derecho: girar · rueda: acercar</p>
+      </div>
+      <article id="ficha" class="grid gap-3 border-2 border-tinta bg-white p-5" aria-live="polite">
+        <h2 id="ficha-nombre" class="text-2xl">Elige una pieza</h2>
+        <dl class="grid gap-3 text-[15px]">
+          <div><dt class="font-narrow text-xs font-bold uppercase tracking-wider text-tinta-3">Qué es</dt><dd id="ficha-que">—</dd></div>
+          <div><dt class="font-narrow text-xs font-bold uppercase tracking-wider text-tinta-3">Cómo falla</dt><dd id="ficha-falla">—</dd></div>
+          <div><dt class="font-narrow text-xs font-bold uppercase tracking-wider text-tinta-3">Cómo se revisa</dt><dd id="ficha-revisa">—</dd></div>
+        </dl>
+      </article>
+    </aside>
+  </div>
+</section>
