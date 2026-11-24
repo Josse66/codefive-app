@@ -1,5 +1,6 @@
 {
-  "watch": ["server"],
-  "ext": "js,json",
-  "ignore": ["server/db/*.sqlite*"]
+  "watch": ["server", "data"],
+  "ext": "js,json,sql",
+  "ignore": ["server/db/*.sqlite*"],
+  "exec": "node --disable-warning=ExperimentalWarning server/bin/www.js"
 }

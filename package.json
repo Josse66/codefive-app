@@ -14,9 +14,9 @@
     "#helpers/*": "./server/helpers/*"
   },
   "scripts": {
-    "dev": "nodemon server/bin/www.js",
+    "dev": "nodemon",
     "build": "vite build",
-    "start": "cross-env NODE_ENV=production node server/bin/www.js",
+    "start": "cross-env NODE_ENV=production node --disable-warning=ExperimentalWarning server/bin/www.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write ."

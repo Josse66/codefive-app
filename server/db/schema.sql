@@ -1,0 +1,71 @@
+-- Competencia = tecnología × grupo de función × nivel × tipo de habilidad.
+CREATE TABLE IF NOT EXISTS competencias (
+  id            TEXT PRIMARY KEY,
+  nombre        TEXT NOT NULL,
+  tecnologia    TEXT NOT NULL CHECK (tecnologia IN ('diesel', 'electrica', 'ambas')),
+  grupo         INTEGER NOT NULL CHECK (grupo BETWEEN 1 AND 9),
+  nivel         INTEGER NOT NULL CHECK (nivel BETWEEN 1 AND 3),
+  habilidad     TEXT NOT NULL CHECK (habilidad IN ('comprension', 'diagnostico', 'mantenimiento', 'reparacion', 'seguridad')),
+  prerequisito  TEXT REFERENCES competencias (id),
+  critica       INTEGER NOT NULL DEFAULT 0
+);
+
+-- dificultad: escala Elo (−3 fácil a +3 difícil); se ajusta con las respuestas de todos los técnicos.
+CREATE TABLE IF NOT EXISTS preguntas (
+  id              TEXT PRIMARY KEY,
+  competencia_id  TEXT NOT NULL REFERENCES competencias (id),
+  enunciado       TEXT NOT NULL,
+  opciones        TEXT NOT NULL,
+  correcta        TEXT NOT NULL,
+  explicacion     TEXT NOT NULL,
+  fuente          TEXT NOT NULL,
+  dificultad      REAL NOT NULL DEFAULT 0,
+  respuestas      INTEGER NOT NULL DEFAULT 0
+);
+
+-- Técnicos ficticios para la demo. dias_simulados adelanta su reloj para la revisión diferida.
+CREATE TABLE IF NOT EXISTS tecnicos (
+  id                 TEXT PRIMARY KEY,
+  nombre             TEXT NOT NULL,
+  taller             TEXT NOT NULL,
+  anios_experiencia  INTEGER NOT NULL DEFAULT 0,
+  tecnologia         TEXT NOT NULL DEFAULT 'diesel',
+  perfil             TEXT,
+  dias_simulados     INTEGER NOT NULL DEFAULT 0,
+  creado_en          TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+-- Bitácora de todo lo que hace un técnico: respuestas, acciones en la práctica y evaluaciones.
+-- Solo se agregan filas; el dominio se recalcula a partir de aquí.
+CREATE TABLE IF NOT EXISTS eventos (
+  id              INTEGER PRIMARY KEY AUTOINCREMENT,
+  tecnico_id      TEXT NOT NULL REFERENCES tecnicos (id),
+  tipo            TEXT NOT NULL CHECK (tipo IN ('respuesta', 'accion')),
+  fase            TEXT NOT NULL CHECK (fase IN ('diagnostico', 'pre', 'practica', 'post', 'diferida')),
+  competencia_id  TEXT REFERENCES competencias (id),
+  pregunta_id     TEXT REFERENCES preguntas (id),
+  escenario_id    TEXT,
+  paso_id         TEXT,
+  accion          TEXT,
+  correcta        INTEGER NOT NULL,
+  critico         INTEGER NOT NULL DEFAULT 0,
+  pista           INTEGER NOT NULL DEFAULT 0,
+  confianza       INTEGER CHECK (confianza IN (1, 2, 3)),
+  codigo_error    TEXT,
+  input_device    TEXT NOT NULL DEFAULT 'mouse',
+  ms              INTEGER,
+  creado_en       TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_eventos_tecnico ON eventos (tecnico_id, creado_en);
+
+-- Estado actual del modelo por técnico y competencia.
+CREATE TABLE IF NOT EXISTS dominio (
+  tecnico_id       TEXT NOT NULL REFERENCES tecnicos (id),
+  competencia_id   TEXT NOT NULL REFERENCES competencias (id),
+  p_saber          REAL NOT NULL,
+  estabilidad      REAL NOT NULL DEFAULT 1,
+  intentos         INTEGER NOT NULL DEFAULT 0,
+  aciertos         INTEGER NOT NULL DEFAULT 0,
+  ultima_practica  TEXT,
+  PRIMARY KEY (tecnico_id, competencia_id)
+);
