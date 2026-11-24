@@ -69,7 +69,7 @@ const FLOTA = [
   },
   {
     id: 'T-09',
-    modelo: '7300-brt',
+    modelo: 'procity',
     nombre: 'Ricardo Navarro',
     taller: 'PSV Veracruz',
     anios: 9,
@@ -99,7 +99,7 @@ const FLOTA = [
   },
   {
     id: 'T-12',
-    modelo: '9800-dd',
+    modelo: 'b8r',
     nombre: 'Daniela Ortiz',
     taller: 'PSV Durango',
     anios: 0,
@@ -109,7 +109,7 @@ const FLOTA = [
   },
   {
     id: 'T-13',
-    modelo: '7700-hibrido',
+    modelo: 'access',
     nombre: 'Luis Ángel Vega',
     taller: 'PSV Tuxtla',
     anios: 6,

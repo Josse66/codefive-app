@@ -19,7 +19,7 @@
       <p class="font-narrow text-sm font-bold uppercase tracking-wider text-tinta-3">Tu autobús</p>
       <p class="font-sans text-2xl font-semibold">{{plan.modelo.nombre}}</p>
       <p class="flex flex-wrap gap-1.5">
-        <span class="chip border-tinta-3 text-tinta-2">{{plan.modelo.segmento}}</span>
+        <span class="chip border-tinta-3 text-tinta-2">{{plan.modelo.linea}} · {{plan.modelo.tipo}}</span>
         {{#if (igual plan.modelo.tecnologia 'electrica')}}<span class="marca-hv">Eléctrico · alto voltaje</span>{{/if}}
         {{#if (igual plan.modelo.tecnologia 'diesel')}}<span class="chip border-tinta-3 text-tinta-2">Diésel</span>{{/if}}
         {{#if (igual plan.modelo.tecnologia 'hibrida')}}<span class="chip border-tinta-3 text-tinta-2">Híbrido</span>{{/if}}

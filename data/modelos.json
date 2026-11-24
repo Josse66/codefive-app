@@ -1,86 +1,125 @@
 [
   {
-    "id": "7800-electric",
-    "nombre": "Volvo 7800 Electric",
-    "segmento": "Urbano",
-    "tecnologia": "electrica",
-    "autobus": "electrico",
-    "descripcion": "Urbano articulado y biarticulado 100 % eléctrico para corredores BRT.",
-    "datos": [
-      "Articulado 18.5 m · 191 pasajeros",
-      "Biarticulado 25.6 m · 300 pasajeros",
-      "Almacenamiento de 540 a 720 kWh"
-    ],
-    "fuente": "Mentoría Volvo, autobuses urbanos cero emisiones (foto 09)"
-  },
-  {
     "id": "luminus",
-    "nombre": "Volvo Luminus",
-    "segmento": "Urbano",
+    "nombre": "Luminus",
+    "linea": "Autobuses urbanos e interurbanos",
+    "tipo": "Autobuses",
     "tecnologia": "electrica",
     "autobus": "electrico",
-    "descripcion": "Urbano de piso bajo 100 % eléctrico, fabricado en México.",
-    "datos": ["Piso bajo y entrada baja", "Fabricado en México desde 2023"],
-    "fuente": "Mentoría Volvo, historia en transporte urbano (fotos 10 a 12)"
+    "descripcion": "Autobús urbano eléctrico con tren motriz eléctrico Volvo y baterías de tracción modulares.",
+    "datos": [
+      "Tren motriz eléctrico de alto rendimiento",
+      "Carga por pantógrafo o por cable",
+      "Fabricado en México (Tultitlán)"
+    ],
+    "fuente": "https://www.volvobuses.com/mx/city-and-intercity/buses/luminus.html"
   },
   {
-    "id": "7700-hibrido",
-    "nombre": "Volvo 7700 Hybrid",
-    "segmento": "Urbano",
-    "tecnologia": "hibrida",
-    "autobus": "diesel",
-    "descripcion": "Urbano híbrido: motor diésel y sistema eléctrico de tracción.",
-    "datos": ["Operó en la Ciudad de México desde 2012", "Combina contenido diésel y de alto voltaje"],
-    "fuente": "Mentoría Volvo, historia en transporte urbano (fotos 10 a 12)"
-  },
-  {
-    "id": "7300-brt",
-    "nombre": "Volvo 7300 BRT",
-    "segmento": "Urbano",
+    "id": "access",
+    "nombre": "Access",
+    "linea": "Autobuses urbanos e interurbanos",
+    "tipo": "Autobuses",
     "tecnologia": "diesel",
     "autobus": "diesel",
-    "descripcion": "Urbano articulado diésel para sistemas BRT.",
-    "datos": ["Segunda generación de articulados BRT (2007)"],
-    "fuente": "Mentoría Volvo, historia en transporte urbano (fotos 10 a 12)"
+    "descripcion": "Autobús urbano de piso bajo sobre chasis B8RLE, con rampa para silla de ruedas.",
+    "datos": ["Chasis B8RLE", "Motor Volvo D8C de 330 hp", "Transmisión automática", "Piso bajo y rampa"],
+    "fuente": "https://www.volvobuses.com/mx/city-and-intercity/buses/access.html"
+  },
+  {
+    "id": "procity",
+    "nombre": "ProCity",
+    "linea": "Autobuses urbanos e interurbanos",
+    "tipo": "Autobuses",
+    "tecnologia": "diesel",
+    "autobus": "diesel",
+    "descripcion": "Autobús urbano sobre chasis B8R.",
+    "datos": ["Chasis B8R", "Motor Volvo D8C de 330 hp", "Transmisión automática"],
+    "fuente": "https://www.volvobuses.com/mx/city-and-intercity/buses/procity.html"
+  },
+  {
+    "id": "7800-electric",
+    "nombre": "Volvo 7800 Electric",
+    "linea": "Autobuses urbanos e interurbanos",
+    "tipo": "Autobuses",
+    "tecnologia": "electrica",
+    "autobus": "electrico",
+    "descripcion": "Articulado y biarticulado 100 % eléctrico para sistemas BRT, fabricado en México.",
+    "datos": [
+      "Articulado 18.5 m (hasta 191 pasajeros) y biarticulado 25.6 m (hasta 300)",
+      "Baterías de ion de litio de 540, 630 o 720 kWh a 600 V",
+      "Motor eléctrico 2 × 200 kW · transmisión automatizada de 2 velocidades",
+      "Carga CCS hasta 250 kW"
+    ],
+    "fuente": "https://www.volvobuses.com/mx/city-and-intercity/buses/volvo-7800-electric.html"
+  },
+  {
+    "id": "b8r-le",
+    "nombre": "Volvo B8R LE",
+    "linea": "Autobuses urbanos e interurbanos",
+    "tipo": "Chasises",
+    "tecnologia": "diesel",
+    "autobus": "diesel",
+    "descripcion": "Chasis urbano de entrada baja para carrozar.",
+    "datos": ["Motor Euro 6 de 8 litros"],
+    "fuente": "https://www.volvobuses.com/mx/city-and-intercity/chassis/volvo-b8r-le.html"
   },
   {
     "id": "9700",
-    "nombre": "Volvo 9700",
-    "segmento": "Foráneo",
+    "nombre": "Volvo 9700 US/CAN",
+    "linea": "Autobuses foráneos",
+    "tipo": "Autobuses",
     "tecnologia": "diesel",
     "autobus": "diesel",
-    "descripcion": "Autobús integral foráneo diésel.",
-    "datos": ["En México desde 2002", "Fabricado en México para exportación"],
-    "fuente": "Mentoría Volvo, historia en transporte foráneo (fotos 14 y 15)"
+    "descripcion": "Autobús foráneo con motor de 13 litros y caja I-Shift.",
+    "datos": ["Motor de 13 litros", "Transmisión Volvo I-Shift"],
+    "fuente": "https://www.volvobuses.com/mx/coaches/coaches/volvo-9700-uscan.html"
   },
   {
     "id": "9800",
     "nombre": "Volvo 9800",
-    "segmento": "Foráneo",
+    "linea": "Autobuses foráneos",
+    "tipo": "Autobuses",
     "tecnologia": "diesel",
     "autobus": "diesel",
-    "descripcion": "Autobús integral foráneo diésel con caja I-Shift y Euro 6.",
-    "datos": ["13.2 m (4x2), 14 y 15 m (6x2)", "Transmisión I-Shift", "Euro 6"],
-    "fuente": "Mentoría Volvo, autobuses integrales foráneos (foto 13)"
+    "descripcion": "Autobús foráneo con motor D13 Euro 6, diésel o HVO.",
+    "datos": ["Motor D13 Euro 6 de 460 o 500 CV", "Diésel o HVO", "13.2, 14.0 o 15.0 m · hasta 54 pasajeros"],
+    "fuente": "https://www.volvobuses.com/mx/coaches/coaches/volvo-9800.html"
   },
   {
     "id": "9800-dd",
     "nombre": "Volvo 9800 DD",
-    "segmento": "Foráneo",
+    "linea": "Autobuses foráneos",
+    "tipo": "Autobuses",
     "tecnologia": "diesel",
     "autobus": "diesel",
-    "descripcion": "Autobús foráneo de dos pisos, diésel.",
-    "datos": ["Dos pisos · 15 m", "Transmisión I-Shift", "Euro 6"],
-    "fuente": "Mentoría Volvo, autobuses integrales foráneos (foto 13)"
+    "descripcion": "Autobús foráneo de dos pisos.",
+    "datos": ["Motor Euro 6 de 13 litros y 500 hp", "Transmisión I-Shift", "15.0 m · hasta 68 asientos"],
+    "fuente": "https://www.volvobuses.com/mx/coaches/coaches/volvo-9800-double-decker.html"
+  },
+  {
+    "id": "b8r",
+    "nombre": "Volvo B8R",
+    "linea": "Autobuses foráneos",
+    "tipo": "Chasises",
+    "tecnologia": "diesel",
+    "autobus": "diesel",
+    "descripcion": "Chasis de dos o tres ejes para carrozar.",
+    "datos": ["Motor Euro 6 de 8 litros", "Dos o tres ejes", "Transmisiones automáticas, incluida I-Shift"],
+    "fuente": "https://www.volvobuses.com/mx/coaches/chassis/volvo-b8r.html"
   },
   {
     "id": "b13r",
-    "nombre": "Chasis Volvo B13R",
-    "segmento": "Chasis",
+    "nombre": "Volvo B13R",
+    "linea": "Autobuses foráneos",
+    "tipo": "Chasises",
     "tecnologia": "diesel",
     "autobus": "diesel",
-    "descripcion": "Chasis diésel de motor trasero para carrozar, Euro V y Euro VI.",
-    "datos": ["Motor de 13 litros", "Euro V y Euro VI"],
-    "fuente": "Mentoría Volvo, retícula de cursos de buses (Módulo I)"
+    "descripcion": "Chasis foráneo con motor Euro 6 de 13 litros.",
+    "datos": [
+      "Motor Euro 6 de 13 litros, de 420 a 500 hp",
+      "Transmisión I-Shift mejorada",
+      "Funciona con HVO"
+    ],
+    "fuente": "https://www.volvobuses.com/mx/coaches/chassis/volvo-b13r-mx.html"
   }
 ]

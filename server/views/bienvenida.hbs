@@ -6,10 +6,13 @@
   </div>
 
   <form method="post" action="/bienvenida" class="grid gap-6">
-    {{#each segmentos}}
+    {{#each lineas}}
+      <section class="grid gap-4">
+        <h2 class="border-b-2 border-tinta pb-2 text-3xl">{{linea}}</h2>
+      {{#each tipos}}
       {{#if modelos.length}}
         <fieldset class="grid gap-3">
-          <legend class="mb-3 text-2xl font-narrow font-bold">{{segmento}}</legend>
+          <legend class="mb-3 font-narrow text-sm font-bold uppercase tracking-wider text-tinta-3">{{tipo}}</legend>
           <div class="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
             {{#each modelos}}
               <label class="group grid cursor-pointer content-start gap-3 border-2 border-placa-linea bg-white p-5 transition-colors duration-150 hover:border-tinta has-[:checked]:border-tinta has-[:checked]:bg-placa-2">
@@ -32,9 +35,11 @@
           </div>
         </fieldset>
       {{/if}}
+      {{/each}}
+      </section>
     {{/each}}
     <div class="sticky bottom-0 flex flex-wrap items-center justify-between gap-3 border-t-2 border-tinta bg-placa py-4">
-      <p class="text-sm text-tinta-3">Puedes cambiarlo después desde Mi plan. Modelos y datos del catálogo presentado en la mentoría; confirmar con Volvo.</p>
+      <p class="text-sm text-tinta-3">Puedes cambiarlo después desde Mi plan. Catálogo y datos tomados de volvobuses.com/mx.</p>
       <button type="submit" class="boton px-8 py-4 text-base">{{#if nuevo}}Continuar a mi diagnóstico{{else}}Guardar mi autobús{{/if}}</button>
     </div>
   </form>

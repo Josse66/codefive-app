@@ -99,18 +99,22 @@ export function mostrarBienvenida(req, res) {
   }
   const tecnico = obtenerTecnico(req.cuenta.tecnicoId);
   const actual = tecnico.modelo_id ? modeloDelTecnico(tecnico).id : null;
-  const segmentos = ['Urbano', 'Foráneo', 'Chasis'].map((segmento) => ({
-    segmento,
-    modelos: listarModelos()
-      .filter((m) => m.segmento === segmento)
-      .map((m) => ({ ...m, elegido: m.id === actual })),
+  // Mismo orden que el catálogo de volvobuses.com/mx: línea y, dentro, Autobuses y Chasises.
+  const lineas = ['Autobuses urbanos e interurbanos', 'Autobuses foráneos'].map((linea) => ({
+    linea,
+    tipos: ['Autobuses', 'Chasises'].map((tipo) => ({
+      tipo,
+      modelos: listarModelos()
+        .filter((m) => m.linea === linea && m.tipo === tipo)
+        .map((m) => ({ ...m, elegido: m.id === actual })),
+    })),
   }));
   res.render('bienvenida', {
     titulo: 'Elige tu autobús',
     sinMenu: !actual,
     tecnico,
     nuevo: !actual,
-    segmentos,
+    lineas,
     seccion: 'plan',
   });
 }
