@@ -1,5 +1,6 @@
 import db from '#db/conexion.js';
 import logger from '#config/logger.js';
+import { avisar } from '#config/envivo.js';
 
 const insertar = db.prepare(`
   INSERT INTO eventos (tecnico_id, tipo, fase, competencia_id, pregunta_id, escenario_id, paso_id, accion,
@@ -30,5 +31,8 @@ export function registrarEvento(evento) {
   logger.info(
     `evento ${fila.tipo}/${fila.fase} tecnico=${fila.tecnico_id} competencia=${fila.competencia_id} correcta=${fila.correcta}`,
   );
-  return Number(lastInsertRowid);
+  const id = Number(lastInsertRowid);
+  // Los tableros abiertos se actualizan con cada respuesta o acción.
+  avisar('evento', { id, tecnicoId: fila.tecnico_id, fase: fila.fase, competenciaId: fila.competencia_id });
+  return id;
 }

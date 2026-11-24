@@ -1,6 +1,7 @@
 import http from 'node:http';
 import { crearApp } from '#app';
 import logger from '#config/logger.js';
+import { conectarEnVivo } from '#config/envivo.js';
 import db from '#db/conexion.js';
 import { baseVacia, sembrar, sembrarEvaluacion } from '#db/semilla.js';
 
@@ -13,6 +14,7 @@ const app = await crearApp();
 app.set('port', port);
 
 const server = http.createServer(app);
+conectarEnVivo(server);
 
 server.on('error', (error) => {
   if (error.code === 'EADDRINUSE') {

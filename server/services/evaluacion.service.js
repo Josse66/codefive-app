@@ -1,5 +1,6 @@
 import db, { transaccion } from '#db/conexion.js';
 import { errorHttp } from '#helpers/errores.js';
+import { avisar } from '#config/envivo.js';
 import { obtenerTecnico } from '#services/tecnicos.service.js';
 import { registrarEvento } from '#services/eventos.service.js';
 import { asegurarDominio, guardarDominio, obtenerDominio } from '#services/dominio.service.js';
@@ -238,5 +239,7 @@ export function simularDias(tecnicoId, dias = DIAS_DIFERIDA) {
     throw errorHttp(400, 'Los días a simular deben ser un entero entre 1 y 60');
   }
   db.prepare('UPDATE tecnicos SET dias_simulados = dias_simulados + ? WHERE id = ?').run(cuantos, tecnicoId);
-  return { diasSimulados: obtenerTecnico(tecnicoId).dias_simulados };
+  const { dias_simulados: diasSimulados } = obtenerTecnico(tecnicoId);
+  avisar('reloj', { tecnicoId, diasSimulados });
+  return { diasSimulados };
 }
