@@ -1,0 +1,134 @@
+[
+  {
+    "competencia_id": "A1-1-MAN",
+    "titulo": "La inspección diaria evita fallas en ruta",
+    "puntos": [
+      "Antes de salir: niveles de aceite, refrigerante y fluidos; llantas; luces; purga de humedad de los tanques de aire.",
+      "El preventivo se programa por kilómetros, horas o tiempo según el fabricante.",
+      "Respetar intervalos atiende el desgaste antes de que falle y conserva la garantía."
+    ],
+    "pista": "Piensa en todo lo que puede dejar a la unidad parada en ruta, no solo en el combustible.",
+    "fuente": "Guía de tipos de mantenimiento (material del equipo)"
+  },
+  {
+    "competencia_id": "A5-1-SEG",
+    "titulo": "Primero se asegura la unidad",
+    "puntos": [
+      "Antes de probar o reparar frenos: estacionar, asegurar la unidad y colocar calzas en las ruedas.",
+      "Nunca trabajar debajo de una unidad que no está asegurada, aunque sea \"rápido\".",
+      "Si alguien va a hacerlo, se detiene la tarea hasta cumplir el procedimiento."
+    ],
+    "pista": "¿Qué impide que la unidad se mueva mientras trabajas?",
+    "fuente": "Bendix BW1231, Air Brake System Troubleshooting"
+  },
+  {
+    "competencia_id": "A5-2-COM",
+    "titulo": "Cómo funciona el sistema neumático",
+    "puntos": [
+      "El compresor llena los depósitos; el gobernador corta cuando llega a la presión de trabajo.",
+      "El secador quita humedad y contaminantes del aire para proteger válvulas y depósitos.",
+      "Si el compresor cicla cada vez más seguido, algo está perdiendo presión: posible fuga."
+    ],
+    "pista": "El aire comprimido trae agua. ¿Qué componente la retira?",
+    "fuente": "Bendix BW1231; Volvo Buses México, contratos de servicio"
+  },
+  {
+    "competencia_id": "A5-2-DIA",
+    "titulo": "Localizar y confirmar una fuga",
+    "puntos": [
+      "Cuantificar: dejar estabilizar la presión y observar cuánto cae en el tiempo que indica el procedimiento.",
+      "Localizar: solución jabonosa o detector en conexiones, válvulas, depósitos y cámaras.",
+      "Reparar la causa con piezas aprobadas y repetir la prueba antes de liberar la unidad."
+    ],
+    "pista": "Una reparación no termina hasta que la prueba sale bien otra vez.",
+    "fuente": "Bendix BW1231"
+  },
+  {
+    "competencia_id": "D2-1-MAN",
+    "titulo": "Cuidados básicos del motor diésel",
+    "puntos": [
+      "Drenar el agua del filtro separador: el agua daña bomba e inyectores de alta presión.",
+      "En motores con SCR se revisa también la urea (DEF / AdBlue): nivel y calidad certificada.",
+      "Aceite, filtros y refrigerante según el intervalo del fabricante."
+    ],
+    "pista": "¿Qué líquido necesita el sistema que reduce las emisiones de NOx?",
+    "fuente": "Guía de tipos de mantenimiento (material del equipo)"
+  },
+  {
+    "competencia_id": "D2-2-COM",
+    "titulo": "DPF y SCR: dos sistemas, dos trabajos",
+    "puntos": [
+      "DPF: atrapa el hollín del escape; la regeneración lo quema a alta temperatura.",
+      "SCR: inyecta urea para convertir los óxidos de nitrógeno (NOx) en nitrógeno y agua.",
+      "Un testigo de postratamiento no dice cuál de los dos falla: hay que leer códigos y datos."
+    ],
+    "pista": "Uno atrapa partículas sólidas, el otro trata un gas con urea.",
+    "fuente": "Cummins 4971424; Bosch, programa Common Rail y postratamiento"
+  },
+  {
+    "competencia_id": "D2-3-DIA",
+    "titulo": "Diagnóstico del DPF sin adivinar",
+    "puntos": [
+      "Confirmar: registrar testigos, códigos y datos antes de borrar nada.",
+      "Validar la medición: sensor de presión diferencial, mangueras y cableado según el árbol de diagnóstico.",
+      "Corregir la causa primero; regenerar solo cuando el fabricante lo autoriza y la zona es segura."
+    ],
+    "pista": "¿Qué evidencia tienes antes de cambiar o regenerar el filtro?",
+    "fuente": "Cummins 4971316; Ficha A, investigación Persona 2"
+  },
+  {
+    "competencia_id": "D2-3-CR",
+    "titulo": "Common rail: probar por partes",
+    "puntos": [
+      "Arranque difícil o poca potencia no siempre son inyectores.",
+      "Probar en orden: alimentación de baja presión, generación de alta presión, riel e inyectores.",
+      "La prueba de retorno muestra si un inyector tiene fuga interna."
+    ],
+    "pista": "Aísla la causa subsistema por subsistema antes de cambiar piezas.",
+    "fuente": "Bosch, Common Rail System Diagnosis"
+  },
+  {
+    "competencia_id": "E3-1-SEG",
+    "titulo": "Alto voltaje: reconocer el riesgo y escalar",
+    "puntos": [
+      "Apagado no significa desenergizado. Un sistema de alto voltaje se trata como energizado hasta comprobar lo contrario.",
+      "Solo personal capacitado y autorizado interviene el sistema de alto voltaje.",
+      "Si no estás autorizado: asegura la unidad, delimita el área y avisa al responsable de alto voltaje."
+    ],
+    "pista": "¿Quién está autorizado para tocar el sistema y qué haces si no eres tú?",
+    "fuente": "NOM-029-STPS-2011; Volvo Buses México, seguridad eléctrica"
+  },
+  {
+    "competencia_id": "E3-2-COM",
+    "titulo": "Cómo se protege el sistema de alto voltaje",
+    "puntos": [
+      "La batería de tracción alimenta los motores; un convertidor DC/DC carga las baterías auxiliares de 24 V.",
+      "El HVIL recorre los conectores de alto voltaje: si uno se abre, el sistema puede desconectarse.",
+      "El aislamiento se monitorea en tiempo real; ante una falla el sistema advierte y puede inhibir la tracción."
+    ],
+    "pista": "Hay un circuito que detecta conectores abiertos. ¿Cómo se llama?",
+    "fuente": "Volvo Buses México, seguridad eléctrica y especificaciones del 7800 Electric"
+  },
+  {
+    "competencia_id": "E3-2-SEG",
+    "titulo": "Bloquear, etiquetar y verificar",
+    "puntos": [
+      "Seguir el procedimiento de desenergización del fabricante para ese modelo.",
+      "Bloqueo y etiquetado (LOTO): candado y etiqueta para que nadie reenergice mientras trabajas.",
+      "Verificar ausencia de tensión: probar el medidor en una fuente conocida, medir los puntos indicados y volver a probar el medidor."
+    ],
+    "pista": "Un medidor dañado también marca cero. ¿Cómo lo descartas?",
+    "fuente": "ASE xEV Safety Standards v2.1; NOM-029-STPS-2011"
+  },
+  {
+    "competencia_id": "E3-3-DIA",
+    "titulo": "Diagnóstico de pérdida de aislamiento",
+    "puntos": [
+      "Ausencia de tensión y resistencia de aislamiento son pruebas distintas: una no sustituye a la otra.",
+      "Se localiza la falla aislando y probando componente por componente, con el instrumento y valores del fabricante.",
+      "Nunca probar aislamiento sobre electrónica conectada sin autorización: se puede dañar."
+    ],
+    "pista": "Primero confirmas que no hay voltaje; luego mides el estado del aislamiento por partes.",
+    "fuente": "ASE xEV Safety Standards v2.1; Ficha C, investigación Persona 2"
+  }
+]
