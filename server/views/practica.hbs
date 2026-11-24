@@ -1,0 +1,62 @@
+<section id="practica" class="mx-auto grid max-w-3xl gap-6" data-tecnico-id="{{tecnico.id}}" data-competencia-id="{{competenciaId}}">
+  <div class="flex flex-wrap items-end justify-between gap-4">
+    <div>
+      <p class="etiqueta">Práctica · {{tecnico.nombre}}</p>
+      <h1 id="titulo-competencia" class="mt-1 text-4xl">Cargando…</h1>
+      <p id="detalle-competencia" class="text-acero-600"></p>
+    </div>
+    <a href="/tecnicos/{{tecnico.id}}/ruta" class="boton bg-acero-900">Volver a mi ruta</a>
+  </div>
+
+  <div class="tarjeta grid gap-2">
+    <div class="flex flex-wrap items-center justify-between gap-2 text-sm">
+      <span>Dominio estimado: <strong id="dominio-texto">—</strong></span>
+      <span id="modo-texto" class="rounded border border-acero-100 px-2 py-0.5 font-mono text-xs"></span>
+    </div>
+    <div class="h-3 rounded bg-acero-100">
+      <div id="dominio-barra" class="h-3 rounded bg-acero-600 transition-[width] duration-700 ease-out" style="width: 0%"></div>
+    </div>
+  </div>
+
+  <article id="leccion" class="tarjeta grid gap-3 border-l-4 border-l-acero-600" hidden>
+    <p class="etiqueta">Microlección</p>
+    <h2 id="leccion-titulo" class="text-2xl"></h2>
+    <ul id="leccion-puntos" class="grid list-disc gap-2 pl-5"></ul>
+    <p id="leccion-fuente" class="text-sm text-acero-600"></p>
+    <button id="boton-empezar" type="button" class="boton">Ya lo leí, practicar</button>
+  </article>
+
+  <div id="tarjeta-pregunta" class="tarjeta grid gap-5" hidden>
+    <p id="pregunta-numero" class="etiqueta"></p>
+    <h2 id="pregunta-enunciado" class="font-sans text-xl font-semibold tracking-normal"></h2>
+    <div id="pregunta-opciones" class="grid gap-3" role="radiogroup" aria-labelledby="pregunta-enunciado"></div>
+
+    <fieldset id="confianza" class="grid gap-2" disabled>
+      <legend class="font-semibold">¿Qué tan seguro estás?</legend>
+      <div class="grid gap-2 sm:grid-cols-3">
+        <button type="button" data-valor="1">No estoy seguro</button>
+        <button type="button" data-valor="2">Creo que sí</button>
+        <button type="button" data-valor="3">Estoy seguro</button>
+      </div>
+    </fieldset>
+
+    <div id="pista" class="rounded border-l-4 border-amber-500 bg-amber-50 p-3 text-amber-900" hidden></div>
+
+    <div id="retroalimentacion" class="grid gap-1 rounded border-l-4 p-4" hidden aria-live="polite"></div>
+
+    <div class="flex flex-wrap gap-2">
+      <button id="boton-comprobar" type="button" class="boton" disabled>Comprobar</button>
+      <button id="boton-pista" type="button" class="boton bg-amber-600 hover:bg-amber-700" hidden>Ver pista</button>
+      <button id="boton-siguiente" type="button" class="boton bg-acero-900" hidden>Siguiente</button>
+    </div>
+  </div>
+
+  <div id="resumen" class="tarjeta grid gap-3" hidden>
+    <p class="etiqueta">Resultado</p>
+    <h2 id="resumen-titulo" class="text-3xl"></h2>
+    <p id="resumen-texto"></p>
+    <a href="/tecnicos/{{tecnico.id}}/ruta" class="boton">Ver mi ruta actualizada</a>
+  </div>
+
+  <p id="mensaje-error" class="rounded border-l-4 border-hv-500 bg-hv-100 p-3" hidden></p>
+</section>

@@ -55,3 +55,14 @@ export function mostrarRuta(req, res) {
     res.render('ruta', { titulo: `Ruta · ${tecnico.nombre}`, tecnico, pasos });
   });
 }
+
+export function mostrarPractica(req, res) {
+  conTecnico(req, res, (tecnico) =>
+    res.render('practica', {
+      titulo: `Práctica · ${tecnico.nombre}`,
+      tecnico,
+      competenciaId: req.params.competenciaId,
+      scriptPagina: 'pages/practica.js',
+    }),
+  );
+}

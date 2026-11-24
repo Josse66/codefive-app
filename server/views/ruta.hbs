@@ -26,6 +26,7 @@
             <p class="mt-1 text-sm">{{motivo}}{{#if bloqueadaPor}} · primero: {{bloqueadaPor.nombre}}{{/if}}</p>
           </div>
           <div class="grid gap-2">
+            <a href="/tecnicos/{{../tecnico.id}}/practica/{{competencia.id}}" class="boton">Practicar</a>
             {{#if escenario}}
               <span class="rounded border border-acero-100 px-2 py-1 text-center font-mono text-xs">Escenario 3D: {{escenario}}</span>
             {{/if}}

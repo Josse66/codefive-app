@@ -16,6 +16,7 @@ export default defineConfig(({ command }) => ({
       input: {
         main: ruta('./client/main.js'),
         diagnostico: ruta('./client/pages/diagnostico.js'),
+        practica: ruta('./client/pages/practica.js'),
       },
     },
   },
