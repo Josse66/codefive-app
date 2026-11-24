@@ -150,6 +150,21 @@ function llenarBahia(tecnico, indiceNivel) {
   });
 }
 
+/** Nivel, experiencia, órdenes entregadas y reputación del técnico (para el panel de Volvo). */
+export function resumenTaller(tecnicoId) {
+  const { xp, indice } = nivelDelTecnico(tecnicoId);
+  const estrellas = db
+    .prepare("SELECT estrellas FROM ordenes WHERE tecnico_id = ? AND estado = 'entregada' ORDER BY id DESC")
+    .all(tecnicoId)
+    .map((o) => o.estrellas);
+  return {
+    nivel: NIVELES[indice].nombre,
+    xp,
+    entregadas: estrellas.length,
+    reputacion: reputacion(estrellas),
+  };
+}
+
 export function obtenerTaller(tecnicoId) {
   const tecnico = validarTecnico(tecnicoId);
   const { xp, indice } = nivelDelTecnico(tecnico.id);
