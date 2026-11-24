@@ -20,7 +20,9 @@ CREATE TABLE IF NOT EXISTS preguntas (
   explicacion     TEXT NOT NULL,
   fuente          TEXT NOT NULL,
   dificultad      REAL NOT NULL DEFAULT 0,
-  respuestas      INTEGER NOT NULL DEFAULT 0
+  respuestas      INTEGER NOT NULL DEFAULT 0,
+  -- 'practica': diagnóstico y práctica. 'evaluacion': antes y después; nunca se ven en la práctica.
+  banco           TEXT NOT NULL DEFAULT 'practica' CHECK (banco IN ('practica', 'evaluacion'))
 );
 
 -- Técnicos ficticios para la demo. dias_simulados adelanta su reloj para la revisión diferida.
@@ -69,3 +71,21 @@ CREATE TABLE IF NOT EXISTS dominio (
   ultima_practica  TEXT,
   PRIMARY KEY (tecnico_id, competencia_id)
 );
+
+-- Resultado de cada momento de evaluación por técnico y competencia: antes de practicar (pre),
+-- justo después (post) y la revisión diferida tras simular días (diferida).
+-- dia = días simulados del técnico en ese momento; ultimo_evento = hasta dónde llegaba la bitácora.
+CREATE TABLE IF NOT EXISTS evaluaciones (
+  id              INTEGER PRIMARY KEY AUTOINCREMENT,
+  tecnico_id      TEXT NOT NULL REFERENCES tecnicos (id),
+  competencia_id  TEXT NOT NULL REFERENCES competencias (id),
+  fase            TEXT NOT NULL CHECK (fase IN ('pre', 'post', 'diferida')),
+  aciertos        INTEGER NOT NULL,
+  total           INTEGER NOT NULL,
+  p_saber         REAL NOT NULL,
+  estabilidad     REAL NOT NULL,
+  dia             INTEGER NOT NULL DEFAULT 0,
+  ultimo_evento   INTEGER NOT NULL DEFAULT 0,
+  creado_en       TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_evaluaciones_tecnico ON evaluaciones (tecnico_id, competencia_id, fase);

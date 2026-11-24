@@ -8,6 +8,20 @@ export const rutaBaseDatos = process.env.DB_PATH ?? path.resolve('server', 'db',
 
 const db = new DatabaseSync(rutaBaseDatos);
 db.exec('PRAGMA journal_mode = WAL; PRAGMA foreign_keys = ON;');
+// Migración: las bases creadas antes del banco de evaluación no tienen la columna `banco`.
+// Va antes del esquema porque el esquema ya no la agrega a una tabla existente.
+const tablaPreguntas = db
+  .prepare("SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'preguntas'")
+  .get();
+if (
+  tablaPreguntas &&
+  !db
+    .prepare('PRAGMA table_info(preguntas)')
+    .all()
+    .some((c) => c.name === 'banco')
+) {
+  db.exec("ALTER TABLE preguntas ADD COLUMN banco TEXT NOT NULL DEFAULT 'practica'");
+}
 db.exec(fs.readFileSync(path.resolve('server', 'db', 'schema.sql'), 'utf8'));
 logger.debug(`Base de datos lista en ${rutaBaseDatos}`);
 

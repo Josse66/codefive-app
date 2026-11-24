@@ -43,7 +43,7 @@ function armarAreas() {
 
 function preguntaDe(competenciaId, usadas) {
   return db
-    .prepare('SELECT * FROM preguntas WHERE competencia_id = ? ORDER BY id')
+    .prepare("SELECT * FROM preguntas WHERE competencia_id = ? AND banco = 'practica' ORDER BY id")
     .all(competenciaId)
     .find((p) => !usadas.has(p.id));
 }

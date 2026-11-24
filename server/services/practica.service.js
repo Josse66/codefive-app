@@ -37,7 +37,7 @@ export function iniciarPractica(tecnicoId, competenciaId) {
   const modo = modoDeAyuda(pSaber);
   const leccion = lecciones.get(competencia.id) ?? null;
   const preguntas = db
-    .prepare('SELECT id, enunciado, opciones FROM preguntas WHERE competencia_id = ? ORDER BY id')
+    .prepare("SELECT id, enunciado, opciones FROM preguntas WHERE competencia_id = ? AND banco = 'practica' ORDER BY id")
     .all(competencia.id)
     .map((p) => ({ id: p.id, enunciado: p.enunciado, opciones: JSON.parse(p.opciones) }));
 

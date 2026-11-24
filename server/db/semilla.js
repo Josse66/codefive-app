@@ -8,6 +8,36 @@ const DIFICULTAD_POR_NIVEL = { 1: -1, 2: 0, 3: 1 };
 
 const leerJson = (archivo) => JSON.parse(fs.readFileSync(path.resolve('data', archivo), 'utf8'));
 
+// Banco de evaluación (antes y después). Se agrega aunque la base ya exista, sin duplicar.
+export function sembrarEvaluacion(db) {
+  const nivelDe = Object.fromEntries(
+    db
+      .prepare('SELECT id, nivel FROM competencias')
+      .all()
+      .map((c) => [c.id, c.nivel]),
+  );
+  const insertar = db.prepare(`
+    INSERT OR IGNORE INTO preguntas (id, competencia_id, enunciado, opciones, correcta, explicacion, fuente, dificultad, banco)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'evaluacion')`);
+  let nuevas = 0;
+  transaccion(() => {
+    leerJson('evaluacion.json').forEach((p) => {
+      const { changes } = insertar.run(
+        p.id,
+        p.competencia_id,
+        p.enunciado,
+        JSON.stringify(p.opciones),
+        p.correcta,
+        p.explicacion,
+        p.fuente,
+        DIFICULTAD_POR_NIVEL[nivelDe[p.competencia_id]] ?? 0,
+      );
+      nuevas += Number(changes);
+    });
+  });
+  if (nuevas) logger.info(`Banco de evaluación: ${nuevas} preguntas nuevas`);
+}
+
 export function baseVacia(db) {
   return db.prepare('SELECT COUNT(*) AS total FROM competencias').get().total === 0;
 }
