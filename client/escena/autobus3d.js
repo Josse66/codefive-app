@@ -3,6 +3,7 @@
 // La usan la exploración por grupos y los escenarios de práctica.
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { HDRLoader } from 'three/examples/jsm/loaders/HDRLoader.js';
 
@@ -447,6 +448,104 @@ export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos 
   herramienta.visible = false;
   escena.add(herramienta);
 
+  // ---------- Modo inmersivo: primera persona en el taller ----------
+  // Clic toma el mouse (pointer lock) y mira; WASD camina; Shift se agacha; la mira al centro
+  // apunta y la herramienta va en la mano derecha con el guante en la izquierda.
+  escena.add(camara);
+  const primeraPersona = new PointerLockControls(camara, renderer.domElement);
+  primeraPersona.addEventListener('change', () => pedirCuadro());
+  const teclas = new Set();
+  const OJOS = { parado: 1.65, agachado: 0.95 };
+  const inmersivo = { activo: false, guardado: null, altura: OJOS.parado };
+  const manoIzquierda = new THREE.Group();
+  manoIzquierda.position.set(-0.3, -0.22, -0.6);
+  manoIzquierda.visible = false;
+  camara.add(manoIzquierda);
+  cargarBiblioteca()
+    .then((biblioteca) => {
+      const guante = biblioteca.getObjectByName('h_mano');
+      if (!guante) return;
+      const copia = copiaDe(guante);
+      copia.scale.setScalar(1.6);
+      copia.rotation.set(0.3, 0.4, 0.2);
+      manoIzquierda.add(copia);
+    })
+    .catch(() => {});
+
+  // El autobús ocupa x de −6.1 a 6.1 y z de −1.35 a 1.35: la persona no lo atraviesa.
+  function fueraDelAutobus(p) {
+    const margen = 0.35;
+    const ax = 6.1 + margen;
+    const az = 1.35 + margen;
+    if (Math.abs(p.x) < ax && Math.abs(p.z) < az) {
+      if (ax - Math.abs(p.x) < az - Math.abs(p.z)) Object.assign(p, { x: Math.sign(p.x || 1) * ax });
+      else Object.assign(p, { z: Math.sign(p.z || 1) * az });
+    }
+    Object.assign(p, { x: THREE.MathUtils.clamp(p.x, -14, 14), z: THREE.MathUtils.clamp(p.z, -9, 9) });
+  }
+
+  function activarInmersivo(encender) {
+    if (encender === inmersivo.activo) return;
+    inmersivo.activo = encender;
+    if (encender) {
+      inmersivo.guardado = { posicion: camara.position.clone(), mira: controles.target.clone() };
+      controles.enabled = false;
+      llegada.t = 1;
+      // Se para frente a la zona del trabajo, a 2.6 m del lado de la puerta, mirándola.
+      camara.position.set(objetivo.x, OJOS.parado, objetivo.z + 2.6);
+      inmersivo.altura = OJOS.parado;
+      camara.lookAt(objetivo.x, Math.max(0.6, objetivo.y), objetivo.z);
+      camara.fov = 70;
+      camara.updateProjectionMatrix();
+      camara.add(herramienta);
+      herramienta.position.set(0.28, -0.2, -0.6);
+      herramienta.rotation.set(0.2, -0.3, 0);
+      herramienta.scale.setScalar(0.32);
+      manoIzquierda.visible = true;
+    } else {
+      primeraPersona.unlock();
+      teclas.clear();
+      escena.add(herramienta);
+      herramienta.scale.setScalar(1);
+      herramienta.rotation.set(0, 0, 0);
+      manoIzquierda.visible = false;
+      camara.fov = 38;
+      camara.updateProjectionMatrix();
+      camara.position.copy(inmersivo.guardado.posicion);
+      controles.target.copy(inmersivo.guardado.mira);
+      controles.enabled = true;
+      controles.update();
+    }
+    pedirCuadro(true);
+  }
+
+  function moverPrimeraPersona(dt) {
+    if (!inmersivo.activo) return false;
+    const adelante = (teclas.has('KeyW') ? 1 : 0) - (teclas.has('KeyS') ? 1 : 0);
+    const lado = (teclas.has('KeyD') ? 1 : 0) - (teclas.has('KeyA') ? 1 : 0);
+    const meta = teclas.has('ShiftLeft') || teclas.has('ShiftRight') ? OJOS.agachado : OJOS.parado;
+    const subiendo = Math.abs(inmersivo.altura - meta) > 0.005;
+    if (!adelante && !lado && !subiendo) return false;
+    const velocidad = 2.4 * dt;
+    if (adelante) primeraPersona.moveForward(adelante * velocidad);
+    if (lado) primeraPersona.moveRight(lado * velocidad);
+    inmersivo.altura += (meta - inmersivo.altura) * Math.min(1, dt * 10);
+    camara.position.y = inmersivo.altura;
+    fueraDelAutobus(camara.position);
+    return true;
+  }
+
+  const alPresionar = (e) => {
+    if (!inmersivo.activo) return;
+    if (['KeyW', 'KeyA', 'KeyS', 'KeyD', 'ShiftLeft', 'ShiftRight'].includes(e.code)) {
+      teclas.add(e.code);
+      pedirCuadro();
+    }
+  };
+  const alSoltar = (e) => teclas.delete(e.code);
+  window.addEventListener('keydown', alPresionar);
+  window.addEventListener('keyup', alSoltar);
+
   const raycaster = new THREE.Raycaster();
   const plano = new THREE.Plane(new THREE.Vector3(0, 0, 1), -1.8);
 
@@ -502,6 +601,8 @@ export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos 
   }
 
   function moverHerramienta(x, y, giro) {
+    // En modo inmersivo la herramienta va en la mano (pegada a la cámara), no sigue al puntero.
+    if (inmersivo.activo) return piezaEn(0.5, 0.5);
     const encima = piezaEn(x, y);
     const punto = encima?.punto ?? rayo(x, y).ray.intersectPlane(plano, new THREE.Vector3());
     if (punto) herramienta.position.copy(punto).add(new THREE.Vector3(0, 0, 0.35));
@@ -661,8 +762,8 @@ export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos 
       llegada.t < 1 ||
       uso < 1 ||
       [...mallasPieza.values()].some((m) => m.userData.cambio != null);
-    // El amortiguado de la cámara también pide cuadros mientras se mueve.
-    const camaraMovida = controles.update();
+    // Caminar en primera persona o el amortiguado de la cámara también piden cuadros.
+    const camaraMovida = moverPrimeraPersona(dt) || (!inmersivo.activo && controles.update());
     if (!animando && !camaraMovida && !pendiente) return;
     pendiente = false;
     if (!medicion.lista && llegada.t < 1) {
@@ -788,12 +889,20 @@ export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos 
     marcarGrupo: yRedibujar(marcarGrupo),
     marcarPieza: yRedibujar(marcarPieza),
     enfocar: yRedibujar(enfocar),
+    activarInmersivo: yRedibujar(activarInmersivo),
+    tomarMouse: () => primeraPersona.lock(),
+    get mouseTomado() {
+      return primeraPersona.isLocked;
+    },
+    alSoltarMouse: (fn) => primeraPersona.addEventListener('unlock', fn),
     moverHerramienta: yRedibujar(moverHerramienta),
     elegirHerramienta: yRedibujar(elegirHerramienta),
     efecto: yRedibujar(efecto, true),
     nombrePieza: (id) => mallasPieza.get(id)?.userData.pieza.nombre ?? id,
     destruir() {
       activo = false;
+      window.removeEventListener('keydown', alPresionar);
+      window.removeEventListener('keyup', alSoltar);
       renderer.dispose();
     },
   };

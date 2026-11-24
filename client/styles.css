@@ -83,6 +83,25 @@
   dialog {
     overscroll-behavior: contain;
   }
+  /* Modo inmersivo del escenario: el autobús a pantalla completa y el panel de pasos flotando encima. */
+  #escenario.inmersivo {
+    @apply fixed inset-0 z-30 block bg-tinta p-0;
+  }
+  #escenario.inmersivo > :not(#area-trabajo):not(#bloqueo):not(#entrega) {
+    display: none;
+  }
+  #escenario.inmersivo #area-trabajo {
+    @apply block h-full;
+  }
+  #escenario.inmersivo #visor {
+    @apply static h-full border-0;
+  }
+  #escenario.inmersivo #panel-escenario {
+    @apply absolute left-4 top-4 z-10 max-h-[calc(100vh-2rem)] w-[380px] overflow-y-auto opacity-95;
+  }
+  #escenario.inmersivo #panel-escenario > :not(#pasos):not(#paso):not(#final) {
+    display: none;
+  }
   /* Quien pide menos movimiento no ve transiciones ni animaciones. */
   @media (prefers-reduced-motion: reduce) {
     *,

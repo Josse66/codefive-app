@@ -321,6 +321,100 @@ $('boton-repetir').addEventListener('click', () => window.location.reload());
 
 const bus = new InputBus();
 
+// Usa la herramienta elegida sobre la pieza que está en (x, y) del lienzo (0 a 1).
+function usarHerramientaEn(x, y, fuente) {
+  const paso = estado.datos.escenario.pasos[estado.paso];
+  if (!paso || paso.tipo !== 'accion' || estado.esperandoContinuar || !$('bloqueo').hidden) return;
+  const encima = estado.escena.piezaEn(x, y)?.pieza;
+  if (!encima) return;
+  if (!estado.herramienta) {
+    retro(
+      'neutro',
+      'Elige una herramienta',
+      'Selecciona en la bandeja con qué vas a trabajar (o usa los números 1 a 9).',
+    );
+    return;
+  }
+  enviar({ accion: `${estado.herramienta}>${encima.id}` }, fuente);
+}
+
+// ---------- Modo inmersivo: pantalla completa en primera persona ----------
+const inmersivo = { activo: false, cuadroPendiente: false };
+
+function mostrarHud(encendido) {
+  $('ayuda-orbita').hidden = encendido;
+  ['mira', 'ayuda-inmersivo', 'salir-inmersivo'].forEach((id) => {
+    $(id).hidden = !encendido;
+  });
+  $('mira-pieza').hidden = true;
+}
+
+function entrarInmersivo() {
+  if (inmersivo.activo) return;
+  inmersivo.activo = true;
+  raiz.classList.add('inmersivo');
+  raiz.requestFullscreen?.().catch(() => {});
+  estado.escena.activarInmersivo(true);
+  mostrarHud(true);
+}
+
+function salirInmersivo() {
+  if (!inmersivo.activo) return;
+  inmersivo.activo = false;
+  raiz.classList.remove('inmersivo');
+  if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+  estado.escena.activarInmersivo(false);
+  mostrarHud(false);
+}
+
+// Lo que hay bajo la mira (centro de la pantalla) se resalta y se nombra.
+function revisarMira() {
+  inmersivo.cuadroPendiente = false;
+  const encima = estado.escena.moverHerramienta(0.5, 0.5)?.pieza ?? null;
+  estado.encima = encima;
+  estado.escena.resaltar(encima?.id ?? null);
+  $('mira-pieza').hidden = !encima;
+  if (encima) $('mira-pieza').textContent = encima.nombre;
+}
+
+function conectarInmersivo() {
+  $('boton-inmersivo').addEventListener('click', entrarInmersivo);
+  $('salir-inmersivo').addEventListener('click', salirInmersivo);
+  document.addEventListener('fullscreenchange', () => {
+    if (!document.fullscreenElement) salirInmersivo();
+  });
+  // En inmersivo el clic toma el mouse; ya tomado, usa la herramienta en lo que apunta la mira.
+  estado.escena.lienzo.addEventListener(
+    'pointerdown',
+    (e) => {
+      if (!inmersivo.activo || e.button !== 0) return;
+      e.stopImmediatePropagation();
+      e.preventDefault();
+      if (!estado.escena.mouseTomado) {
+        estado.escena.tomarMouse();
+        $('ayuda-estado').textContent = 'Apunta con la mira y haz clic para usar la herramienta';
+        return;
+      }
+      usarHerramientaEn(0.5, 0.5, 'mouse');
+    },
+    { capture: true },
+  );
+  estado.escena.alSoltarMouse(() => {
+    $('ayuda-estado').textContent =
+      'Mouse libre: usa el panel de la izquierda o haz clic en el autobús para seguir';
+  });
+  document.addEventListener('mousemove', () => {
+    if (!inmersivo.activo || !estado.escena.mouseTomado || inmersivo.cuadroPendiente) return;
+    inmersivo.cuadroPendiente = true;
+    requestAnimationFrame(revisarMira);
+  });
+  window.addEventListener('keydown', (e) => {
+    if (!inmersivo.activo || !/^Digit[1-9]$/.test(e.code)) return;
+    const botones = [...$('bandeja').querySelectorAll('button')];
+    botones[Number(e.code.slice(5)) - 1]?.click();
+  });
+}
+
 function conectarEntradas() {
   bus.conectarMouse(estado.escena.lienzo);
   bus.addEventListener('pose', ({ detail }) => {
@@ -330,17 +424,7 @@ function conectarEntradas() {
     $('etiqueta-pieza').hidden = !estado.encima;
     if (estado.encima) $('etiqueta-pieza').textContent = estado.encima.nombre;
   });
-  bus.addEventListener('grab', ({ detail }) => {
-    const paso = estado.datos.escenario.pasos[estado.paso];
-    if (!paso || paso.tipo !== 'accion' || estado.esperandoContinuar || !$('bloqueo').hidden) return;
-    const encima = estado.escena.piezaEn(detail.x, detail.y)?.pieza;
-    if (!encima) return;
-    if (!estado.herramienta) {
-      retro('neutro', 'Elige una herramienta', 'Selecciona en la bandeja con qué vas a trabajar.');
-      return;
-    }
-    enviar({ accion: `${estado.herramienta}>${encima.id}` }, detail.source);
-  });
+  bus.addEventListener('grab', ({ detail }) => usarHerramientaEn(detail.x, detail.y, detail.source));
   bus.addEventListener('fuentes', ({ detail }) => {
     document.querySelectorAll('[data-fuente]').forEach((chip) => {
       const activa = detail[chip.dataset.fuente];
@@ -410,6 +494,7 @@ carga
       enfoque: escenario.enfoque,
     });
     conectarEntradas();
+    conectarInmersivo();
     pintarPaso();
   })
   .catch((error) => mostrarError(error.message));

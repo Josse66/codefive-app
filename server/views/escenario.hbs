@@ -23,12 +23,12 @@
     <div class="flex flex-wrap items-center gap-2">
       <span id="marca-hv" class="marca-hv" hidden>Alto voltaje 600 V</span>
       <span class="chip border-tinta-3 text-tinta-2">Datos de demostración</span>
-      <a href="/tecnicos/{{tecnico.id}}/autobus" class="boton-linea">Ver el autobús</a>
+      <button id="boton-inmersivo" type="button" class="boton">Entrar al taller (pantalla completa)</button>
     </div>
   </div>
 
-  <div class="grid gap-5 lg:grid-cols-[400px_minmax(0,1fr)] lg:items-start">
-    <div class="grid gap-4">
+  <div id="area-trabajo" class="grid gap-5 lg:grid-cols-[400px_minmax(0,1fr)] lg:items-start">
+    <div id="panel-escenario" class="grid gap-4">
       <ol id="pasos" class="flex flex-wrap gap-1.5" aria-label="Pasos del escenario"></ol>
 
       <article id="paso" class="grid gap-4 border-2 border-tinta bg-white p-5" hidden aria-live="polite">
@@ -90,10 +90,21 @@
       <p id="mensaje-error" class="aviso-critico" hidden></p>
     </div>
 
-    <div class="relative h-[460px] border border-tinta bg-placa lg:sticky lg:top-6 lg:h-[680px]">
+    <div id="visor" class="relative h-[460px] border border-tinta bg-placa lg:sticky lg:top-6 lg:h-[680px]">
       <div id="lienzo" class="absolute inset-0"></div>
+      {{! Modo inmersivo: mira al centro, ayuda de controles y salida. }}
+      <div id="mira" class="pointer-events-none absolute left-1/2 top-1/2 h-5 w-5 -translate-x-1/2 -translate-y-1/2" hidden aria-hidden="true">
+        <span class="absolute left-1/2 top-0 h-full w-0.5 -translate-x-1/2 bg-white mix-blend-difference"></span>
+        <span class="absolute left-0 top-1/2 h-0.5 w-full -translate-y-1/2 bg-white mix-blend-difference"></span>
+      </div>
+      <p id="mira-pieza" class="pointer-events-none absolute left-1/2 top-[calc(50%+22px)] -translate-x-1/2 border border-tinta bg-white px-2 py-1 text-sm font-semibold" hidden></p>
+      <div id="ayuda-inmersivo" class="absolute bottom-3 left-1/2 grid -translate-x-1/2 gap-1 border border-tinta bg-white/95 px-4 py-2 text-center text-sm" hidden>
+        <p id="ayuda-estado" class="font-semibold">Haz clic en el autobús para tomar el control</p>
+        <p class="text-tinta-2">Mouse: mirar · W A S D: caminar · Shift: agacharte · 1–9: herramienta · Clic: usar · Esc: soltar el mouse</p>
+      </div>
+      <button id="salir-inmersivo" type="button" class="boton-linea absolute right-3 top-14 bg-white px-3 py-2 text-sm" hidden>Salir de pantalla completa</button>
       <p id="etiqueta-pieza" class="pointer-events-none absolute left-3 top-3 border border-tinta bg-white px-2 py-1 text-sm font-semibold" hidden></p>
-      <p class="pointer-events-none absolute bottom-3 left-3 bg-white/90 px-2 py-1 text-xs text-tinta-3">Clic derecho y arrastrar: girar · rueda: acercar</p>
+      <p id="ayuda-orbita" class="pointer-events-none absolute bottom-3 left-3 bg-white/90 px-2 py-1 text-xs text-tinta-3">Clic derecho y arrastrar: girar · rueda: acercar</p>
     </div>
   </div>
 
