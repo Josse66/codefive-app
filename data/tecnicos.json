@@ -1,0 +1,34 @@
+[
+  {
+    "id": "T-01",
+    "nombre": "Ana Ruiz",
+    "taller": "PSV Querétaro",
+    "anios_experiencia": 0,
+    "tecnologia": "electrica",
+    "perfil": "recien_egresada"
+  },
+  {
+    "id": "T-02",
+    "nombre": "Luis Mendoza",
+    "taller": "PSV Monterrey",
+    "anios_experiencia": 12,
+    "tecnologia": "diesel",
+    "perfil": "experto_diesel"
+  },
+  {
+    "id": "T-03",
+    "nombre": "Marco Pérez",
+    "taller": "WSI Texcoco",
+    "anios_experiencia": 8,
+    "tecnologia": "diesel",
+    "perfil": "veterano_errores"
+  },
+  {
+    "id": "T-04",
+    "nombre": "Sofía Torres",
+    "taller": "Flota cliente Guadalajara",
+    "anios_experiencia": 3,
+    "tecnologia": "electrica",
+    "perfil": "tecnica_flota"
+  }
+]

@@ -1,0 +1,122 @@
+[
+  {
+    "id": "A1-1-MAN",
+    "nombre": "Inspección y mantenimiento preventivo general",
+    "tecnologia": "ambas",
+    "grupo": 1,
+    "nivel": 1,
+    "habilidad": "mantenimiento",
+    "prerequisito": null,
+    "critica": false
+  },
+  {
+    "id": "A5-1-SEG",
+    "nombre": "Asegurar la unidad antes de intervenir frenos",
+    "tecnologia": "ambas",
+    "grupo": 5,
+    "nivel": 1,
+    "habilidad": "seguridad",
+    "prerequisito": null,
+    "critica": true
+  },
+  {
+    "id": "A5-2-COM",
+    "nombre": "Funcionamiento del sistema de frenos neumáticos",
+    "tecnologia": "ambas",
+    "grupo": 5,
+    "nivel": 2,
+    "habilidad": "comprension",
+    "prerequisito": "A5-1-SEG",
+    "critica": false
+  },
+  {
+    "id": "A5-2-DIA",
+    "nombre": "Localizar una fuga neumática",
+    "tecnologia": "ambas",
+    "grupo": 5,
+    "nivel": 2,
+    "habilidad": "diagnostico",
+    "prerequisito": "A5-2-COM",
+    "critica": false
+  },
+  {
+    "id": "D2-1-MAN",
+    "nombre": "Mantenimiento preventivo del motor diésel",
+    "tecnologia": "diesel",
+    "grupo": 2,
+    "nivel": 1,
+    "habilidad": "mantenimiento",
+    "prerequisito": null,
+    "critica": false
+  },
+  {
+    "id": "D2-2-COM",
+    "nombre": "Función del postratamiento DPF y SCR",
+    "tecnologia": "diesel",
+    "grupo": 2,
+    "nivel": 2,
+    "habilidad": "comprension",
+    "prerequisito": "D2-1-MAN",
+    "critica": false
+  },
+  {
+    "id": "D2-3-DIA",
+    "nombre": "Diagnóstico de DPF y regeneración",
+    "tecnologia": "diesel",
+    "grupo": 2,
+    "nivel": 3,
+    "habilidad": "diagnostico",
+    "prerequisito": "D2-2-COM",
+    "critica": false
+  },
+  {
+    "id": "D2-3-CR",
+    "nombre": "Diagnóstico de inyección common rail",
+    "tecnologia": "diesel",
+    "grupo": 2,
+    "nivel": 3,
+    "habilidad": "diagnostico",
+    "prerequisito": "D2-1-MAN",
+    "critica": false
+  },
+  {
+    "id": "E3-1-SEG",
+    "nombre": "Reconocer el riesgo de alto voltaje y escalar",
+    "tecnologia": "electrica",
+    "grupo": 3,
+    "nivel": 1,
+    "habilidad": "seguridad",
+    "prerequisito": null,
+    "critica": true
+  },
+  {
+    "id": "E3-2-COM",
+    "nombre": "Arquitectura de alto voltaje: batería, HVIL y monitoreo de aislamiento",
+    "tecnologia": "electrica",
+    "grupo": 3,
+    "nivel": 2,
+    "habilidad": "comprension",
+    "prerequisito": "E3-1-SEG",
+    "critica": false
+  },
+  {
+    "id": "E3-2-SEG",
+    "nombre": "Bloqueo, etiquetado y verificación de ausencia de tensión",
+    "tecnologia": "electrica",
+    "grupo": 3,
+    "nivel": 2,
+    "habilidad": "seguridad",
+    "prerequisito": "E3-1-SEG",
+    "critica": true
+  },
+  {
+    "id": "E3-3-DIA",
+    "nombre": "Diagnóstico de pérdida de aislamiento y HVIL",
+    "tecnologia": "electrica",
+    "grupo": 3,
+    "nivel": 3,
+    "habilidad": "diagnostico",
+    "prerequisito": "E3-2-SEG",
+    "critica": false
+  }
+]

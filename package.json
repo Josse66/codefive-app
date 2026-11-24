@@ -19,7 +19,8 @@
     "start": "cross-env NODE_ENV=production node --disable-warning=ExperimentalWarning server/bin/www.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "db:reset": "node --disable-warning=ExperimentalWarning server/db/reset.js"
   },
   "engines": {
     "node": ">=22.13"
