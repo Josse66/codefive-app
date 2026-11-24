@@ -5,7 +5,8 @@
     "taller": "PSV Querétaro",
     "anios_experiencia": 0,
     "tecnologia": "electrica",
-    "perfil": "recien_egresada"
+    "perfil": "recien_egresada",
+    "modelo_id": "luminus"
   },
   {
     "id": "T-02",
@@ -13,7 +14,8 @@
     "taller": "PSV Monterrey",
     "anios_experiencia": 12,
     "tecnologia": "diesel",
-    "perfil": "experto_diesel"
+    "perfil": "experto_diesel",
+    "modelo_id": "9800"
   },
   {
     "id": "T-03",
@@ -21,7 +23,8 @@
     "taller": "WSI Texcoco",
     "anios_experiencia": 8,
     "tecnologia": "diesel",
-    "perfil": "veterano_errores"
+    "perfil": "veterano_errores",
+    "modelo_id": "9700"
   },
   {
     "id": "T-04",
@@ -29,6 +32,7 @@
     "taller": "Flota cliente Guadalajara",
     "anios_experiencia": 3,
     "tecnologia": "electrica",
-    "perfil": "tecnica_flota"
+    "perfil": "tecnica_flota",
+    "modelo_id": "7800-electric"
   }
 ]

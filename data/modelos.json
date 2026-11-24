@@ -1,0 +1,86 @@
+[
+  {
+    "id": "7800-electric",
+    "nombre": "Volvo 7800 Electric",
+    "segmento": "Urbano",
+    "tecnologia": "electrica",
+    "autobus": "electrico",
+    "descripcion": "Urbano articulado y biarticulado 100 % eléctrico para corredores BRT.",
+    "datos": [
+      "Articulado 18.5 m · 191 pasajeros",
+      "Biarticulado 25.6 m · 300 pasajeros",
+      "Almacenamiento de 540 a 720 kWh"
+    ],
+    "fuente": "Mentoría Volvo, autobuses urbanos cero emisiones (foto 09)"
+  },
+  {
+    "id": "luminus",
+    "nombre": "Volvo Luminus",
+    "segmento": "Urbano",
+    "tecnologia": "electrica",
+    "autobus": "electrico",
+    "descripcion": "Urbano de piso bajo 100 % eléctrico, fabricado en México.",
+    "datos": ["Piso bajo y entrada baja", "Fabricado en México desde 2023"],
+    "fuente": "Mentoría Volvo, historia en transporte urbano (fotos 10 a 12)"
+  },
+  {
+    "id": "7700-hibrido",
+    "nombre": "Volvo 7700 Hybrid",
+    "segmento": "Urbano",
+    "tecnologia": "hibrida",
+    "autobus": "diesel",
+    "descripcion": "Urbano híbrido: motor diésel y sistema eléctrico de tracción.",
+    "datos": ["Operó en la Ciudad de México desde 2012", "Combina contenido diésel y de alto voltaje"],
+    "fuente": "Mentoría Volvo, historia en transporte urbano (fotos 10 a 12)"
+  },
+  {
+    "id": "7300-brt",
+    "nombre": "Volvo 7300 BRT",
+    "segmento": "Urbano",
+    "tecnologia": "diesel",
+    "autobus": "diesel",
+    "descripcion": "Urbano articulado diésel para sistemas BRT.",
+    "datos": ["Segunda generación de articulados BRT (2007)"],
+    "fuente": "Mentoría Volvo, historia en transporte urbano (fotos 10 a 12)"
+  },
+  {
+    "id": "9700",
+    "nombre": "Volvo 9700",
+    "segmento": "Foráneo",
+    "tecnologia": "diesel",
+    "autobus": "diesel",
+    "descripcion": "Autobús integral foráneo diésel.",
+    "datos": ["En México desde 2002", "Fabricado en México para exportación"],
+    "fuente": "Mentoría Volvo, historia en transporte foráneo (fotos 14 y 15)"
+  },
+  {
+    "id": "9800",
+    "nombre": "Volvo 9800",
+    "segmento": "Foráneo",
+    "tecnologia": "diesel",
+    "autobus": "diesel",
+    "descripcion": "Autobús integral foráneo diésel con caja I-Shift y Euro 6.",
+    "datos": ["13.2 m (4x2), 14 y 15 m (6x2)", "Transmisión I-Shift", "Euro 6"],
+    "fuente": "Mentoría Volvo, autobuses integrales foráneos (foto 13)"
+  },
+  {
+    "id": "9800-dd",
+    "nombre": "Volvo 9800 DD",
+    "segmento": "Foráneo",
+    "tecnologia": "diesel",
+    "autobus": "diesel",
+    "descripcion": "Autobús foráneo de dos pisos, diésel.",
+    "datos": ["Dos pisos · 15 m", "Transmisión I-Shift", "Euro 6"],
+    "fuente": "Mentoría Volvo, autobuses integrales foráneos (foto 13)"
+  },
+  {
+    "id": "b13r",
+    "nombre": "Chasis Volvo B13R",
+    "segmento": "Chasis",
+    "tecnologia": "diesel",
+    "autobus": "diesel",
+    "descripcion": "Chasis diésel de motor trasero para carrozar, Euro V y Euro VI.",
+    "datos": ["Motor de 13 litros", "Euro V y Euro VI"],
+    "fuente": "Mentoría Volvo, retícula de cursos de buses (Módulo I)"
+  }
+]
