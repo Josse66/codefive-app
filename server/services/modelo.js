@@ -71,3 +71,39 @@ export function cuadranteConfianza(correcta, confianza) {
   if (correcta) return seguro ? 'seguro_correcto' : 'inseguro_correcto';
   return seguro ? 'seguro_equivocado' : 'inseguro_equivocado';
 }
+
+// Curva de olvido (Ebbinghaus; forma usada por FSRS y Pimsleur): R = e^(−t/S).
+// t = días desde la última evaluación; S = estabilidad en días (cuánto le dura al técnico lo aprendido).
+// Lo olvidado regresa hacia el punto de partida medido antes de practicar, no hacia cero.
+// Parámetros de demostración; se calibran con datos reales de un piloto.
+export const OLVIDO = {
+  estabilidadMinima: 2, // días
+  estabilidadTrasPractica: { base: 3, porAcierto: 6 }, // 3 días si falló todo, 9 si acertó todo
+  crecimientoRepaso: 2.5, // un repaso bien contestado multiplica la estabilidad
+  caidaRepaso: 0.6, // uno mal contestado la reduce
+};
+
+export function retencion(dias, estabilidad) {
+  return Math.exp(-Math.max(0, dias) / Math.max(estabilidad, OLVIDO.estabilidadMinima));
+}
+
+/** Dominio esperado después de `dias` sin practicar. */
+export function aplicarOlvido(pAprendido, pPartida, dias, estabilidad) {
+  const piso = Math.min(pAprendido, pPartida);
+  return piso + (pAprendido - piso) * retencion(dias, estabilidad);
+}
+
+/** Estabilidad justo después de practicar, según la proporción de aciertos en la evaluación inmediata. */
+export function estabilidadTrasPractica(proporcion) {
+  const { base, porAcierto } = OLVIDO.estabilidadTrasPractica;
+  return base + porAcierto * proporcion;
+}
+
+/** Estabilidad después de una revisión diferida: crece si la recordó, baja si la olvidó. */
+export function estabilidadTrasRepaso(estabilidad, proporcion) {
+  const nueva =
+    proporcion >= 0.5
+      ? estabilidad * (1 + (OLVIDO.crecimientoRepaso - 1) * proporcion)
+      : estabilidad * OLVIDO.caidaRepaso;
+  return Math.max(OLVIDO.estabilidadMinima, nueva);
+}
