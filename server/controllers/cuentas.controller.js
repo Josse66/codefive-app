@@ -1,4 +1,4 @@
-import db from '#db/conexion.js';
+import { yaEmpezo } from '#services/carrera.service.js';
 import { COOKIE, escribirCookie, leerCookie } from '#helpers/sesion.js';
 import { abrirSesion, cerrarSesion, registrarTecnico, verificar } from '#services/cuentas.service.js';
 import { elegirModelo, listarModelos, modeloDelTecnico } from '#services/modelos.service.js';
@@ -28,6 +28,7 @@ function destino(cuenta) {
   if (cuenta.rol === 'volvo') return '/volvo';
   const tecnico = obtenerTecnico(cuenta.tecnicoId ?? cuenta.tecnico_id);
   if (!tecnico.modelo_id) return '/bienvenida';
+  if (!yaEmpezo(tecnico)) return `/tecnicos/${tecnico.id}/empezar`;
   return `/tecnicos/${tecnico.id}/plan`;
 }
 
@@ -121,14 +122,7 @@ export function mostrarBienvenida(req, res) {
 
 export function guardarBienvenida(req, res) {
   const tecnico = obtenerTecnico(req.cuenta.tecnicoId);
-  const primeraVez = !tecnico.modelo_id;
   elegirModelo(tecnico.id, req.body.modelo);
-  const diagnosticado =
-    db
-      .prepare("SELECT COUNT(*) AS n FROM eventos WHERE tecnico_id = ? AND fase = 'diagnostico'")
-      .get(tecnico.id).n > 0;
-  // Un técnico nuevo sigue directo a su diagnóstico; si solo cambió de autobús, vuelve a su plan.
-  res.redirect(
-    primeraVez && !diagnosticado ? `/tecnicos/${tecnico.id}/diagnostico` : `/tecnicos/${tecnico.id}/plan`,
-  );
+  // Un técnico nuevo sigue a elegir cómo empieza; si solo cambió de autobús, vuelve a su plan.
+  res.redirect(yaEmpezo(tecnico) ? `/tecnicos/${tecnico.id}/plan` : `/tecnicos/${tecnico.id}/empezar`);
 }

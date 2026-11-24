@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{#if titulo}}{{titulo}} · {{/if}}Técnicos del Mañana</title>
+  {{{viteAssets "main.js"}}}
+  {{#if scriptPagina}}{{{viteAssets scriptPagina}}}{{/if}}
+</head>
+{{!-- Pantalla de un solo paso (empezar, diagnóstico, resultados): sin menú ni pie, todo el foco en lo que toca. --}}
+<body class="flex min-h-screen flex-col bg-placa">
+  <header class="flex items-center justify-between gap-4 px-5 py-4 lg:px-10">
+    <span class="flex items-center gap-3 font-narrow text-lg font-bold uppercase tracking-wide">
+      <span class="recuadro h-6 w-6 text-[13px]" aria-hidden="true">T</span>
+      Técnicos del Mañana
+    </span>
+    {{#if pasoFlujo}}<span class="font-narrow text-sm font-bold uppercase tracking-wider text-tinta-3">{{pasoFlujo}}</span>{{/if}}
+    {{#if cuenta}}
+      <form method="post" action="/salir"><button type="submit" class="text-sm text-tinta-2 underline decoration-placa-linea hover:text-tinta">Salir</button></form>
+    {{/if}}
+  </header>
+  <main id="contenido" class="flex flex-1 items-center justify-center px-5 pb-10 lg:px-10">
+    {{{body}}}
+  </main>
+</body>
+</html>

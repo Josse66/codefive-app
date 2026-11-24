@@ -1,0 +1,65 @@
+<section class="grid w-full max-w-6xl gap-8 py-4">
+  <div class="grid gap-3">
+    <p class="font-narrow text-sm font-bold uppercase tracking-wider text-tinta-3">{{#if (igual carrera.inicio 'principiante')}}Empiezas como principiante{{else}}Resultado de tu diagnóstico{{/if}} · {{carrera.modelo.nombre}}</p>
+    <h1 class="text-4xl leading-tight lg:text-5xl">
+      {{#if carrera.nivelGlobal}}Tu punto de partida: nivel {{carrera.nombreNivelGlobal}}{{else}}Tu punto de partida: principiante{{/if}}
+    </h1>
+    <p class="max-w-3xl text-lg text-tinta-2">
+      Dominas <strong>{{carrera.dominadas}} de {{carrera.total}}</strong> competencias de tu autobús ({{carrera.avanceExperto}} % del camino a experto).
+      Te faltan unas <strong>{{carrera.horasRestantes}} horas</strong> de estudio y práctica para llegar a experto.
+    </p>
+  </div>
+
+  <div class="grid gap-4 lg:grid-cols-3">
+    <article class="grid content-start gap-2 border-2 border-ok bg-white p-5">
+      <h2 class="font-sans text-xl font-semibold tracking-normal text-ok">Lo que ya dominas ({{carrera.resumen.dominadas.length}})</h2>
+      {{#if carrera.resumen.dominadas.length}}
+        <ul class="grid gap-1 text-[15px]">{{#each carrera.resumen.dominadas}}<li>✓ {{this}}</li>{{/each}}</ul>
+        <p class="text-sm text-tinta-3">Tu plan se salta estas lecciones; las repasas solo si se te olvidan.</p>
+      {{else}}
+        <p class="text-[15px] text-tinta-2">Todavía nada: tu plan empieza desde lo básico.</p>
+      {{/if}}
+    </article>
+    <article class="grid content-start gap-2 border-2 border-med bg-white p-5">
+      <h2 class="font-sans text-xl font-semibold tracking-normal text-med-texto">Lo que vas a reforzar ({{carrera.resumen.enDesarrollo.length}})</h2>
+      {{#if carrera.resumen.enDesarrollo.length}}
+        <ul class="grid gap-1 text-[15px]">{{#each carrera.resumen.enDesarrollo}}<li>{{this}}</li>{{/each}}</ul>
+        <p class="text-sm text-tinta-3">Sabes una parte: practicas directo en el autobús con menos ayuda.</p>
+      {{else}}
+        <p class="text-[15px] text-tinta-2">Nada a medias por ahora.</p>
+      {{/if}}
+    </article>
+    <article class="grid content-start gap-2 border-2 border-mal bg-white p-5">
+      <h2 class="font-sans text-xl font-semibold tracking-normal text-mal">Lo que vas a aprender ({{carrera.resumen.brechas.length}})</h2>
+      {{#if carrera.resumen.brechas.length}}
+        <ul class="grid gap-1 text-[15px]">{{#each carrera.resumen.brechas}}<li>{{this}}</li>{{/each}}</ul>
+        <p class="text-sm text-tinta-3">Empiezas con la lección y práctica guiada paso a paso.</p>
+      {{else}}
+        <p class="text-[15px] text-tinta-2">No tienes brechas.</p>
+      {{/if}}
+    </article>
+  </div>
+
+  {{#if carrera.resumen.seguridad.length}}
+    <p class="aviso-critico">
+      <strong>Primero, seguridad:</strong> {{#each carrera.resumen.seguridad}}{{this}}{{#unless @last}} · {{/unless}}{{/each}}.
+      Son obligatorias y no avanzas a otro tema del mismo grupo hasta dominarlas.
+    </p>
+  {{/if}}
+  {{#if carrera.resumen.alertas.length}}
+    <p class="aviso-critico">
+      <strong>Ojo:</strong> respondiste con seguridad y te equivocaste en {{#each carrera.resumen.alertas}}{{this}}{{#unless @last}} · {{/unless}}{{/each}}. Eso es lo más riesgoso en el taller y va primero en tu plan.
+    </p>
+  {{/if}}
+
+  <div class="grid gap-3">
+    <h2 class="text-3xl">Tu nivel en cada grupo</h2>
+    <p class="text-tinta-2">El nivel es por grupo: puedes ser avanzado en frenos y básico en el sistema eléctrico. Pasa el cursor por una celda para ver sus competencias.</p>
+    {{> matriz-carrera carrera=carrera}}
+  </div>
+
+  <div class="flex flex-wrap items-center justify-between gap-4 border-t border-placa-linea pt-6">
+    <p class="text-tinta-2">Siguiente: tu plan de carrera, con el primer paso listo.</p>
+    <a href="/tecnicos/{{carrera.tecnico.id}}/plan" class="boton px-8 py-4 text-base">Ver mi plan de carrera</a>
+  </div>
+</section>

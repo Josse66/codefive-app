@@ -9,6 +9,7 @@ import { obtenerRuta } from '#services/ruta.service.js';
 import { listarEscenarios } from '#services/escenarios.js';
 import { resumenTaller } from '#services/taller.service.js';
 import { aplicaAlModelo, modeloDelTecnico } from '#services/modelos.service.js';
+import { yaEmpezo } from '#services/carrera.service.js';
 
 // "Mi plan de formación": la página de inicio de cada técnico. Junta su autobús, su siguiente paso
 // y los 9 módulos (grupos de función) con solo lo que aplica a ese autobús.
@@ -54,10 +55,8 @@ export function obtenerPlan(tecnicoId) {
   asegurarDominio(tecnico);
   const modelo = modeloDelTecnico(tecnico);
   const { competencias } = obtenerPerfil(tecnico.id);
-  const diagnosticado =
-    db
-      .prepare("SELECT COUNT(*) AS n FROM eventos WHERE tecnico_id = ? AND fase = 'diagnostico'")
-      .get(tecnico.id).n > 0;
+  // Ya tiene punto de partida si hizo el diagnóstico o eligió empezar como principiante.
+  const diagnosticado = yaEmpezo(tecnico);
   const vistas = new Set(
     db
       .prepare('SELECT leccion_id FROM lecciones_vistas WHERE tecnico_id = ?')

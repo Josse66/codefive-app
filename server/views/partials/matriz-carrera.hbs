@@ -1,0 +1,41 @@
+{{!-- Matriz 9 grupos × 3 niveles Volvo. Recibe carrera. --}}
+<div class="overflow-x-auto border border-tinta bg-white">
+  <table class="w-full min-w-[640px] border-collapse text-[15px]">
+    <caption class="sr-only">Tu nivel en cada grupo de función</caption>
+    <thead>
+      <tr class="border-b border-tinta text-left">
+        <th scope="col" class="p-3 font-narrow text-sm font-bold uppercase tracking-wider text-tinta-3">Grupo de función</th>
+        <th scope="col" class="p-3 font-narrow text-sm font-bold uppercase tracking-wider text-tinta-3">1 · Básico</th>
+        <th scope="col" class="p-3 font-narrow text-sm font-bold uppercase tracking-wider text-tinta-3">2 · Medio</th>
+        <th scope="col" class="p-3 font-narrow text-sm font-bold uppercase tracking-wider text-tinta-3">3 · Avanzado</th>
+        <th scope="col" class="p-3 text-right font-narrow text-sm font-bold uppercase tracking-wider text-tinta-3">Tu nivel</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each carrera.grupos}}
+        <tr class="border-b border-placa-linea last:border-b-0">
+          <th scope="row" class="p-3 text-left">
+            <span class="flex items-center gap-2"><span class="recuadro h-7 w-7 text-sm">{{grupo}}</span><span class="font-semibold">{{nombre}}</span></span>
+          </th>
+          {{#each niveles}}
+            <td class="p-2">
+              {{#if (igual estado 'sin_contenido')}}
+                <span class="block px-2 py-1.5 text-xs text-tinta-3">No aplica a tu autobús</span>
+              {{else}}
+                <span class="block border px-2 py-1.5 text-xs font-semibold
+                  {{#if (igual estado 'dominado')}}border-ok bg-ok-suave text-ok{{/if}}
+                  {{#if (igual estado 'en_curso')}}border-med bg-med-suave text-med-texto{{/if}}
+                  {{#if (igual estado 'pendiente')}}border-placa-linea bg-placa text-tinta-2{{/if}}"
+                  title="{{#each competencias}}{{nombre}} ({{dominio}} %){{#unless @last}} · {{/unless}}{{/each}}">
+                  {{#if (igual estado 'dominado')}}Dominado ✓{{/if}}{{#if (igual estado 'en_curso')}}En curso{{/if}}{{#if (igual estado 'pendiente')}}Por aprender{{/if}}
+                  <span class="block font-normal">{{competencias.length}} {{#if (igual competencias.length 1)}}competencia{{else}}competencias{{/if}}</span>
+                </span>
+              {{/if}}
+            </td>
+          {{/each}}
+          <td class="p-3 text-right font-semibold">{{nombreAlcanzado}}</td>
+        </tr>
+      {{/each}}
+    </tbody>
+  </table>
+</div>

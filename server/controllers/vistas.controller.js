@@ -4,6 +4,8 @@ import { asegurarDominio, obtenerPerfil } from '#services/dominio.service.js';
 import { obtenerRuta } from '#services/ruta.service.js';
 import { RECUADROS, estadoGrupo } from '#helpers/lamina.js';
 import { nombreGrupo } from '#helpers/formato.js';
+import { empezarComoPrincipiante, obtenerCarrera, yaEmpezo } from '#services/carrera.service.js';
+import { modeloDelTecnico } from '#services/modelos.service.js';
 
 function conTecnico(req, res, render) {
   const tecnico = obtenerTecnico(req.params.id);
@@ -14,10 +16,47 @@ function conTecnico(req, res, render) {
   render(tecnico);
 }
 
+// Flujo de entrada del técnico, una pantalla a la vez y sin menú:
+// ¿Cómo empiezas? → diagnóstico (o principiante) → resultados → Mi plan.
+export function mostrarEmpezar(req, res) {
+  conTecnico(req, res, (tecnico) => {
+    const { escalones } = obtenerCarrera(tecnico.id);
+    res.render('empezar', {
+      layout: 'enfoque',
+      titulo: '¿Cómo empiezas?',
+      pasoFlujo: 'Paso 1 de 3 · Cómo empiezas',
+      tecnico,
+      modelo: modeloDelTecnico(tecnico),
+      escalones,
+    });
+  });
+}
+
+export function empezarPrincipiante(req, res) {
+  conTecnico(req, res, (tecnico) => {
+    empezarComoPrincipiante(tecnico.id);
+    res.redirect(`/tecnicos/${tecnico.id}/resultados`);
+  });
+}
+
+export function mostrarResultados(req, res) {
+  conTecnico(req, res, (tecnico) =>
+    res.render('resultados', {
+      layout: 'enfoque',
+      titulo: `Tu punto de partida · ${tecnico.nombre}`,
+      pasoFlujo: 'Paso 3 de 3 · Tu punto de partida',
+      tecnico,
+      carrera: obtenerCarrera(tecnico.id),
+    }),
+  );
+}
+
 export function mostrarDiagnostico(req, res) {
   conTecnico(req, res, (tecnico) =>
     res.render('diagnostico', {
+      layout: 'enfoque',
       titulo: `Diagnóstico · ${tecnico.nombre}`,
+      pasoFlujo: 'Paso 2 de 3 · Diagnóstico',
       tecnico,
       seccion: 'diagnostico',
       scriptPagina: 'pages/diagnostico.js',
@@ -77,7 +116,7 @@ export function mostrarRuta(req, res) {
   conTecnico(req, res, (tecnico) => {
     const { pasos } = obtenerRuta(tecnico.id);
     const [siguiente, ...despues] = pasos;
-    res.render('ruta', { titulo: `Ruta · ${tecnico.nombre}`, tecnico, seccion: 'ruta', siguiente, despues });
+    res.render('ruta', { titulo: `Ruta · ${tecnico.nombre}`, tecnico, seccion: 'plan', siguiente, despues });
   });
 }
 
@@ -86,7 +125,7 @@ export function mostrarPractica(req, res) {
     res.render('practica', {
       titulo: `Práctica · ${tecnico.nombre}`,
       tecnico,
-      seccion: 'ruta',
+      seccion: 'plan',
       competenciaId: req.params.competenciaId,
       scriptPagina: 'pages/practica.js',
     }),
@@ -98,7 +137,7 @@ export function mostrarEvaluacion(req, res) {
     res.render('evaluacion', {
       titulo: `Evaluación · ${tecnico.nombre}`,
       tecnico,
-      seccion: 'ruta',
+      seccion: 'plan',
       competenciaId: req.params.competenciaId,
       scriptPagina: 'pages/evaluacion.js',
     }),
@@ -171,7 +210,7 @@ export function mostrarTemario(req, res) {
     res.render('aprender', {
       titulo: `Aprender · ${tecnico.nombre}`,
       tecnico,
-      seccion: 'aprender',
+      seccion: 'plan',
       scriptPagina: 'pages/aprender.js',
     }),
   );
@@ -183,7 +222,7 @@ export function mostrarLeccion(req, res) {
     res.render('leccion', {
       titulo: `Lección · ${tecnico.nombre}`,
       tecnico,
-      seccion: 'aprender',
+      seccion: 'plan',
       leccionId: req.params.leccionId,
       scriptPagina: 'pages/leccion.js',
     }),
@@ -192,12 +231,18 @@ export function mostrarLeccion(req, res) {
 
 // Mi plan de formación: la página de inicio de cada técnico.
 export function mostrarPlan(req, res) {
-  conTecnico(req, res, (tecnico) =>
+  conTecnico(req, res, (tecnico) => {
+    // Un técnico que todavía no decide cómo empezar va primero a esa pantalla.
+    if (req.cuenta?.rol === 'tecnico' && !yaEmpezo(tecnico)) {
+      res.redirect(`/tecnicos/${tecnico.id}/empezar`);
+      return;
+    }
     res.render('plan', {
       titulo: `Mi plan · ${tecnico.nombre}`,
       tecnico,
       seccion: 'plan',
       plan: obtenerPlan(tecnico.id),
-    }),
-  );
+      carrera: obtenerCarrera(tecnico.id),
+    });
+  });
 }

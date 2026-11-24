@@ -4,6 +4,7 @@ import { errorHttp } from '#helpers/errores.js';
 import { obtenerTecnico } from '#services/tecnicos.service.js';
 import { aplicaAlModelo, modeloDelTecnico } from '#services/modelos.service.js';
 import { registrarEvento } from '#services/eventos.service.js';
+import { marcarInicioDiagnostico } from '#services/carrera.service.js';
 import {
   asegurarDominio,
   guardarDominio,
@@ -188,6 +189,7 @@ export function responderDiagnostico(sesionId, { preguntaId, opcion, confianza, 
 
   if (!sesion.pendiente) {
     sesiones.delete(sesionId);
+    marcarInicioDiagnostico(sesion.tecnicoId);
     return { terminado: true, perfil: obtenerPerfil(sesion.tecnicoId) };
   }
   return { terminado: false, pregunta: paraCliente(sesion.pendiente), progreso: progreso(sesion) };

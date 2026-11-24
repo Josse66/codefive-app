@@ -1,0 +1,39 @@
+<section class="grid w-full max-w-5xl gap-8">
+  <div class="grid gap-3 text-center">
+    <p class="font-narrow text-sm font-bold uppercase tracking-wider text-tinta-3">{{modelo.nombre}} · {{tecnico.taller}}</p>
+    <h1 class="text-4xl leading-tight lg:text-6xl">¿Cómo quieres empezar, {{tecnico.nombre}}?</h1>
+    <p class="mx-auto max-w-2xl text-lg text-tinta-2">Tu plan va de principiante a experto en los 9 grupos de función de tu autobús. Decide desde dónde arranca.</p>
+  </div>
+
+  <div class="grid gap-4 md:grid-cols-2">
+    <a href="/tecnicos/{{tecnico.id}}/diagnostico" class="group grid content-between gap-6 border-2 border-tinta bg-white p-6 no-underline transition-colors duration-150 hover:bg-tinta hover:text-white lg:p-8">
+      <div class="grid gap-3">
+        <p class="font-narrow text-sm font-bold uppercase tracking-wider text-tinta-3 group-hover:text-placa-linea">Recomendado si ya tienes experiencia</p>
+        <h2 class="font-sans text-3xl font-semibold tracking-normal">Hacer mi diagnóstico</h2>
+        <p class="text-tinta-2 group-hover:text-placa-linea">Entre 15 y 20 preguntas de taller que suben o bajan de nivel según contestes. Al final ves qué dominas, qué te falta y tu plan se salta lo que ya sabes.</p>
+      </div>
+      <p class="flex items-center justify-between font-semibold"><span>Unos 8 minutos</span><span aria-hidden="true">→</span></p>
+    </a>
+
+    <form method="post" action="/tecnicos/{{tecnico.id}}/empezar/principiante" class="grid">
+      <button type="submit" class="group grid content-between gap-6 border-2 border-placa-linea bg-white p-6 text-left transition-colors duration-150 hover:border-tinta lg:p-8">
+        <div class="grid gap-3">
+          <p class="font-narrow text-sm font-bold uppercase tracking-wider text-tinta-3">Recomendado si eres recién egresado</p>
+          <h2 class="font-sans text-3xl font-semibold tracking-normal">Empezar como principiante</h2>
+          <p class="text-tinta-2">Sin examen: tu plan arranca en el nivel básico, primero seguridad e inspección. Puedes hacer el diagnóstico después para saltarte lo que ya sepas.</p>
+        </div>
+        <p class="flex items-center justify-between font-semibold"><span>Empiezas de inmediato</span><span aria-hidden="true">→</span></p>
+      </button>
+    </form>
+  </div>
+
+  <ol class="mx-auto grid w-full max-w-3xl grid-cols-5 gap-2 text-center text-sm" aria-label="Tu camino">
+    {{#each escalones}}
+      <li class="grid gap-1">
+        <span class="h-1.5 {{#if @first}}bg-tinta{{else}}bg-placa-linea{{/if}}" aria-hidden="true"></span>
+        <span class="font-semibold">{{nombre}}</span>
+        <span class="text-xs text-tinta-3">{{enfoque}}</span>
+      </li>
+    {{/each}}
+  </ol>
+</section>

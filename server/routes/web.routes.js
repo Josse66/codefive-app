@@ -2,8 +2,11 @@ import { Router } from 'express';
 import { mostrarInicio } from '#controllers/inicio.controller.js';
 import * as cuentas from '#controllers/cuentas.controller.js';
 import {
+  empezarPrincipiante,
   mostrarAutobus,
   mostrarDiagnostico,
+  mostrarEmpezar,
+  mostrarResultados,
   mostrarEscenario,
   mostrarEvaluacion,
   mostrarLeccion,
@@ -36,6 +39,9 @@ router.get('/tecnicos', exigirVolvo, mostrarInicio);
 
 // Páginas del técnico: cada quien solo las suyas (Volvo puede ver todas)
 router.use('/tecnicos/:id', exigirTecnico);
+router.get('/tecnicos/:id/empezar', mostrarEmpezar);
+router.post('/tecnicos/:id/empezar/principiante', empezarPrincipiante);
+router.get('/tecnicos/:id/resultados', mostrarResultados);
 router.get('/tecnicos/:id/plan', mostrarPlan);
 router.get('/tecnicos/:id/diagnostico', mostrarDiagnostico);
 router.get('/tecnicos/:id/perfil', mostrarPerfil);

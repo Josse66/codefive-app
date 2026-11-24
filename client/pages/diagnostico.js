@@ -114,7 +114,7 @@ el.siguiente.addEventListener('click', async () => {
       inputDevice: 'mouse',
     });
     if (resultado.terminado) {
-      window.location.assign(`/tecnicos/${tecnicoId}/plan`);
+      window.location.assign(`/tecnicos/${tecnicoId}/resultados`);
       return;
     }
     mostrarPregunta(resultado.pregunta, resultado.progreso);
