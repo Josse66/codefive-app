@@ -1,0 +1,116 @@
+{
+  "id": "transmision-marcha",
+  "grupo": 4,
+  "tecnologia": "diesel",
+  "autobus": "diesel",
+  "competencia": "D4-2-DIA",
+  "nivel": 2,
+  "profundidad": "ligero",
+  "titulo": "La caja no entra en marcha",
+  "sintoma": "Testigo de transmisión encendido; la caja automatizada no engrana la marcha.",
+  "fuente": "Mapa temático de capacitación Volvo, Transmisión (mentoría); datos de demostración",
+  "enfoque": {
+    "objetivo": [-1, 0.9, 1.2],
+    "distancia": 9
+  },
+  "herramientas": [
+    {
+      "id": "mano",
+      "nombre": "Mano"
+    },
+    {
+      "id": "escaner",
+      "nombre": "Herramienta de diagnóstico"
+    },
+    {
+      "id": "jabon",
+      "nombre": "Solución jabonosa"
+    }
+  ],
+  "piezas": [
+    {
+      "id": "conector_diagnostico",
+      "nombre": "Conector de diagnóstico",
+      "pos": [5.3, 1.3, 1.32],
+      "tamano": [0.35, 0.25, 0.1],
+      "tipo": "tablero"
+    },
+    {
+      "id": "actuador_caja",
+      "nombre": "Línea de aire del actuador de la caja",
+      "pos": [-3, 0.7, 1.33],
+      "tamano": [0.5, 0.25, 0.1],
+      "tipo": "aire"
+    }
+  ],
+  "pasos": [
+    {
+      "id": "leer_codigos",
+      "tipo": "accion",
+      "instruccion": "Lee los códigos de la transmisión.",
+      "correcta": ["escaner>conector_diagnostico"],
+      "explicacion": "El código apunta a baja presión de aire en el actuador.",
+      "pista": "El conector está en el puesto del conductor.",
+      "errores": {
+        "*": {
+          "codigo": null,
+          "critico": false,
+          "consecuencia": "reintentar",
+          "mensaje": "Primero hay que leer los códigos."
+        }
+      }
+    },
+    {
+      "id": "suministro",
+      "tipo": "hipotesis",
+      "pregunta": "Código de baja presión en el actuador de la caja. ¿Qué revisas primero?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Cambio la caja completa"
+        },
+        {
+          "id": "b",
+          "texto": "Presión de suministro y fugas hacia el actuador"
+        },
+        {
+          "id": "c",
+          "texto": "El nivel de urea"
+        },
+        {
+          "id": "d",
+          "texto": "El alternador"
+        }
+      ],
+      "correcta": "b",
+      "explicacion": "Sin aire suficiente el actuador no completa el cambio.",
+      "pista": "¿Con qué se mueven los actuadores de la caja?",
+      "errores": {
+        "*": {
+          "codigo": null,
+          "critico": false,
+          "consecuencia": "reintentar",
+          "mensaje": "No es lo primero. Revisa lo más simple y probable."
+        }
+      }
+    },
+    {
+      "id": "fuga_actuador",
+      "tipo": "accion",
+      "instruccion": "Busca la fuga en la línea del actuador.",
+      "correcta": ["jabon>actuador_caja"],
+      "explicacion": "Las burbujas confirman la fuga en la línea del actuador.",
+      "pista": "La línea de aire va de la parte baja hacia la caja.",
+      "efecto": "burbujas",
+      "errores": {
+        "*": {
+          "codigo": null,
+          "critico": false,
+          "consecuencia": "reintentar",
+          "mensaje": "Ahí no hay burbujas. Sigue la línea de aire del actuador."
+        }
+      }
+    }
+  ],
+  "datosDemo": true
+}

@@ -1,0 +1,85 @@
+{
+  "id": "puerta-servicio",
+  "grupo": 8,
+  "tecnologia": "ambas",
+  "autobus": null,
+  "competencia": "A8-2-DIA",
+  "nivel": 2,
+  "profundidad": "ligero",
+  "titulo": "La puerta de servicio no cierra",
+  "sintoma": "La puerta delantera no termina de cerrar y se escucha una fuga de aire.",
+  "fuente": "Mapa temático de capacitación Volvo, Carrocería e interior (mentoría); reglas de seguridad del taller",
+  "enfoque": {
+    "objetivo": [4.6, 2, 1.2],
+    "distancia": 6
+  },
+  "herramientas": [
+    {
+      "id": "mano",
+      "nombre": "Mano"
+    },
+    {
+      "id": "jabon",
+      "nombre": "Solución jabonosa"
+    }
+  ],
+  "piezas": [
+    {
+      "id": "llave_emergencia",
+      "nombre": "Llave de emergencia de la puerta",
+      "pos": [4.1, 2.2, 1.33],
+      "tamano": [0.2, 0.2, 0.1],
+      "tipo": "tablero"
+    },
+    {
+      "id": "mecanismo_puerta",
+      "nombre": "Mecanismo y cilindro de la puerta",
+      "pos": [5, 2.95, 1.33],
+      "tamano": [0.8, 0.2, 0.12],
+      "tipo": "aire"
+    }
+  ],
+  "pasos": [
+    {
+      "id": "despresurizar",
+      "tipo": "accion",
+      "instruccion": "Antes de meter la mano al mecanismo, descarga el aire de la puerta.",
+      "correcta": ["mano>llave_emergencia"],
+      "explicacion": "Sin aire, el cilindro ya no puede cerrar de golpe.",
+      "pista": "Usa la llave de emergencia junto a la puerta.",
+      "errores": {
+        "mano>mecanismo_puerta": {
+          "codigo": "PU-01",
+          "critico": true,
+          "consecuencia": "bloqueo",
+          "efecto": "golpe",
+          "mensaje": "Metiste la mano con el sistema presurizado: el cilindro puede cerrar de golpe y lesionarte."
+        },
+        "*": {
+          "codigo": null,
+          "critico": false,
+          "consecuencia": "reintentar",
+          "mensaje": "Primero descarga el aire."
+        }
+      }
+    },
+    {
+      "id": "fuga",
+      "tipo": "accion",
+      "instruccion": "Localiza la fuga en el mecanismo de la puerta.",
+      "correcta": ["jabon>mecanismo_puerta"],
+      "explicacion": "Las burbujas marcan el sello dañado del cilindro.",
+      "pista": "El mecanismo está arriba de la puerta.",
+      "efecto": "burbujas",
+      "errores": {
+        "*": {
+          "codigo": null,
+          "critico": false,
+          "consecuencia": "reintentar",
+          "mensaje": "Ahí no hay burbujas."
+        }
+      }
+    }
+  ],
+  "datosDemo": true
+}

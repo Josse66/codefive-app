@@ -1,0 +1,118 @@
+{
+  "id": "direccion-juego",
+  "grupo": 6,
+  "tecnologia": "ambas",
+  "autobus": null,
+  "competencia": "A6-1-MAN",
+  "nivel": 1,
+  "profundidad": "ligero",
+  "titulo": "Juego excesivo en la dirección",
+  "sintoma": "El conductor siente el volante flojo y la unidad se va de lado.",
+  "fuente": "Mapa temático de capacitación Volvo, Suspensión y dirección (mentoría); datos de demostración",
+  "enfoque": {
+    "objetivo": [1, 0.6, 1.2],
+    "distancia": 9
+  },
+  "herramientas": [
+    {
+      "id": "calzas",
+      "nombre": "Calzas"
+    },
+    {
+      "id": "linterna",
+      "nombre": "Lámpara de inspección"
+    }
+  ],
+  "piezas": [
+    {
+      "id": "rueda_trasera",
+      "nombre": "Rueda trasera",
+      "pos": [-3.8, 0.55, 1.42],
+      "tamano": [1.1, 1.1, 0.2],
+      "tipo": "rueda"
+    },
+    {
+      "id": "terminal_direccion",
+      "nombre": "Terminal de dirección",
+      "pos": [3.4, 0.42, 1.33],
+      "tamano": [0.35, 0.18, 0.12],
+      "tipo": "metal"
+    }
+  ],
+  "pasos": [
+    {
+      "id": "asegurar",
+      "tipo": "accion",
+      "instruccion": "Asegura la unidad antes de revisar la dirección.",
+      "correcta": ["calzas>rueda_trasera"],
+      "explicacion": "La unidad asegurada permite revisar sin riesgo.",
+      "pista": "Calza las llantas traseras.",
+      "errores": {
+        "linterna>terminal_direccion": {
+          "codigo": "DI-01",
+          "critico": true,
+          "consecuencia": "bloqueo",
+          "efecto": "golpe",
+          "mensaje": "Te metiste a revisar sin asegurar la unidad."
+        },
+        "*": {
+          "codigo": null,
+          "critico": false,
+          "consecuencia": "reintentar",
+          "mensaje": "Primero asegura la unidad."
+        }
+      }
+    },
+    {
+      "id": "revisar",
+      "tipo": "accion",
+      "instruccion": "Con un ayudante moviendo el volante, revisa la terminal de dirección.",
+      "correcta": ["linterna>terminal_direccion"],
+      "explicacion": "La terminal tiene holgura visible.",
+      "pista": "La terminal está detrás de la llanta delantera.",
+      "errores": {
+        "*": {
+          "codigo": null,
+          "critico": false,
+          "consecuencia": "reintentar",
+          "mensaje": "Revisa la terminal de dirección."
+        }
+      }
+    },
+    {
+      "id": "despues",
+      "tipo": "hipotesis",
+      "pregunta": "Reemplazaste la terminal. ¿Qué sigue?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Liberar la unidad"
+        },
+        {
+          "id": "b",
+          "texto": "Apretar al torque del manual y verificar la alineación"
+        },
+        {
+          "id": "c",
+          "texto": "Cambiar las cuatro llantas"
+        },
+        {
+          "id": "d",
+          "texto": "Engrasar el volante"
+        }
+      ],
+      "correcta": "b",
+      "explicacion": "Una terminal nueva cambia la geometría: torque y alineación.",
+      "pista": "Piensa en la geometría de la dirección.",
+      "errores": {
+        "*": {
+          "codigo": null,
+          "critico": false,
+          "consecuencia": "reintentar",
+          "mensaje": "Falta algo antes de liberar."
+        }
+      }
+    }
+  ],
+  "datosDemo": true
+}

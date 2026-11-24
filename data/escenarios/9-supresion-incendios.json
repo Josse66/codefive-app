@@ -1,0 +1,125 @@
+{
+  "id": "supresion-incendios",
+  "grupo": 9,
+  "tecnologia": "ambas",
+  "autobus": null,
+  "competencia": "A9-1-SEG",
+  "nivel": 1,
+  "profundidad": "ligero",
+  "titulo": "Advertencia del sistema contra incendios",
+  "sintoma": "Después de lavar el motor aparece la advertencia del sistema de supresión de incendios.",
+  "fuente": "Mapa temático de capacitación Volvo, Detección y supresión de incendios (mentoría); datos de demostración",
+  "enfoque": {
+    "objetivo": [0.2, 1.4, 1.2],
+    "distancia": 10
+  },
+  "herramientas": [
+    {
+      "id": "mano",
+      "nombre": "Mano"
+    },
+    {
+      "id": "linterna",
+      "nombre": "Lámpara de inspección"
+    }
+  ],
+  "piezas": [
+    {
+      "id": "detector_incendio",
+      "nombre": "Detector del compartimiento del motor",
+      "pos": [-5, 1.55, 1.33],
+      "tamano": [0.3, 0.2, 0.12],
+      "tipo": "equipo"
+    },
+    {
+      "id": "panel_supresion",
+      "nombre": "Panel del sistema de supresión",
+      "pos": [5.3, 1.75, 1.32],
+      "tamano": [0.35, 0.25, 0.1],
+      "tipo": "tablero"
+    }
+  ],
+  "pasos": [
+    {
+      "id": "decidir",
+      "tipo": "hipotesis",
+      "pregunta": "¿Qué haces con la advertencia?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Desconecto el sistema para que no se dispare"
+        },
+        {
+          "id": "b",
+          "texto": "Reviso el panel y el detector según el manual, sin desactivarlo"
+        },
+        {
+          "id": "c",
+          "texto": "La ignoro, es por el agua"
+        },
+        {
+          "id": "d",
+          "texto": "Libero la unidad y que la revisen después"
+        }
+      ],
+      "correcta": "b",
+      "explicacion": "El sistema protege a los pasajeros: no se desactiva, se revisa.",
+      "pista": "¿A quién protege este sistema?",
+      "errores": {
+        "a": {
+          "codigo": "FI-01",
+          "critico": true,
+          "consecuencia": "bloqueo",
+          "efecto": null,
+          "mensaje": "Desactivar el sistema contra incendios deja a los pasajeros sin protección."
+        },
+        "d": {
+          "codigo": "FI-02",
+          "critico": true,
+          "consecuencia": "bloqueo",
+          "efecto": null,
+          "mensaje": "La unidad no sale con el sistema contra incendios en falla."
+        },
+        "*": {
+          "codigo": null,
+          "critico": false,
+          "consecuencia": "reintentar",
+          "mensaje": "No es correcto."
+        }
+      }
+    },
+    {
+      "id": "panel",
+      "tipo": "accion",
+      "instruccion": "Consulta el panel del sistema.",
+      "correcta": ["mano>panel_supresion"],
+      "explicacion": "El panel indica falla en el detector del motor.",
+      "pista": "El panel está en el puesto del conductor.",
+      "errores": {
+        "*": {
+          "codigo": null,
+          "critico": false,
+          "consecuencia": "reintentar",
+          "mensaje": "Empieza por el panel."
+        }
+      }
+    },
+    {
+      "id": "detector",
+      "tipo": "accion",
+      "instruccion": "Inspecciona el detector del compartimiento del motor.",
+      "correcta": ["linterna>detector_incendio"],
+      "explicacion": "El detector tiene humedad en el conector: se seca y se prueba según el manual.",
+      "pista": "El detector está en el compartimiento del motor, atrás.",
+      "errores": {
+        "*": {
+          "codigo": null,
+          "critico": false,
+          "consecuencia": "reintentar",
+          "mensaje": "Revisa el detector del motor."
+        }
+      }
+    }
+  ],
+  "datosDemo": true
+}

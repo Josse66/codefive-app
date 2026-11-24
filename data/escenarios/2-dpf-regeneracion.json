@@ -1,0 +1,190 @@
+{
+  "id": "dpf-regeneracion",
+  "grupo": 2,
+  "tecnologia": "diesel",
+  "autobus": "diesel",
+  "competencia": "D2-3-DIA",
+  "nivel": 3,
+  "profundidad": "completo",
+  "titulo": "Testigo del DPF y potencia reducida",
+  "sintoma": "El conductor reporta el testigo del filtro de partículas encendido y la unidad sin fuerza.",
+  "fuente": "Cummins 4971316 y 4971424; Ficha A, investigación Persona 2",
+  "enfoque": {
+    "objetivo": [-4.2, 1, 1.2],
+    "distancia": 7
+  },
+  "herramientas": [
+    {
+      "id": "mano",
+      "nombre": "Mano"
+    },
+    {
+      "id": "escaner",
+      "nombre": "Herramienta de diagnóstico"
+    },
+    {
+      "id": "linterna",
+      "nombre": "Lámpara de inspección"
+    }
+  ],
+  "piezas": [
+    {
+      "id": "conector_diagnostico",
+      "nombre": "Conector de diagnóstico",
+      "pos": [5.3, 1.3, 1.32],
+      "tamano": [0.35, 0.25, 0.1],
+      "tipo": "tablero"
+    },
+    {
+      "id": "dpf",
+      "nombre": "Filtro de partículas (DPF)",
+      "pos": [-5, 0.85, 1.33],
+      "tamano": [0.9, 0.45, 0.2],
+      "tipo": "caliente"
+    },
+    {
+      "id": "mangueras_sensor",
+      "nombre": "Mangueras del sensor de presión diferencial",
+      "pos": [-4.2, 1.05, 1.33],
+      "tamano": [0.4, 0.25, 0.1],
+      "tipo": "metal"
+    }
+  ],
+  "pasos": [
+    {
+      "id": "leer_codigos",
+      "tipo": "accion",
+      "instruccion": "Conecta la herramienta de diagnóstico y lee los códigos.",
+      "correcta": ["escaner>conector_diagnostico"],
+      "explicacion": "Los códigos y sus datos dicen por dónde empezar.",
+      "pista": "El conector de diagnóstico está en el puesto del conductor.",
+      "errores": {
+        "mano>dpf": {
+          "codigo": "DP-01",
+          "critico": true,
+          "consecuencia": "bloqueo",
+          "efecto": "calor",
+          "mensaje": "El DPF está a muy alta temperatura. Tocarlo sin protección causa quemaduras graves."
+        },
+        "*": {
+          "codigo": null,
+          "critico": false,
+          "consecuencia": "reintentar",
+          "mensaje": "Primero hay que saber qué código tiene la unidad."
+        }
+      }
+    },
+    {
+      "id": "registrar",
+      "tipo": "hipotesis",
+      "pregunta": "Aparece un código de presión diferencial alta en el DPF. ¿Qué haces antes de borrarlo?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Lo borro y pruebo la unidad"
+        },
+        {
+          "id": "b",
+          "texto": "Registro testigos, códigos y datos congelados"
+        },
+        {
+          "id": "c",
+          "texto": "Cambio el DPF"
+        },
+        {
+          "id": "d",
+          "texto": "Hago una regeneración forzada de inmediato"
+        }
+      ],
+      "correcta": "b",
+      "explicacion": "Lo que se borra se pierde: los datos son la evidencia para diagnosticar y para la garantía.",
+      "pista": "¿Qué pierdes si borras el código?",
+      "errores": {
+        "c": {
+          "codigo": "DP-02",
+          "critico": false,
+          "consecuencia": "reintentar",
+          "mensaje": "Cambiar el filtro sin diagnóstico sale caro y puede no resolver la falla."
+        },
+        "*": {
+          "codigo": null,
+          "critico": false,
+          "consecuencia": "reintentar",
+          "mensaje": "Antes de cualquier acción, guarda la evidencia."
+        }
+      }
+    },
+    {
+      "id": "revisar_sensor",
+      "tipo": "accion",
+      "instruccion": "Antes de condenar el filtro, revisa las mangueras del sensor de presión diferencial.",
+      "correcta": ["linterna>mangueras_sensor"],
+      "explicacion": "Una manguera rota o tapada da una lectura falsa de filtro lleno.",
+      "pista": "Busca las mangueras delgadas que van del filtro al sensor.",
+      "errores": {
+        "linterna>dpf": {
+          "codigo": "DP-02",
+          "critico": false,
+          "consecuencia": "reintentar",
+          "mensaje": "El filtro no se condena sin revisar antes el sensor y sus mangueras."
+        },
+        "mano>dpf": {
+          "codigo": "DP-01",
+          "critico": true,
+          "consecuencia": "bloqueo",
+          "efecto": "calor",
+          "mensaje": "El DPF sigue caliente. No se toca sin protección."
+        },
+        "*": {
+          "codigo": null,
+          "critico": false,
+          "consecuencia": "reintentar",
+          "mensaje": "Revisa las mangueras del sensor."
+        }
+      }
+    },
+    {
+      "id": "regeneracion",
+      "tipo": "hipotesis",
+      "competencia": "D2-2-COM",
+      "pregunta": "Las mangueras están bien y el hollín está alto. ¿Cuándo es correcto hacer la regeneración forzada?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Ahí mismo, aunque haya cartones junto al escape"
+        },
+        {
+          "id": "b",
+          "texto": "Cuando el procedimiento lo indica, en un área despejada y lejos de material inflamable"
+        },
+        {
+          "id": "c",
+          "texto": "Nunca, siempre se cambia el filtro"
+        },
+        {
+          "id": "d",
+          "texto": "Con el motor apagado"
+        }
+      ],
+      "correcta": "b",
+      "explicacion": "La regeneración eleva mucho la temperatura del escape: se hace solo en un área segura y según el procedimiento.",
+      "pista": "Piensa en la temperatura del escape durante la regeneración.",
+      "errores": {
+        "a": {
+          "codigo": "DP-03",
+          "critico": true,
+          "consecuencia": "bloqueo",
+          "efecto": "calor",
+          "mensaje": "Riesgo de incendio: la regeneración calienta el escape lo suficiente para encender material cercano."
+        },
+        "*": {
+          "codigo": null,
+          "critico": false,
+          "consecuencia": "reintentar",
+          "mensaje": "No es correcto. La regeneración tiene condiciones de seguridad."
+        }
+      }
+    }
+  ],
+  "datosDemo": true
+}

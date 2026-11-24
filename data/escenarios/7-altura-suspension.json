@@ -1,0 +1,96 @@
+{
+  "id": "altura-suspension",
+  "grupo": 7,
+  "tecnologia": "ambas",
+  "autobus": null,
+  "competencia": "A7-2-DIA",
+  "nivel": 2,
+  "profundidad": "ligero",
+  "titulo": "Unidad inclinada de un lado",
+  "sintoma": "Estacionada, la unidad queda más baja del lado derecho.",
+  "fuente": "Mapa temático de capacitación Volvo, Bastidor y control de altura (mentoría); datos de demostración",
+  "enfoque": {
+    "objetivo": [-2.6, 0.8, 1.2],
+    "distancia": 6.5
+  },
+  "herramientas": [
+    {
+      "id": "jabon",
+      "nombre": "Solución jabonosa"
+    },
+    {
+      "id": "linterna",
+      "nombre": "Lámpara de inspección"
+    }
+  ],
+  "piezas": [
+    {
+      "id": "bolsa_aire",
+      "nombre": "Bolsa de aire de la suspensión",
+      "pos": [-3, 0.85, 1.33],
+      "tamano": [0.4, 0.4, 0.15],
+      "tipo": "aire"
+    },
+    {
+      "id": "valvula_niveladora",
+      "nombre": "Válvula niveladora",
+      "pos": [-2.2, 0.75, 1.33],
+      "tamano": [0.25, 0.2, 0.12],
+      "tipo": "aire"
+    }
+  ],
+  "pasos": [
+    {
+      "id": "hipotesis",
+      "tipo": "hipotesis",
+      "pregunta": "¿Qué revisas primero?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "El nivel de aceite"
+        },
+        {
+          "id": "b",
+          "texto": "Fugas en las bolsas de aire y la válvula niveladora de ese lado"
+        },
+        {
+          "id": "c",
+          "texto": "La batería"
+        },
+        {
+          "id": "d",
+          "texto": "El aire acondicionado"
+        }
+      ],
+      "correcta": "b",
+      "explicacion": "Un lado bajo suele ser una fuga en la suspensión neumática.",
+      "pista": "¿Qué sostiene la carrocería?",
+      "errores": {
+        "*": {
+          "codigo": null,
+          "critico": false,
+          "consecuencia": "reintentar",
+          "mensaje": "No es lo más probable."
+        }
+      }
+    },
+    {
+      "id": "fuga",
+      "tipo": "accion",
+      "instruccion": "Busca la fuga con solución jabonosa.",
+      "correcta": ["jabon>bolsa_aire"],
+      "explicacion": "La bolsa de aire tiene una fisura: hace burbujas.",
+      "pista": "Prueba la bolsa de aire del lado bajo.",
+      "efecto": "burbujas",
+      "errores": {
+        "*": {
+          "codigo": null,
+          "critico": false,
+          "consecuencia": "reintentar",
+          "mensaje": "Ahí no hay burbujas."
+        }
+      }
+    }
+  ],
+  "datosDemo": true
+}

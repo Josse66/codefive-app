@@ -1,0 +1,187 @@
+{
+  "id": "frenos-fuga",
+  "grupo": 5,
+  "tecnologia": "ambas",
+  "autobus": null,
+  "competencia": "A5-2-DIA",
+  "nivel": 2,
+  "profundidad": "completo",
+  "titulo": "Fuga en el sistema de frenos neumáticos",
+  "sintoma": "El compresor trabaja muy seguido y la presión baja con la unidad estacionada.",
+  "fuente": "Bendix BW1231, Air Brake System Troubleshooting; Ficha B, investigación Persona 2",
+  "enfoque": {
+    "objetivo": [-2.6, 0.6, 1.2],
+    "distancia": 6.5
+  },
+  "herramientas": [
+    {
+      "id": "mano",
+      "nombre": "Mano"
+    },
+    {
+      "id": "calzas",
+      "nombre": "Calzas"
+    },
+    {
+      "id": "jabon",
+      "nombre": "Solución jabonosa"
+    }
+  ],
+  "piezas": [
+    {
+      "id": "rueda_trasera",
+      "nombre": "Rueda trasera",
+      "pos": [-3.8, 0.55, 1.42],
+      "tamano": [1.1, 1.1, 0.2],
+      "tipo": "rueda"
+    },
+    {
+      "id": "camara_freno",
+      "nombre": "Cámara de freno",
+      "pos": [-3.1, 0.45, 1.33],
+      "tamano": [0.3, 0.3, 0.15],
+      "tipo": "metal"
+    },
+    {
+      "id": "conexion_valvula",
+      "nombre": "Conexión de la válvula relevadora",
+      "pos": [-2.2, 0.42, 1.33],
+      "tamano": [0.3, 0.2, 0.12],
+      "tipo": "aire"
+    },
+    {
+      "id": "deposito_aire",
+      "nombre": "Tanque de aire",
+      "pos": [-0.6, 0.62, 1.3],
+      "tamano": [1.4, 0.35, 0.35],
+      "tipo": "deposito"
+    }
+  ],
+  "pasos": [
+    {
+      "id": "asegurar",
+      "tipo": "accion",
+      "competencia": "A5-1-SEG",
+      "instruccion": "Antes de meterte a revisar, asegura la unidad: coloca las calzas.",
+      "correcta": ["calzas>rueda_trasera"],
+      "explicacion": "Al liberar frenos para la prueba, solo las calzas impiden que la unidad se mueva.",
+      "pista": "Las calzas van en las llantas que no vas a intervenir.",
+      "errores": {
+        "mano>camara_freno": {
+          "codigo": "FR-01",
+          "critico": true,
+          "consecuencia": "bloqueo",
+          "efecto": "golpe",
+          "mensaje": "Te metiste bajo la unidad sin asegurarla. Si se mueve, puede aplastarte."
+        },
+        "jabon>conexion_valvula": {
+          "codigo": "FR-01",
+          "critico": true,
+          "consecuencia": "bloqueo",
+          "efecto": "golpe",
+          "mensaje": "Primero se asegura la unidad. Nunca se trabaja debajo de una unidad sin calzar."
+        },
+        "mano>conexion_valvula": {
+          "codigo": "FR-01",
+          "critico": true,
+          "consecuencia": "bloqueo",
+          "efecto": "golpe",
+          "mensaje": "Primero se asegura la unidad."
+        },
+        "*": {
+          "codigo": null,
+          "critico": false,
+          "consecuencia": "reintentar",
+          "mensaje": "Primero asegura la unidad con las calzas."
+        }
+      }
+    },
+    {
+      "id": "prueba_fugas",
+      "tipo": "hipotesis",
+      "competencia": "A5-2-COM",
+      "pregunta": "Con el motor apagado y los frenos liberados, la presión baja más de lo permitido en un minuto. ¿Qué indica?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Que es normal"
+        },
+        {
+          "id": "b",
+          "texto": "Que hay una fuga mayor a la permitida y hay que localizarla"
+        },
+        {
+          "id": "c",
+          "texto": "Que el compresor es muy chico"
+        },
+        {
+          "id": "d",
+          "texto": "Que falta aceite en el motor"
+        }
+      ],
+      "correcta": "b",
+      "explicacion": "Una caída mayor a la permitida es una fuga que se localiza por partes.",
+      "pista": "Si el motor está apagado, ¿por dónde se puede ir el aire?",
+      "errores": {
+        "*": {
+          "codigo": null,
+          "critico": false,
+          "consecuencia": "reintentar",
+          "mensaje": "No es correcto. La presión no debería bajar así."
+        }
+      }
+    },
+    {
+      "id": "localizar",
+      "tipo": "accion",
+      "instruccion": "Localiza la fuga con solución jabonosa en conexiones y componentes.",
+      "correcta": ["jabon>conexion_valvula"],
+      "explicacion": "Las burbujas marcan la fuga en la conexión de la válvula relevadora.",
+      "pista": "Prueba en las conexiones cercanas al eje trasero.",
+      "efecto": "burbujas",
+      "errores": {
+        "*": {
+          "codigo": null,
+          "critico": false,
+          "consecuencia": "reintentar",
+          "mensaje": "No hay burbujas ahí. Prueba otra conexión."
+        }
+      }
+    },
+    {
+      "id": "verificar",
+      "tipo": "hipotesis",
+      "pregunta": "Ya reparaste la conexión. ¿Qué sigue antes de liberar la unidad?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Liberarla"
+        },
+        {
+          "id": "b",
+          "texto": "Repetir la prueba de fugas y confirmar el funcionamiento"
+        },
+        {
+          "id": "c",
+          "texto": "Quitar las calzas y salir a probar"
+        },
+        {
+          "id": "d",
+          "texto": "Subir la presión del gobernador"
+        }
+      ],
+      "correcta": "b",
+      "explicacion": "La reparación se confirma repitiendo la prueba antes de liberar.",
+      "pista": "¿Cómo sabes que ya no fuga?",
+      "errores": {
+        "*": {
+          "codigo": null,
+          "critico": false,
+          "consecuencia": "reintentar",
+          "mensaje": "Falta comprobar la reparación."
+        }
+      }
+    }
+  ],
+  "datosDemo": true
+}

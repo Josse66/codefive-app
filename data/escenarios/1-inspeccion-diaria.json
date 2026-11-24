@@ -1,0 +1,102 @@
+{
+  "id": "inspeccion-diaria",
+  "grupo": 1,
+  "tecnologia": "ambas",
+  "autobus": null,
+  "competencia": "A1-1-MAN",
+  "nivel": 1,
+  "profundidad": "ligero",
+  "titulo": "Inspección antes de salir a ruta",
+  "sintoma": "La unidad va a salir a ruta en 20 minutos. Toca la inspección diaria.",
+  "fuente": "Guía de tipos de mantenimiento (material del equipo); Bendix BW1231",
+  "enfoque": {
+    "objetivo": [-0.5, 0.6, 1.2],
+    "distancia": 6
+  },
+  "herramientas": [
+    {
+      "id": "mano",
+      "nombre": "Mano"
+    },
+    {
+      "id": "linterna",
+      "nombre": "Lámpara de inspección"
+    }
+  ],
+  "piezas": [
+    {
+      "id": "valvula_purga",
+      "nombre": "Válvula de purga del tanque de aire",
+      "pos": [-0.6, 0.38, 1.32],
+      "tamano": [0.25, 0.25, 0.2],
+      "tipo": "aire"
+    },
+    {
+      "id": "deposito_aire",
+      "nombre": "Tanque de aire",
+      "pos": [-0.6, 0.62, 1.3],
+      "tamano": [1.4, 0.35, 0.35],
+      "tipo": "deposito"
+    }
+  ],
+  "pasos": [
+    {
+      "id": "purgar",
+      "tipo": "accion",
+      "instruccion": "Purga el tanque de aire para sacar la humedad.",
+      "correcta": ["mano>valvula_purga"],
+      "explicacion": "La purga diaria saca el agua que se condensa en los tanques.",
+      "pista": "Busca la válvula en la parte baja del tanque de aire.",
+      "efecto": "agua",
+      "errores": {
+        "*": {
+          "codigo": null,
+          "critico": false,
+          "consecuencia": "reintentar",
+          "mensaje": "Eso no es la purga. Busca la válvula del tanque de aire."
+        }
+      }
+    },
+    {
+      "id": "mucha_agua",
+      "tipo": "hipotesis",
+      "pregunta": "Al purgar sale mucha agua. ¿Qué haces?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Nada, siempre sale agua"
+        },
+        {
+          "id": "b",
+          "texto": "Lo reporto: el secador de aire puede no estar funcionando"
+        },
+        {
+          "id": "c",
+          "texto": "Purgo una vez al mes para que salga menos"
+        },
+        {
+          "id": "d",
+          "texto": "Lleno el tanque con aceite"
+        }
+      ],
+      "correcta": "b",
+      "explicacion": "Mucha agua indica que el secador no está quitando la humedad; se reporta antes de que dañe válvulas.",
+      "pista": "¿Qué componente debería quitar la humedad del aire?",
+      "errores": {
+        "a": {
+          "codigo": null,
+          "critico": false,
+          "consecuencia": "reintentar",
+          "mensaje": "Un poco de humedad es normal; mucha agua no."
+        },
+        "*": {
+          "codigo": null,
+          "critico": false,
+          "consecuencia": "reintentar",
+          "mensaje": "No es correcto. Piensa en qué quita la humedad del aire."
+        }
+      }
+    }
+  ],
+  "datosDemo": true
+}

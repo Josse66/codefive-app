@@ -1,0 +1,278 @@
+{
+  "id": "hv-aislamiento",
+  "grupo": 3,
+  "tecnologia": "electrica",
+  "autobus": "electrico",
+  "competencia": "E3-2-SEG",
+  "nivel": 2,
+  "profundidad": "completo",
+  "titulo": "Pérdida de aislamiento en alto voltaje",
+  "sintoma": "Advertencia de aislamiento en el tablero; la tracción quedó inhibida.",
+  "fuente": "NOM-029-STPS-2011; ASE xEV Safety Standards v2.1; Ficha C, investigación Persona 2",
+  "enfoque": {
+    "objetivo": [0.2, 3, 0.9],
+    "distancia": 6.5
+  },
+  "herramientas": [
+    {
+      "id": "mano",
+      "nombre": "Mano"
+    },
+    {
+      "id": "candado",
+      "nombre": "Candado y etiqueta"
+    },
+    {
+      "id": "multimetro",
+      "nombre": "Probador CAT III"
+    }
+  ],
+  "piezas": [
+    {
+      "id": "desconexion_servicio",
+      "nombre": "Desconexión de servicio",
+      "pos": [-1.2, 3.62, 0.8],
+      "tamano": [0.5, 0.3, 0.4],
+      "tipo": "hv"
+    },
+    {
+      "id": "conector_hv",
+      "nombre": "Conector de alto voltaje",
+      "pos": [1.6, 3.55, 1],
+      "tamano": [0.35, 0.22, 0.3],
+      "tipo": "hv"
+    },
+    {
+      "id": "punto_medicion",
+      "nombre": "Punto de medición",
+      "pos": [0.4, 3.55, 1],
+      "tamano": [0.3, 0.2, 0.3],
+      "tipo": "medicion"
+    },
+    {
+      "id": "fuente_prueba",
+      "nombre": "Fuente de prueba del medidor",
+      "pos": [2.6, 0.35, 2.3],
+      "tamano": [0.4, 0.3, 0.3],
+      "tipo": "equipo"
+    }
+  ],
+  "pasos": [
+    {
+      "id": "escalar",
+      "tipo": "hipotesis",
+      "competencia": "E3-1-SEG",
+      "pregunta": "Ves la advertencia de aislamiento. ¿Qué haces primero?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Abro la tapa de baterías para ver qué pasa"
+        },
+        {
+          "id": "b",
+          "texto": "Aseguro la unidad, delimito el área y aviso al responsable de alto voltaje"
+        },
+        {
+          "id": "c",
+          "texto": "Borro el código y pruebo la unidad"
+        },
+        {
+          "id": "d",
+          "texto": "Sigo con el servicio de frenos que tenía programado"
+        }
+      ],
+      "correcta": "b",
+      "explicacion": "Una falla de aislamiento puede energizar el chasis: primero se asegura el área y se escala.",
+      "pista": "¿Quién está autorizado para intervenir alto voltaje?",
+      "errores": {
+        "a": {
+          "codigo": "HV-02",
+          "critico": true,
+          "consecuencia": "bloqueo",
+          "efecto": "chispa",
+          "mensaje": "Abrir el sistema de alto voltaje sin procedimiento ni autorización puede causar una descarga mortal."
+        },
+        "c": {
+          "codigo": "HV-03",
+          "critico": true,
+          "consecuencia": "bloqueo",
+          "efecto": null,
+          "mensaje": "Borrar el código no quita la falla: la unidad seguiría con riesgo de descarga."
+        },
+        "*": {
+          "codigo": null,
+          "critico": false,
+          "consecuencia": "reintentar",
+          "mensaje": "No es lo primero. La falla de aislamiento es un riesgo para todos."
+        }
+      }
+    },
+    {
+      "id": "desenergizar",
+      "tipo": "accion",
+      "instruccion": "Ya autorizado y con tu equipo de protección: abre la desconexión de servicio.",
+      "correcta": ["mano>desconexion_servicio"],
+      "explicacion": "La desconexión de servicio separa la batería del resto del sistema.",
+      "pista": "Es la pieza naranja más grande sobre el paquete de baterías.",
+      "errores": {
+        "mano>conector_hv": {
+          "codigo": "HV-01",
+          "critico": true,
+          "consecuencia": "bloqueo",
+          "efecto": "chispa",
+          "mensaje": "Tocaste un conector de alto voltaje energizado. En un autobús real esto puede ser mortal."
+        },
+        "mano>punto_medicion": {
+          "codigo": "HV-01",
+          "critico": true,
+          "consecuencia": "bloqueo",
+          "efecto": "chispa",
+          "mensaje": "El sistema sigue energizado: no se toca ningún punto de alto voltaje."
+        },
+        "*": {
+          "codigo": null,
+          "critico": false,
+          "consecuencia": "reintentar",
+          "mensaje": "Primero hay que desenergizar con la desconexión de servicio."
+        }
+      }
+    },
+    {
+      "id": "loto",
+      "tipo": "accion",
+      "instruccion": "Coloca tu candado y etiqueta en la desconexión de servicio.",
+      "correcta": ["candado>desconexion_servicio"],
+      "explicacion": "El candado personal impide que alguien reenergice el sistema mientras trabajas.",
+      "pista": "El candado va donde se podría volver a conectar el sistema.",
+      "errores": {
+        "mano>conector_hv": {
+          "codigo": "HV-01",
+          "critico": true,
+          "consecuencia": "bloqueo",
+          "efecto": "chispa",
+          "mensaje": "Todavía no verificas la ausencia de tensión. No se toca."
+        },
+        "*": {
+          "codigo": null,
+          "critico": false,
+          "consecuencia": "reintentar",
+          "mensaje": "El candado va en la desconexión de servicio."
+        }
+      }
+    },
+    {
+      "id": "espera",
+      "tipo": "hipotesis",
+      "pregunta": "Ya pusiste el candado. ¿Cuándo puedes medir?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "De inmediato"
+        },
+        {
+          "id": "b",
+          "texto": "Después del tiempo de descarga de los capacitores que indica el fabricante"
+        },
+        {
+          "id": "c",
+          "texto": "Cuando se apague el tablero"
+        },
+        {
+          "id": "d",
+          "texto": "Al día siguiente"
+        }
+      ],
+      "correcta": "b",
+      "explicacion": "Los capacitores guardan carga después de desconectar: se respeta el tiempo de espera.",
+      "pista": "¿Qué componentes guardan energía aunque la batería esté desconectada?",
+      "errores": {
+        "a": {
+          "codigo": "HV-05",
+          "critico": true,
+          "consecuencia": "bloqueo",
+          "efecto": "chispa",
+          "mensaje": "Los capacitores pueden seguir cargados. Medir de inmediato es exponerse a una descarga."
+        },
+        "*": {
+          "codigo": null,
+          "critico": false,
+          "consecuencia": "reintentar",
+          "mensaje": "No es correcto. Hay un tiempo de espera definido."
+        }
+      }
+    },
+    {
+      "id": "verificar",
+      "tipo": "accion",
+      "instruccion": "Verifica la ausencia de tensión: prueba el medidor, mide y vuelve a probar el medidor.",
+      "correcta": ["multimetro>fuente_prueba", "multimetro>punto_medicion", "multimetro>fuente_prueba"],
+      "explicacion": "Probar el medidor antes y después confirma que el cero que leíste es real.",
+      "pista": "Probar, medir, volver a probar: empieza con la fuente de prueba.",
+      "errores": {
+        "multimetro>punto_medicion": {
+          "codigo": "HV-04",
+          "critico": true,
+          "consecuencia": "bloqueo",
+          "efecto": null,
+          "mensaje": "Mediste sin comprobar el medidor. Si está dañado marcará cero aunque haya tensión."
+        },
+        "mano>conector_hv": {
+          "codigo": "HV-01",
+          "critico": true,
+          "consecuencia": "bloqueo",
+          "efecto": "chispa",
+          "mensaje": "Aún no confirmas la ausencia de tensión. No se toca."
+        },
+        "*": {
+          "codigo": null,
+          "critico": false,
+          "consecuencia": "reintentar",
+          "mensaje": "Sigue el orden: probar, medir, volver a probar."
+        }
+      }
+    },
+    {
+      "id": "localizar",
+      "tipo": "hipotesis",
+      "competencia": "E3-3-DIA",
+      "pregunta": "El sistema está verificado sin tensión. ¿Cómo localizas el componente con pérdida de aislamiento?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Cambiando la batería completa"
+        },
+        {
+          "id": "b",
+          "texto": "Aislando y probando por componente con el megóhmetro según el procedimiento"
+        },
+        {
+          "id": "c",
+          "texto": "Esperando a que se seque"
+        },
+        {
+          "id": "d",
+          "texto": "Puenteando el monitor de aislamiento"
+        }
+      ],
+      "correcta": "b",
+      "explicacion": "Se aísla cada componente y se mide su resistencia de aislamiento hasta encontrar el que falla.",
+      "pista": "Divide el sistema en partes y prueba cada una.",
+      "errores": {
+        "d": {
+          "codigo": "HV-06",
+          "critico": true,
+          "consecuencia": "bloqueo",
+          "efecto": null,
+          "mensaje": "Puentear una protección deja a la unidad sin detección de fugas a chasis."
+        },
+        "*": {
+          "codigo": null,
+          "critico": false,
+          "consecuencia": "reintentar",
+          "mensaje": "No es correcto. Hay que encontrar el componente que falla."
+        }
+      }
+    }
+  ],
+  "datosDemo": true
+}
