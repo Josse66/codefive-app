@@ -1,0 +1,84 @@
+<section class="grid gap-6">
+  <div class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-stretch">
+    <div class="grid content-start gap-3">
+      <p class="font-narrow text-sm font-bold uppercase tracking-wider text-tinta-3">Mi plan de formación</p>
+      <h1 class="text-4xl leading-tight lg:text-5xl">Hola, {{plan.tecnico.nombre}}</h1>
+      <p class="max-w-2xl text-tinta-2">{{plan.tecnico.taller}} · {{plan.tecnico.anios}} años de experiencia · {{plan.progreso.nivel}} en el taller · {{plan.avance.lecciones}} de {{plan.avance.total}} lecciones leídas</p>
+
+      <article class="mt-2 grid gap-3 border-2 {{#if plan.siguiente.obligatoria}}border-mal{{else}}border-tinta{{/if}} bg-white p-5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center lg:p-6">
+        <div class="grid gap-1">
+          <p class="font-narrow text-sm font-bold uppercase tracking-wider {{#if plan.siguiente.obligatoria}}text-mal{{else}}text-tinta-3{{/if}}">Tu siguiente paso{{#if plan.siguiente.obligatoria}} · obligatorio por seguridad{{/if}}</p>
+          <h2 class="font-sans text-2xl font-semibold tracking-normal">{{plan.siguiente.titulo}}</h2>
+          <p class="text-tinta-2">{{plan.siguiente.texto}}</p>
+        </div>
+        <a href="{{plan.siguiente.enlace}}" class="boton px-8 py-4 text-base">{{plan.siguiente.boton}}</a>
+      </article>
+    </div>
+
+    <aside class="grid content-start gap-3 border border-tinta bg-white p-5">
+      <p class="font-narrow text-sm font-bold uppercase tracking-wider text-tinta-3">Tu autobús</p>
+      <p class="font-sans text-2xl font-semibold">{{plan.modelo.nombre}}</p>
+      <p class="flex flex-wrap gap-1.5">
+        <span class="chip border-tinta-3 text-tinta-2">{{plan.modelo.segmento}}</span>
+        {{#if (igual plan.modelo.tecnologia 'electrica')}}<span class="marca-hv">Eléctrico · alto voltaje</span>{{/if}}
+        {{#if (igual plan.modelo.tecnologia 'diesel')}}<span class="chip border-tinta-3 text-tinta-2">Diésel</span>{{/if}}
+        {{#if (igual plan.modelo.tecnologia 'hibrida')}}<span class="chip border-tinta-3 text-tinta-2">Híbrido</span>{{/if}}
+      </p>
+      <p class="text-[15px] text-tinta-2">{{plan.modelo.descripcion}}</p>
+      <div class="flex flex-wrap gap-2 border-t border-placa-linea pt-3">
+        <a href="/tecnicos/{{plan.tecnico.id}}/autobus" class="boton-linea px-4 py-2">Ver en 3D</a>
+        <a href="/bienvenida" class="boton-linea px-4 py-2">Cambiar autobús</a>
+      </div>
+    </aside>
+  </div>
+
+  <div class="grid gap-3">
+    <div class="flex flex-wrap items-baseline justify-between gap-2">
+      <h2 class="text-3xl">Los 9 módulos de tu autobús</h2>
+      <p class="text-sm text-tinta-3">Cada módulo es un grupo de función. Solo ves lo que aplica a {{plan.modelo.nombre}}.</p>
+    </div>
+    <ol class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+      {{#each plan.modulos}}
+        <li class="grid content-start border {{#if aplica}}border-tinta bg-white{{else}}border-placa-linea bg-placa{{/if}}">
+          <header class="grid gap-2 border-b {{#if aplica}}border-tinta{{else}}border-placa-linea{{/if}} p-4">
+            <div class="flex items-start gap-3">
+              <span class="recuadro h-9 w-9 text-xl {{#unless aplica}}bg-nada{{/unless}}">{{grupo}}</span>
+              <div class="grid gap-0.5">
+                <h3 class="font-sans text-xl font-semibold leading-snug tracking-normal">{{nombre}}</h3>
+                <p class="text-sm text-tinta-3">{{descripcion}}</p>
+              </div>
+            </div>
+            {{#if aplica}}
+              <div class="flex items-center gap-3">
+                <div class="relative h-2 flex-1 bg-placa-2" aria-hidden="true">
+                  <div class="h-2 {{#if (igual estado 'dominada')}}bg-ok{{else if (igual estado 'en_desarrollo')}}bg-med{{else if (igual estado 'brecha')}}bg-mal{{else}}bg-nada{{/if}}" style="width: {{#if dominio}}{{dominio}}{{else}}0{{/if}}%"></div>
+                </div>
+                <span class="codigo text-sm">{{#if dominio}}{{dominio}} %{{else}}Sin diagnóstico{{/if}}</span>
+              </div>
+            {{/if}}
+          </header>
+          {{#if aplica}}
+            <ul class="grid">
+              {{#each lecciones}}
+                <li>
+                  <a href="/tecnicos/{{../../plan.tecnico.id}}/aprender/{{id}}" class="flex items-baseline justify-between gap-3 border-b border-placa-linea px-4 py-2.5 text-[15px] no-underline hover:bg-placa">
+                    <span class="{{#if vista}}text-tinta-2{{else}}font-semibold{{/if}}">{{titulo}}{{#if critica}} <span class="chip border-mal bg-mal-suave text-mal">Seguridad</span>{{/if}}</span>
+                    <span class="whitespace-nowrap text-xs text-tinta-3">{{#if vista}}Leída ✓{{else}}{{minutos}} min{{/if}}</span>
+                  </a>
+                </li>
+              {{/each}}
+            </ul>
+            {{#if escenario}}
+              <a href="/tecnicos/{{../plan.tecnico.id}}/escenario/{{escenario.id}}" class="m-4 flex items-center justify-between gap-3 border border-tinta px-3 py-2.5 text-[15px] no-underline hover:bg-placa">
+                <span><span class="block text-xs text-tinta-3">Práctica en el autobús</span><span class="font-semibold">{{escenario.titulo}}</span></span>
+                <span aria-hidden="true">→</span>
+              </a>
+            {{/if}}
+          {{else}}
+            <p class="p-4 text-sm text-tinta-3">Este módulo no tiene contenido para tu autobús todavía.</p>
+          {{/if}}
+        </li>
+      {{/each}}
+    </ol>
+  </div>
+</section>

@@ -1,4 +1,5 @@
 import { obtenerTecnico } from '#services/tecnicos.service.js';
+import { obtenerPlan } from '#services/plan.service.js';
 import { asegurarDominio, obtenerPerfil } from '#services/dominio.service.js';
 import { obtenerRuta } from '#services/ruta.service.js';
 import { RECUADROS, estadoGrupo } from '#helpers/lamina.js';
@@ -185,6 +186,18 @@ export function mostrarLeccion(req, res) {
       seccion: 'aprender',
       leccionId: req.params.leccionId,
       scriptPagina: 'pages/leccion.js',
+    }),
+  );
+}
+
+// Mi plan de formación: la página de inicio de cada técnico.
+export function mostrarPlan(req, res) {
+  conTecnico(req, res, (tecnico) =>
+    res.render('plan', {
+      titulo: `Mi plan · ${tecnico.nombre}`,
+      tecnico,
+      seccion: 'plan',
+      plan: obtenerPlan(tecnico.id),
     }),
   );
 }
