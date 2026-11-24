@@ -20,7 +20,8 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
-    "db:reset": "node --disable-warning=ExperimentalWarning server/db/reset.js"
+    "db:reset": "node --disable-warning=ExperimentalWarning server/db/reset.js",
+    "test": "node --disable-warning=ExperimentalWarning --test \"server/**/*.test.js\""
   },
   "engines": {
     "node": ">=22.13"
