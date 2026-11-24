@@ -1,22 +1,13 @@
 // Explorar el autobús por grupos de función: recuadros 1 a 9 con el color del dominio del técnico
 // y la ficha del escenario de práctica de cada grupo.
 import { crearEscena } from '../escena/autobus3d.js';
+import GRUPOS_DATOS from '../../data/grupos.json';
 
 const raiz = document.getElementById('autobus');
 const { tecnicoId, autobus } = raiz.dataset;
 const $ = (id) => document.getElementById(id);
 
-const GRUPOS = {
-  1: 'Servicio y mantenimiento',
-  2: 'Motor y equipo asociado',
-  3: 'Sistema eléctrico e instrumentos',
-  4: 'Transmisión',
-  5: 'Frenos',
-  6: 'Suspensión y dirección',
-  7: 'Bastidor, resortes y ruedas',
-  8: 'Carrocería e interior',
-  9: 'Misceláneos',
-};
+const GRUPOS = Object.fromEntries(Object.entries(GRUPOS_DATOS).map(([n, g]) => [n, g.nombre]));
 const COLOR = { dominada: '#2f7d43', en_desarrollo: '#c98a00', brecha: '#b3121f' };
 const ESTADO = { dominada: 'Dominada', en_desarrollo: 'En desarrollo', brecha: 'Brecha' };
 const CHIP = {

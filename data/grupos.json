@@ -1,0 +1,39 @@
+{
+  "1": {
+    "nombre": "Grupos de función",
+    "corto": "Grupos de función",
+    "descripcion": "Conoce el autobús y sus grupos de función; inspección diaria y servicio general."
+  },
+  "2": { "nombre": "Motor", "corto": "Motor", "descripcion": "Todo lo que tiene que ver con el motor." },
+  "3": {
+    "nombre": "Sistema eléctrico",
+    "corto": "Eléctrico",
+    "descripcion": "Todo el sistema eléctrico, incluido el alto voltaje de los autobuses eléctricos."
+  },
+  "4": {
+    "nombre": "Transmisión",
+    "corto": "Transmisión",
+    "descripcion": "Todo lo que tiene que ver con la transmisión."
+  },
+  "5": { "nombre": "Frenos", "corto": "Frenos", "descripcion": "Frenos neumáticos y ABS." },
+  "6": {
+    "nombre": "Suspensión y dirección",
+    "corto": "Susp. y dirección",
+    "descripcion": "Todo lo que tiene que ver con la suspensión y la dirección."
+  },
+  "7": {
+    "nombre": "Soportería",
+    "corto": "Soportería",
+    "descripcion": "Todo lo que tiene que ver con la soportería: bastidor, resortes, bolsas de aire y ruedas."
+  },
+  "8": {
+    "nombre": "Carrocería, asientos y volantes",
+    "corto": "Carrocería",
+    "descripcion": "Carrocería, asientos, volantes, puertas e interior."
+  },
+  "9": {
+    "nombre": "Misceláneos",
+    "corto": "Misceláneos",
+    "descripcion": "Todo lo misceláneo, como la detección y supresión de incendios."
+  }
+}

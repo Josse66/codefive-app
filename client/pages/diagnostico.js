@@ -1,4 +1,6 @@
 // Pantalla del diagnóstico: muestra una pregunta a la vez, pide la confianza y manda la respuesta.
+import GRUPOS_DATOS from '../../data/grupos.json';
+
 const raiz = document.getElementById('diagnostico');
 const { tecnicoId } = raiz.dataset;
 
@@ -16,17 +18,7 @@ const el = {
 };
 
 const TECNOLOGIA = { diesel: 'Diésel', electrica: 'Eléctrico', ambas: 'Diésel y eléctrico' };
-const GRUPO = {
-  1: 'Servicio y mantenimiento',
-  2: 'Motor',
-  3: 'Sistema eléctrico',
-  4: 'Transmisión',
-  5: 'Frenos',
-  6: 'Ejes, suspensión y dirección',
-  7: 'Bastidor y ruedas',
-  8: 'Carrocería e interior',
-  9: 'Misceláneos',
-};
+const GRUPO = Object.fromEntries(Object.entries(GRUPOS_DATOS).map(([n, g]) => [n, g.nombre]));
 const CLASE_OPCION =
   'flex w-full items-start gap-3 border border-placa-linea bg-white p-4 text-left text-[16px] transition-colors duration-150 hover:border-tinta aria-checked:border-tinta aria-checked:bg-placa-2 aria-checked:shadow-[inset_0_0_0_1px_#141c24]';
 const CLASE_LETRA = 'codigo flex h-6 w-6 shrink-0 items-center justify-center border border-tinta text-sm';

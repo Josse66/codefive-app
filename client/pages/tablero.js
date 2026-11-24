@@ -2,6 +2,7 @@
 // avisa por Socket.IO que un técnico respondió algo o adelantó su reloj.
 import { io } from 'socket.io-client';
 import { BarController, BarElement, CategoryScale, Chart, Legend, LinearScale, Tooltip } from 'chart.js';
+import GRUPOS_DATOS from '../../data/grupos.json';
 
 Chart.register(BarController, BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 Chart.defaults.font.family = 'Archivo, system-ui, sans-serif';
@@ -328,17 +329,7 @@ const CLASE_CELDA = (p) => {
   if (p >= 40) return 'bg-med text-tinta';
   return 'bg-mal text-white';
 };
-const GRUPOS = {
-  1: 'Servicio',
-  2: 'Motor',
-  3: 'Eléctrico',
-  4: 'Transmisión',
-  5: 'Frenos',
-  6: 'Dirección',
-  7: 'Bastidor',
-  8: 'Carrocería',
-  9: 'Diversos',
-};
+const GRUPOS = Object.fromEntries(Object.entries(GRUPOS_DATOS).map(([n, g]) => [n, g.corto]));
 
 function pintarMapa(mapa) {
   const encabezado = el('tr');

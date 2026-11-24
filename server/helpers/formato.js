@@ -1,3 +1,6 @@
+import fs from 'node:fs';
+import path from 'node:path';
+
 // Helpers de Handlebars para mostrar el modelo en lenguaje de taller.
 
 const TECNOLOGIAS = { diesel: 'Diésel', electrica: 'Eléctrico', ambas: 'Diésel y eléctrico' };
@@ -27,18 +30,8 @@ const HABILIDADES = {
   reparacion: 'Reparación',
   seguridad: 'Seguridad',
 };
-// Grupos de función de Volvo (Tech Tool / Impact).
-const GRUPOS = {
-  1: 'Servicio y mantenimiento',
-  2: 'Motor y equipo asociado',
-  3: 'Sistema eléctrico e instrumentos',
-  4: 'Transmisión',
-  5: 'Frenos',
-  6: 'Ejes, suspensión y dirección',
-  7: 'Bastidor, resortes y ruedas',
-  8: 'Carrocería, cabina e interior',
-  9: 'Misceláneos',
-};
+// Grupos de función de Volvo (Impact), con los nombres que usan los técnicos: data/grupos.json.
+const GRUPOS = JSON.parse(fs.readFileSync(path.resolve('data', 'grupos.json'), 'utf8'));
 const MODOS = { guiado: 'Guiado', con_pistas: 'Con pistas', autonomo: 'Autónomo' };
 
 export const porcentaje = (p) => Math.round(Number(p) * 100);
@@ -47,7 +40,8 @@ export const nombreEstado = (e) => ESTADOS[e] ?? e;
 export const claseEstado = (e) => CLASES_ESTADO[e] ?? '';
 export const rellenoEstado = (e) => RELLENO_ESTADO[e] ?? RELLENO_ESTADO.sin_evaluar;
 export const nombreHabilidad = (h) => HABILIDADES[h] ?? h;
-export const nombreGrupo = (g) => GRUPOS[g] ?? `Grupo ${g}`;
+export const nombreGrupo = (g) => GRUPOS[g]?.nombre ?? `Grupo ${g}`;
+export const descripcionGrupo = (g) => GRUPOS[g]?.descripcion ?? '';
 export const nombreModo = (m) => MODOS[m] ?? m;
 
 // Competencias del sistema de tracción de 600 V: llevan la marca naranja de alto voltaje.
