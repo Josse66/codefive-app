@@ -1,0 +1,25 @@
+<section id="aprender" class="grid gap-6" data-tecnico-id="{{tecnico.id}}">
+  <div class="flex flex-wrap items-end justify-between gap-4">
+    <div class="grid gap-2">
+      <h1 class="text-4xl leading-tight lg:text-5xl">Aprender</h1>
+      <p class="max-w-3xl text-tinta-2">El temario del autobús por grupo de función, de lo básico a lo avanzado. Cada lección se apoya en el autobús 3D y termina en una práctica en el Taller.</p>
+    </div>
+    <div class="grid min-w-64 gap-1">
+      <p class="flex justify-between text-sm"><span class="font-semibold">Tu avance</span><span id="avance-texto" class="codigo">—</span></p>
+      <div class="h-2 bg-placa-2" aria-hidden="true"><div id="avance-barra" class="h-2 bg-tinta transition-[width] duration-700 ease-out" style="width: 0%"></div></div>
+      <a href="/tecnicos/{{tecnico.id}}/autobus" class="text-sm underline">Conoce el autobús por grupos</a>
+    </div>
+  </div>
+
+  <article id="recomendada" class="grid gap-3 border-2 border-tinta bg-white p-5 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:p-6" hidden>
+    <div class="grid gap-1">
+      <p class="font-narrow text-sm font-bold uppercase tracking-wider text-tinta-3">Recomendada para ti</p>
+      <h2 id="recomendada-titulo" class="font-sans text-2xl font-semibold tracking-normal"></h2>
+      <p id="recomendada-motivo" class="text-tinta-2"></p>
+    </div>
+    <a id="recomendada-enlace" href="#" class="boton px-8 py-4 text-base">Empezar la lección</a>
+  </article>
+
+  <div id="grupos" class="grid gap-4 md:grid-cols-2 xl:grid-cols-3"></div>
+  <p id="mensaje-error" class="aviso-critico" hidden></p>
+</section>
