@@ -4,6 +4,8 @@ import morgan from 'morgan';
 import logger, { streamHttp } from '#config/logger.js';
 import { configurarHandlebars } from '#config/handlebars.js';
 import { configurarVite } from '#config/vite.js';
+import webRoutes from '#routes/web.routes.js';
+import apiRoutes from '#routes/api.routes.js';
 
 const enDesarrollo = process.env.NODE_ENV !== 'production';
 
@@ -19,16 +21,8 @@ export async function crearApp() {
   await configurarVite(app);
   app.use(express.static(path.resolve('public')));
 
-  app.get('/', (_req, res) => {
-    res.render('inicio', {
-      titulo: 'Inicio',
-      modulos: ['Diagnóstico de competencias', 'Ruta personalizada', 'Práctica en 3D', 'Tablero Volvo'],
-    });
-  });
-
-  app.get('/api/salud', (_req, res) => {
-    res.json({ ok: true, servicio: 'codefive-app' });
-  });
+  app.use('/', webRoutes);
+  app.use('/api', apiRoutes);
 
   // 404: ninguna ruta respondió.
   app.use((req, res) => {

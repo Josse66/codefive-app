@@ -14,4 +14,19 @@
       </li>
     {{/each}}
   </ul>
+  <div>
+    <h2 class="text-3xl">Técnicos</h2>
+    <p class="text-sm text-acero-600">Datos ficticios para la demostración.</p>
+    <ul class="mt-3 grid gap-3 sm:grid-cols-2">
+      {{#each tecnicos}}
+        <li class="tarjeta flex items-center justify-between gap-4">
+          <div>
+            <p class="font-semibold">{{nombre}}</p>
+            <p class="text-sm text-acero-600">{{taller}} · {{anios_experiencia}} años · {{tecnologia}}</p>
+          </div>
+          <span class="font-mono text-xs text-acero-600">{{id}}</span>
+        </li>
+      {{/each}}
+    </ul>
+  </div>
 </section>
