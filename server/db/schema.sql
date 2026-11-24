@@ -113,3 +113,11 @@ CREATE TABLE IF NOT EXISTS ordenes (
   creado_en        TEXT NOT NULL DEFAULT (datetime('now'))
 );
 CREATE INDEX IF NOT EXISTS idx_ordenes_tecnico ON ordenes (tecnico_id, estado);
+
+-- Modo Aprender: lecciones que el técnico ya leyó.
+CREATE TABLE IF NOT EXISTS lecciones_vistas (
+  tecnico_id   TEXT NOT NULL REFERENCES tecnicos (id),
+  leccion_id   TEXT NOT NULL,
+  vista_en     TEXT NOT NULL DEFAULT (datetime('now')),
+  PRIMARY KEY (tecnico_id, leccion_id)
+);

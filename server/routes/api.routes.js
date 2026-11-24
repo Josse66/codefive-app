@@ -5,6 +5,7 @@ import * as practica from '#controllers/practica.controller.js';
 import * as evaluacion from '#controllers/evaluacion.controller.js';
 import * as escenarios from '#controllers/escenarios.controller.js';
 import * as taller from '#controllers/taller.controller.js';
+import * as aprender from '#controllers/aprender.controller.js';
 import { obtenerTablero } from '#services/tablero.service.js';
 
 const router = Router();
@@ -33,6 +34,10 @@ router.post('/eventos', escenarios.evento);
 
 router.get('/tecnicos/:id/taller', taller.obtener);
 router.post('/tecnicos/:id/taller/ordenes/:ordenId/iniciar', taller.iniciar);
+
+router.get('/tecnicos/:id/aprender', aprender.temario);
+router.get('/tecnicos/:id/aprender/:leccionId', aprender.leccion);
+router.post('/tecnicos/:id/aprender/:leccionId/vista', aprender.vista);
 
 router.get('/tablero', (_req, res) => res.json(obtenerTablero()));
 
