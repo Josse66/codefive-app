@@ -4,6 +4,7 @@ import { sembrar, sembrarEvaluacion } from '#db/semilla.js';
 import logger from '#config/logger.js';
 
 db.exec(`
+  DELETE FROM ordenes;
   DELETE FROM evaluaciones;
   DELETE FROM eventos;
   DELETE FROM dominio;

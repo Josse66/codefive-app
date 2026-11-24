@@ -89,3 +89,27 @@ CREATE TABLE IF NOT EXISTS evaluaciones (
   creado_en       TEXT NOT NULL DEFAULT (datetime('now'))
 );
 CREATE INDEX IF NOT EXISTS idx_evaluaciones_tecnico ON evaluaciones (tecnico_id, competencia_id, fase);
+
+-- Modo Taller: órdenes de trabajo que el técnico atiende en su bahía. Cada una es un escenario con
+-- cliente y unidad ficticios; al entregarla se califica y da experiencia.
+CREATE TABLE IF NOT EXISTS ordenes (
+  id               INTEGER PRIMARY KEY AUTOINCREMENT,
+  tecnico_id       TEXT NOT NULL REFERENCES tecnicos (id),
+  escenario_id     TEXT NOT NULL,
+  motivo           TEXT NOT NULL CHECK (motivo IN ('seguridad', 'brecha', 'nueva', 'repaso')),
+  cliente          TEXT NOT NULL,
+  unidad           TEXT NOT NULL,
+  estado           TEXT NOT NULL DEFAULT 'abierta' CHECK (estado IN ('abierta', 'en_proceso', 'entregada')),
+  iniciada_en      TEXT,
+  entregada_en     TEXT,
+  segundos         INTEGER,
+  errores          INTEGER NOT NULL DEFAULT 0,
+  criticos         INTEGER NOT NULL DEFAULT 0,
+  pistas           INTEGER NOT NULL DEFAULT 0,
+  gasto            INTEGER NOT NULL DEFAULT 0,
+  gasto_necesario  INTEGER NOT NULL DEFAULT 0,
+  estrellas        INTEGER,
+  xp               INTEGER NOT NULL DEFAULT 0,
+  creado_en        TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_ordenes_tecnico ON ordenes (tecnico_id, estado);

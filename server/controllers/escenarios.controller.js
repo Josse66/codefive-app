@@ -1,4 +1,5 @@
 import { listarEscenarios } from '#services/escenarios.js';
+import { intentoEnOrden } from '#services/taller.service.js';
 import { escenariosDelTecnico, iniciarEscenario, registrarIntento } from '#services/escenarios.service.js';
 
 export function listar(_req, res) {
@@ -23,7 +24,26 @@ export function iniciar(req, res) {
 
 // Evento educativo que manda la escena (contrato de la sección 13 del plan).
 export function evento(req, res) {
-  const { tecnicoId, escenarioId, pasoId, accion, opcion, pista, inputDevice, ms } = req.body;
+  const { tecnicoId, escenarioId, pasoId, accion, opcion, pista, inputDevice, ms, ordenId } = req.body;
+  // Dentro de una orden de trabajo del Taller, el intento también cuenta para la orden.
+  if (ordenId) {
+    res
+      .status(201)
+      .json(
+        intentoEnOrden({
+          tecnicoId,
+          escenarioId,
+          pasoId,
+          accion,
+          opcion,
+          pista,
+          inputDevice,
+          ms,
+          ordenId: Number(ordenId),
+        }),
+      );
+    return;
+  }
   res
     .status(201)
     .json(registrarIntento({ tecnicoId, escenarioId, pasoId, accion, opcion, pista, inputDevice, ms }));
