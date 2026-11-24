@@ -27,21 +27,19 @@ export function evento(req, res) {
   const { tecnicoId, escenarioId, pasoId, accion, opcion, pista, inputDevice, ms, ordenId } = req.body;
   // Dentro de una orden de trabajo del Taller, el intento también cuenta para la orden.
   if (ordenId) {
-    res
-      .status(201)
-      .json(
-        intentoEnOrden({
-          tecnicoId,
-          escenarioId,
-          pasoId,
-          accion,
-          opcion,
-          pista,
-          inputDevice,
-          ms,
-          ordenId: Number(ordenId),
-        }),
-      );
+    res.status(201).json(
+      intentoEnOrden({
+        tecnicoId,
+        escenarioId,
+        pasoId,
+        accion,
+        opcion,
+        pista,
+        inputDevice,
+        ms,
+        ordenId: Number(ordenId),
+      }),
+    );
     return;
   }
   res
