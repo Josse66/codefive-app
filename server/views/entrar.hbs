@@ -1,0 +1,26 @@
+<section class="mx-auto grid w-full max-w-5xl gap-8 lg:grid-cols-[minmax(0,1fr)_420px] lg:items-center">
+  <div class="grid gap-4">
+    <h1 class="text-5xl leading-none lg:text-6xl">Tu plan de formación técnica</h1>
+    <p class="max-w-xl text-lg text-tinta-2">Entra con la cuenta que te dio tu empresa. Verás solo tu avance: tu autobús, tus módulos, lo que te toca aprender y tus órdenes en el taller.</p>
+    <ul class="grid max-w-xl gap-2 text-[15px] text-tinta-2">
+      <li class="flex gap-3"><span class="recuadro h-6 w-6 text-sm">1</span>Un diagnóstico ubica lo que ya dominas.</li>
+      <li class="flex gap-3"><span class="recuadro h-6 w-6 text-sm">2</span>Aprendes con lecciones sobre el autobús que atiendes.</li>
+      <li class="flex gap-3"><span class="recuadro h-6 w-6 text-sm">3</span>Practicas en el taller y subes de nivel.</li>
+    </ul>
+  </div>
+
+  <form method="post" action="/entrar" class="grid gap-4 border-2 border-tinta bg-white p-6 lg:p-8">
+    <h2 class="text-3xl">Entrar</h2>
+    {{#if error}}<p class="aviso-critico" role="alert">{{error}}</p>{{/if}}
+    <label class="grid gap-1.5">
+      <span class="font-semibold">Correo</span>
+      <input name="correo" type="email" autocomplete="username" required value="{{correo}}" class="border border-tinta-3 px-3 py-3 text-base focus:border-tinta">
+    </label>
+    <label class="grid gap-1.5">
+      <span class="font-semibold">Contraseña</span>
+      <input name="contrasena" type="password" autocomplete="current-password" required class="border border-tinta-3 px-3 py-3 text-base focus:border-tinta">
+    </label>
+    <button type="submit" class="boton py-4 text-base">Entrar</button>
+    <p class="border-t border-placa-linea pt-4 text-[15px]">¿Eres nuevo? <a href="/registro" class="font-semibold underline">Regístrate con el código de tu empresa</a></p>
+  </form>
+</section>

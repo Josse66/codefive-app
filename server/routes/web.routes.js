@@ -1,24 +1,42 @@
 import { Router } from 'express';
 import { mostrarInicio } from '#controllers/inicio.controller.js';
+import * as cuentas from '#controllers/cuentas.controller.js';
 import {
   mostrarAutobus,
-  mostrarLeccion,
-  mostrarTemario,
   mostrarDiagnostico,
   mostrarEscenario,
   mostrarEvaluacion,
+  mostrarLeccion,
   mostrarOrden,
   mostrarPerfil,
+  mostrarPlan,
   mostrarPractica,
   mostrarRuta,
-  mostrarTaller,
   mostrarTablero,
+  mostrarTaller,
+  mostrarTemario,
 } from '#controllers/vistas.controller.js';
+import { exigirSesion, exigirTecnico, exigirVolvo } from '#helpers/sesion.js';
 
 const router = Router();
 
-router.get('/', mostrarInicio);
-router.get('/volvo', mostrarTablero);
+// Acceso
+router.get('/', cuentas.inicio);
+router.get('/entrar', cuentas.mostrarEntrar);
+router.post('/entrar', cuentas.entrar);
+router.post('/salir', cuentas.salir);
+router.get('/registro', cuentas.mostrarRegistro);
+router.post('/registro', cuentas.registrar);
+router.get('/bienvenida', exigirSesion, cuentas.mostrarBienvenida);
+router.post('/bienvenida', exigirSesion, cuentas.guardarBienvenida);
+
+// Capacitación Volvo: panel y red de técnicos
+router.get('/volvo', exigirVolvo, mostrarTablero);
+router.get('/tecnicos', exigirVolvo, mostrarInicio);
+
+// Páginas del técnico: cada quien solo las suyas (Volvo puede ver todas)
+router.use('/tecnicos/:id', exigirTecnico);
+router.get('/tecnicos/:id/plan', mostrarPlan);
 router.get('/tecnicos/:id/diagnostico', mostrarDiagnostico);
 router.get('/tecnicos/:id/perfil', mostrarPerfil);
 router.get('/tecnicos/:id/ruta', mostrarRuta);

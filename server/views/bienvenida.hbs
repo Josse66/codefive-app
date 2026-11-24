@@ -1,0 +1,41 @@
+<section class="grid gap-6">
+  <div class="grid gap-2">
+    {{#if nuevo}}<p class="font-narrow text-sm font-bold uppercase tracking-wider text-tinta-3">Paso 2 de 3 · Tu autobús</p>{{/if}}
+    <h1 class="text-4xl leading-tight lg:text-5xl">{{#if nuevo}}Bienvenido, {{tecnico.nombre}}. ¿Qué autobús atiendes?{{else}}Cambia tu autobús{{/if}}</h1>
+    <p class="max-w-3xl text-tinta-2">Cada autobús se revisa y se repara distinto. Tu plan, tus lecciones y tus prácticas se arman para el modelo que elijas: un eléctrico no ve postratamiento diésel y un diésel no ve alto voltaje.</p>
+  </div>
+
+  <form method="post" action="/bienvenida" class="grid gap-6">
+    {{#each segmentos}}
+      {{#if modelos.length}}
+        <fieldset class="grid gap-3">
+          <legend class="mb-3 text-2xl font-narrow font-bold">{{segmento}}</legend>
+          <div class="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+            {{#each modelos}}
+              <label class="group grid cursor-pointer content-start gap-3 border-2 border-placa-linea bg-white p-5 transition-colors duration-150 hover:border-tinta has-[:checked]:border-tinta has-[:checked]:bg-placa-2">
+                <input type="radio" name="modelo" value="{{id}}" class="sr-only" required {{#if elegido}}checked{{/if}}>
+                <span class="flex items-start justify-between gap-2">
+                  <span class="font-sans text-xl font-semibold leading-snug">{{nombre}}</span>
+                  <span class="hidden h-6 w-6 shrink-0 items-center justify-center bg-tinta text-white group-has-[:checked]:flex" aria-hidden="true">✓</span>
+                </span>
+                <span class="flex flex-wrap gap-1.5">
+                  {{#if (igual tecnologia 'electrica')}}<span class="marca-hv">Eléctrico · alto voltaje</span>{{/if}}
+                  {{#if (igual tecnologia 'diesel')}}<span class="chip border-tinta-3 text-tinta-2">Diésel</span>{{/if}}
+                  {{#if (igual tecnologia 'hibrida')}}<span class="chip border-tinta-3 text-tinta-2">Híbrido</span><span class="marca-hv">Alto voltaje</span>{{/if}}
+                </span>
+                <span class="text-[15px] text-tinta-2">{{descripcion}}</span>
+                <ul class="grid gap-1 border-t border-placa-linea pt-2 text-sm text-tinta-3">
+                  {{#each datos}}<li>{{this}}</li>{{/each}}
+                </ul>
+              </label>
+            {{/each}}
+          </div>
+        </fieldset>
+      {{/if}}
+    {{/each}}
+    <div class="sticky bottom-0 flex flex-wrap items-center justify-between gap-3 border-t-2 border-tinta bg-placa py-4">
+      <p class="text-sm text-tinta-3">Puedes cambiarlo después desde Mi plan. Modelos y datos del catálogo presentado en la mentoría; confirmar con Volvo.</p>
+      <button type="submit" class="boton px-8 py-4 text-base">{{#if nuevo}}Continuar a mi diagnóstico{{else}}Guardar mi autobús{{/if}}</button>
+    </div>
+  </form>
+</section>

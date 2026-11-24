@@ -6,6 +6,7 @@ import { configurarHandlebars } from '#config/handlebars.js';
 import { configurarVite } from '#config/vite.js';
 import webRoutes from '#routes/web.routes.js';
 import apiRoutes from '#routes/api.routes.js';
+import { cargarSesion } from '#helpers/sesion.js';
 
 const enDesarrollo = process.env.NODE_ENV !== 'production';
 
@@ -21,6 +22,8 @@ export async function crearApp() {
   await configurarVite(app);
   app.use(express.static(path.resolve('public')));
 
+  // Quién está usando la app (cookie de sesión) antes de cualquier ruta.
+  app.use(cargarSesion);
   app.use('/', webRoutes);
   app.use('/api', apiRoutes);
 

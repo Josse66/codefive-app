@@ -1,0 +1,47 @@
+<section class="mx-auto grid w-full max-w-2xl gap-6">
+  <div class="grid gap-2">
+    <p class="font-narrow text-sm font-bold uppercase tracking-wider text-tinta-3">Paso 1 de 3 · Tu cuenta</p>
+    <h1 class="text-4xl leading-tight lg:text-5xl">Crea tu cuenta</h1>
+    <p class="text-tinta-2">Tu empresa te dio un código de registro. Con él creas tu cuenta; después eliges el autobús que atiendes y haces tu diagnóstico.</p>
+  </div>
+
+  <form method="post" action="/registro" class="grid gap-5 border-2 border-tinta bg-white p-6 lg:p-8" novalidate>
+    <label class="grid gap-1.5">
+      <span class="font-semibold">Código de tu empresa</span>
+      <input name="codigo" required value="{{datos.codigo}}" placeholder="Por ejemplo: VOLVO-MX-2026" class="codigo border border-tinta-3 px-3 py-3 text-lg uppercase focus:border-tinta" {{#if errores.codigo}}aria-invalid="true"{{/if}}>
+      {{#if errores.codigo}}<span class="text-sm font-semibold text-mal">{{errores.codigo}}</span>{{/if}}
+    </label>
+    <div class="grid gap-5 sm:grid-cols-2">
+      <label class="grid gap-1.5 sm:col-span-2">
+        <span class="font-semibold">Nombre completo</span>
+        <input name="nombre" autocomplete="name" required value="{{datos.nombre}}" class="border border-tinta-3 px-3 py-3 text-base focus:border-tinta" {{#if errores.nombre}}aria-invalid="true"{{/if}}>
+        {{#if errores.nombre}}<span class="text-sm font-semibold text-mal">{{errores.nombre}}</span>{{/if}}
+      </label>
+      <label class="grid gap-1.5">
+        <span class="font-semibold">Correo</span>
+        <input name="correo" type="email" autocomplete="email" required value="{{datos.correo}}" class="border border-tinta-3 px-3 py-3 text-base focus:border-tinta" {{#if errores.correo}}aria-invalid="true"{{/if}}>
+        {{#if errores.correo}}<span class="text-sm font-semibold text-mal">{{errores.correo}}</span>{{/if}}
+      </label>
+      <label class="grid gap-1.5">
+        <span class="font-semibold">Contraseña</span>
+        <input name="contrasena" type="password" autocomplete="new-password" required minlength="8" class="border border-tinta-3 px-3 py-3 text-base focus:border-tinta" {{#if errores.contrasena}}aria-invalid="true"{{/if}}>
+        <span class="text-sm {{#if errores.contrasena}}font-semibold text-mal{{else}}text-tinta-3{{/if}}">{{#if errores.contrasena}}{{errores.contrasena}}{{else}}Al menos 8 caracteres.{{/if}}</span>
+      </label>
+      <label class="grid gap-1.5">
+        <span class="font-semibold">Tu taller</span>
+        <select name="taller" required class="border border-tinta-3 bg-white px-3 py-3 text-base focus:border-tinta" {{#if errores.taller}}aria-invalid="true"{{/if}}>
+          <option value="">Elige tu taller</option>
+          {{#each talleres}}<option value="{{this}}" {{#if (igual this ../datos.taller)}}selected{{/if}}>{{this}}</option>{{/each}}
+        </select>
+        {{#if errores.taller}}<span class="text-sm font-semibold text-mal">{{errores.taller}}</span>{{/if}}
+      </label>
+      <label class="grid gap-1.5">
+        <span class="font-semibold">Años de experiencia</span>
+        <input name="anios" type="number" min="0" max="50" inputmode="numeric" required value="{{datos.anios}}" class="border border-tinta-3 px-3 py-3 text-base focus:border-tinta" {{#if errores.anios}}aria-invalid="true"{{/if}}>
+        <span class="text-sm {{#if errores.anios}}font-semibold text-mal{{else}}text-tinta-3{{/if}}">{{#if errores.anios}}{{errores.anios}}{{else}}0 si eres recién egresado.{{/if}}</span>
+      </label>
+    </div>
+    <button type="submit" class="boton py-4 text-base">Crear mi cuenta</button>
+    <p class="text-[15px]">¿Ya tienes cuenta? <a href="/entrar" class="font-semibold underline">Entra aquí</a></p>
+  </form>
+</section>
