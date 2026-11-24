@@ -11,7 +11,9 @@ export async function configurarVite(app) {
   const { createServer } = await import('vite');
   const vite = await createServer({
     configFile: path.resolve('vite.config.js'),
-    server: { middlewareMode: true },
+    // El canal de recarga en caliente usa un puerto ligado al del servidor (3000 → 23000), así dos
+    // servidores de desarrollo no se pelean el 24678 ni la página se recarga sola.
+    server: { middlewareMode: true, hmr: { port: (Number(process.env.PORT) || 3000) + 20000 } },
     appType: 'custom',
   });
   app.use(vite.middlewares);
