@@ -3,6 +3,7 @@
 // La usan la exploración por grupos y los escenarios de práctica.
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 const COLOR = {
   papel: 0xeef1f3,
@@ -104,43 +105,86 @@ function etiqueta(texto, { fondo = '#141c24', tinta = '#ffffff', tamano = 0.42 }
   return sprite;
 }
 
-function construirAutobus(tipo) {
-  const bus = new THREE.Group();
-  // Carrocería.
-  bus.add(caja([12, 2.8, 2.5], COLOR.carroceria, [0, 1.85, 0]));
-  // Banda de ventanas a los dos lados y parabrisas.
-  [1.26, -1.26].forEach((z) => {
-    for (let x = -4.6; x <= 3.4; x += 1.6) {
-      bus.add(caja([1.4, 0.95, 0.02], COLOR.vidrio, [x, 2.45, z]));
-    }
-  });
-  bus.add(caja([0.02, 1.4, 2.2], COLOR.vidrio, [6.01, 2.3, 0]));
-  // Puertas del lado derecho.
-  bus.add(caja([1.1, 2.4, 0.03], 0xe3e8ec, [5.0, 1.65, 1.27]));
-  bus.add(caja([1.2, 2.4, 0.03], 0xe3e8ec, [0.6, 1.65, 1.27]));
-  // Defensa y faldón.
-  bus.add(caja([12.1, 0.18, 2.55], COLOR.llanta, [0, 0.5, 0]));
-  // Ruedas.
-  [-3.8, 4.1].forEach((x) => [1.1, -1.1].forEach((z) => bus.add(rueda(x, z))));
+// Modelo realista del autobús (GLB hecho en Blender, 12 m de largo, frente hacia +x, puerta en +z).
+// Se descarga una sola vez y cada escena usa una copia.
+const RUTA_MODELO = '/modelos/autobus_urbano.glb';
+const TECHO = 3.25;
+let modeloCargando = null;
+function cargarModelo() {
+  modeloCargando ??= new GLTFLoader().loadAsync(RUTA_MODELO).then((gltf) => gltf.scene);
+  return modeloCargando;
+}
 
+// Paquete de baterías o escape, encima del techo cuya altura se recibe.
+function agregarExtras(bus, tipo, techo) {
+  const extras = new THREE.Group();
   if (tipo === 'electrico') {
     // Paquete de baterías de 600 V en el techo, con su marca naranja.
-    const baterias = caja([5.2, 0.3, 1.9], COLOR.hvSuave, [0, 3.4, 0]);
+    const baterias = caja([5.2, 0.3, 1.9], COLOR.hvSuave, [0, techo + 0.15, 0]);
     baterias.children[0].material.color.set(COLOR.hv);
-    bus.add(baterias);
+    extras.add(baterias);
     const marca = etiqueta('600 V', { fondo: '#d9480f', tamano: 0.6 });
-    marca.position.set(2.4, 3.85, -0.7);
-    bus.add(marca);
+    marca.position.set(2.4, techo + 0.6, -0.7);
+    extras.add(marca);
   } else {
-    // Compartimiento del motor atrás y escape.
-    bus.add(caja([0.03, 1.1, 2.0], 0xe3e8ec, [-6.01, 1.25, 0]));
     const escape = new THREE.Mesh(
       new THREE.CylinderGeometry(0.08, 0.08, 1.0, 12),
       new THREE.MeshStandardMaterial({ color: COLOR.metal }),
     );
-    escape.position.set(-5.7, 3.6, -0.9);
-    bus.add(conAristas(escape));
+    escape.position.set(-5.7, techo + 0.2, -0.9);
+    extras.add(conAristas(escape));
   }
+  bus.add(extras);
+  return extras;
+}
+
+function construirAutobus(tipo) {
+  const bus = new THREE.Group();
+  // Autobús de bloques: se ve mientras carga el modelo y se queda si el modelo no carga.
+  const bloques = new THREE.Group();
+  bus.add(bloques);
+  // Carrocería.
+  bloques.add(caja([12, 2.8, 2.5], COLOR.carroceria, [0, 1.85, 0]));
+  // Banda de ventanas a los dos lados y parabrisas.
+  [1.26, -1.26].forEach((z) => {
+    for (let x = -4.6; x <= 3.4; x += 1.6) {
+      bloques.add(caja([1.4, 0.95, 0.02], COLOR.vidrio, [x, 2.45, z]));
+    }
+  });
+  bloques.add(caja([0.02, 1.4, 2.2], COLOR.vidrio, [6.01, 2.3, 0]));
+  // Puertas del lado derecho.
+  bloques.add(caja([1.1, 2.4, 0.03], 0xe3e8ec, [5.0, 1.65, 1.27]));
+  bloques.add(caja([1.2, 2.4, 0.03], 0xe3e8ec, [0.6, 1.65, 1.27]));
+  // Defensa y faldón.
+  bloques.add(caja([12.1, 0.18, 2.55], COLOR.llanta, [0, 0.5, 0]));
+  // Ruedas.
+  [-3.8, 4.1].forEach((x) => [1.1, -1.1].forEach((z) => bloques.add(rueda(x, z))));
+  // Compartimiento del motor atrás en el diésel.
+  if (tipo === 'diesel') bloques.add(caja([0.03, 1.1, 2.0], 0xe3e8ec, [-6.01, 1.25, 0]));
+
+  let extras = agregarExtras(bus, tipo, TECHO);
+
+  // Cuando llega el modelo realista, sustituye a los bloques y los extras se acomodan a su techo.
+  cargarModelo()
+    .then((modelo) => {
+      const copia = modelo.clone(true);
+      // Las piezas de los escenarios están medidas sobre el techo de 3.25 m de los bloques.
+      // La carrocería se estira a lo alto; las ruedas crecen parejo para seguir redondas y en el piso.
+      const factor = TECHO / new THREE.Box3().setFromObject(copia).max.y;
+      copia.children.forEach((parte) => {
+        const p = parte;
+        if (p.name.startsWith('rueda')) {
+          p.scale.multiplyScalar(factor);
+          p.position.y *= factor;
+        } else {
+          p.scale.y *= factor;
+        }
+      });
+      bus.remove(bloques, extras);
+      bus.add(copia);
+      extras = agregarExtras(bus, tipo, TECHO);
+    })
+    .catch(() => {});
   return bus;
 }
 
