@@ -1,0 +1,97 @@
+<section id="evaluacion" class="grid gap-6" data-tecnico-id="{{tecnico.id}}" data-competencia-id="{{competenciaId}}">
+  <div class="flex flex-wrap items-end justify-between gap-4">
+    <div class="grid gap-2">
+      <p class="font-narrow text-sm font-bold uppercase tracking-wider text-tinta-3">Evaluación antes, después y diferida</p>
+      <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+        <span class="codigo text-3xl lg:text-4xl">{{competenciaId}}</span>
+        <h1 id="titulo-competencia" class="font-sans text-3xl font-semibold leading-tight tracking-normal">Cargando…</h1>
+      </div>
+      <p id="detalle-competencia" class="text-tinta-2"></p>
+    </div>
+    <div class="flex flex-wrap items-center gap-3">
+      <span class="border border-tinta bg-white px-3 py-2 text-sm">Reloj del técnico: <span id="dia-simulado" class="codigo">día 0</span></span>
+      <a href="/tecnicos/{{tecnico.id}}/ruta" class="boton-linea">Volver a la ruta</a>
+    </div>
+  </div>
+
+  {{! Los tres momentos a la misma escala: lo que sabía, lo que aprendió y lo que conservó. }}
+  <ol id="momentos" class="grid border border-tinta bg-white md:grid-cols-3" aria-label="Momentos de la evaluación">
+    {{#each (lista 'pre' 'post' 'diferida')}}
+      <li data-momento="{{this}}" class="grid gap-3 border-placa-linea p-5 max-md:border-b md:border-r md:last:border-r-0">
+        <div class="flex items-baseline justify-between gap-3">
+          <h2 data-titulo class="text-xl"></h2>
+          <span data-cuando class="text-sm text-tinta-3"></span>
+        </div>
+        <p class="flex items-baseline gap-2">
+          <span data-porcentaje class="codigo text-5xl">—</span>
+          <span data-aciertos class="text-tinta-2"></span>
+        </p>
+        <div class="relative h-2 bg-placa-2" aria-hidden="true">
+          <div data-barra class="h-2 bg-tinta transition-[width] duration-700 ease-out" style="width: 0%"></div>
+          <span class="absolute inset-y-[-4px] left-[40%] w-px bg-tinta-3"></span>
+          <span class="absolute inset-y-[-4px] left-[80%] w-px bg-tinta-3"></span>
+        </div>
+        <p data-nota class="text-sm text-tinta-3"></p>
+      </li>
+    {{/each}}
+  </ol>
+
+  <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_400px] lg:items-start">
+    <div class="grid gap-6">
+      {{! Qué toca ahora: se llena según el momento siguiente. }}
+      <article id="accion" class="grid gap-4 border-2 border-tinta bg-white p-6 lg:p-8" hidden>
+        <h2 id="accion-titulo" class="text-3xl"></h2>
+        <p id="accion-texto" class="max-w-[70ch] text-[17px] leading-relaxed"></p>
+        <div class="flex flex-wrap gap-3">
+          <button id="boton-accion" type="button" class="boton px-8 py-4 text-base" hidden></button>
+          <a id="enlace-accion" href="#" class="boton px-8 py-4 text-base" hidden></a>
+          <a id="enlace-secundario" href="/tecnicos/{{tecnico.id}}/ruta" class="boton-linea px-6 py-4" hidden>Ver la ruta</a>
+        </div>
+      </article>
+
+      <div id="tarjeta-pregunta" class="grid gap-6 border border-placa-linea bg-white p-6 lg:p-8" hidden>
+        <div class="flex flex-wrap items-baseline justify-between gap-2">
+          <p id="pregunta-numero" class="text-sm font-semibold text-tinta-2"></p>
+          <p class="text-sm text-tinta-3">Sin pistas. Las respuestas se muestran al terminar.</p>
+        </div>
+        <h2 id="pregunta-enunciado" class="font-sans text-2xl font-semibold leading-snug tracking-normal"></h2>
+        <div id="pregunta-opciones" class="grid gap-2" role="radiogroup" aria-labelledby="pregunta-enunciado"></div>
+
+        <hr class="border-placa-linea">
+        <fieldset id="confianza" class="grid gap-2" disabled>
+          <legend class="mb-2 font-semibold">¿Qué tan seguro estás de tu respuesta?</legend>
+          <div class="grid gap-2 sm:grid-cols-3">
+            <button type="button" data-valor="1">No estoy seguro</button>
+            <button type="button" data-valor="2">Creo que sí</button>
+            <button type="button" data-valor="3">Estoy seguro</button>
+          </div>
+        </fieldset>
+
+        <div class="flex justify-end">
+          <button id="boton-siguiente" type="button" class="boton min-w-48" disabled>Siguiente</button>
+        </div>
+      </div>
+
+      <div id="resultado" class="grid gap-4 border border-tinta bg-white p-6 lg:p-8" hidden>
+        <h2 id="resultado-titulo" class="text-3xl"></h2>
+        <ol id="resultado-detalle" class="grid gap-3"></ol>
+      </div>
+
+      <p id="mensaje-error" class="aviso-critico" hidden></p>
+    </div>
+
+    <aside id="olvido" class="grid gap-4 border border-placa-linea bg-white p-5 lg:sticky lg:top-6" aria-labelledby="olvido-titulo">
+      <div class="grid gap-1">
+        <h2 id="olvido-titulo" class="text-xl">Curva de olvido</h2>
+        <p class="text-sm text-tinta-3">Dominio esperado si no vuelve a practicar: R = e<sup>−t/S</sup>. S son los días que le dura lo aprendido; cada repaso bien contestado la alarga.</p>
+      </div>
+      <div id="olvido-grafica" class="min-h-48"></div>
+      <dl class="grid grid-cols-3 border-t border-tinta pt-3 text-sm">
+        <div class="grid gap-0.5"><dt class="text-tinta-3">Ganancia</dt><dd id="ind-ganancia" class="codigo text-2xl">—</dd></div>
+        <div class="grid gap-0.5"><dt class="text-tinta-3">Retención</dt><dd id="ind-retencion" class="codigo text-2xl">—</dd></div>
+        <div class="grid gap-0.5"><dt class="text-tinta-3">Estabilidad</dt><dd id="ind-estabilidad" class="codigo text-2xl">—</dd></div>
+      </dl>
+      <p class="text-xs text-tinta-3">Ganancia: puntos de dominio de antes a después. Retención: parte del dominio alcanzado que conservó en la revisión diferida. Parámetros de demostración, se calibran con un piloto.</p>
+    </aside>
+  </div>
+</section>

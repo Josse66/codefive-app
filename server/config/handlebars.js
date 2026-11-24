@@ -17,6 +17,8 @@ export function configurarHandlebars(app) {
         anio: () => new Date().getFullYear(),
         igual: (a, b) => a === b,
         inc: (n) => Number(n) + 1,
+        // Arma un arreglo en la plantilla; Handlebars agrega al final un objeto de opciones.
+        lista: (...valores) => valores.slice(0, -1),
         viteAssets,
         ...formato,
       },

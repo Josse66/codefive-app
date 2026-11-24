@@ -18,6 +18,7 @@ export default defineConfig(({ command }) => ({
         diagnostico: ruta('./client/pages/diagnostico.js'),
         practica: ruta('./client/pages/practica.js'),
         perfil: ruta('./client/pages/perfil.js'),
+        evaluacion: ruta('./client/pages/evaluacion.js'),
       },
     },
   },

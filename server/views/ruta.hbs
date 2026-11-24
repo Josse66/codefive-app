@@ -21,7 +21,8 @@
         <p class="text-[15px]">{{siguiente.motivo}}{{#if siguiente.bloqueadaPor}} · primero: {{siguiente.bloqueadaPor.nombre}}{{/if}}</p>
       </div>
       <div class="grid gap-2 lg:min-w-56">
-        <a href="/tecnicos/{{tecnico.id}}/practica/{{siguiente.competencia.id}}" class="boton px-8 py-4 text-base">Practicar ahora</a>
+        <a href="/tecnicos/{{tecnico.id}}/evaluacion/{{siguiente.competencia.id}}" class="boton px-8 py-4 text-base">Empezar</a>
+        <p class="text-center text-sm text-tinta-3">Evaluación antes, práctica y evaluación después</p>
         {{#if siguiente.escenario}}<p class="text-center text-sm text-tinta-3">Con escenario 3D: {{siguiente.escenario}}</p>{{/if}}
       </div>
     </article>
@@ -49,7 +50,7 @@
                   <td class="text-sm">
                     {{#if obligatoria}}<span class="font-semibold text-mal">Obligatoria.</span> {{/if}}{{motivo}}{{#if bloqueadaPor}} · primero {{bloqueadaPor.id}}{{/if}}
                   </td>
-                  <td class="text-right"><a href="/tecnicos/{{../tecnico.id}}/practica/{{competencia.id}}" class="font-semibold underline">Practicar</a></td>
+                  <td class="text-right"><a href="/tecnicos/{{../tecnico.id}}/evaluacion/{{competencia.id}}" class="font-semibold underline">Empezar</a></td>
                 </tr>
               {{/each}}
             </tbody>

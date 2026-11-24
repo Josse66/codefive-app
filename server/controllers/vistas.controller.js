@@ -91,3 +91,15 @@ export function mostrarPractica(req, res) {
     }),
   );
 }
+
+export function mostrarEvaluacion(req, res) {
+  conTecnico(req, res, (tecnico) =>
+    res.render('evaluacion', {
+      titulo: `Evaluación · ${tecnico.nombre}`,
+      tecnico,
+      seccion: 'ruta',
+      competenciaId: req.params.competenciaId,
+      scriptPagina: 'pages/evaluacion.js',
+    }),
+  );
+}
