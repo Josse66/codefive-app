@@ -6,6 +6,7 @@
     </a>
     {{#if tecnico}}
       <nav aria-label="Secciones del técnico" class="flex gap-1 text-[15px]">
+        <a href="/tecnicos/{{tecnico.id}}/taller" class="px-3 py-4 no-underline {{#if (igual seccion 'taller')}}text-white shadow-[inset_0_-3px_0_#ffffff]{{else}}text-placa-linea hover:text-white{{/if}}" {{#if (igual seccion 'taller')}}aria-current="page"{{/if}}>Taller</a>
         <a href="/tecnicos/{{tecnico.id}}/diagnostico" class="px-3 py-4 no-underline {{#if (igual seccion 'diagnostico')}}text-white shadow-[inset_0_-3px_0_#ffffff]{{else}}text-placa-linea hover:text-white{{/if}}" {{#if (igual seccion 'diagnostico')}}aria-current="page"{{/if}}>Diagnóstico</a>
         <a href="/tecnicos/{{tecnico.id}}/perfil" class="px-3 py-4 no-underline {{#if (igual seccion 'competencias')}}text-white shadow-[inset_0_-3px_0_#ffffff]{{else}}text-placa-linea hover:text-white{{/if}}" {{#if (igual seccion 'competencias')}}aria-current="page"{{/if}}>Competencias</a>
         <a href="/tecnicos/{{tecnico.id}}/ruta" class="px-3 py-4 no-underline {{#if (igual seccion 'ruta')}}text-white shadow-[inset_0_-3px_0_#ffffff]{{else}}text-placa-linea hover:text-white{{/if}}" {{#if (igual seccion 'ruta')}}aria-current="page"{{/if}}>Ruta</a>

@@ -138,3 +138,28 @@ export function mostrarEscenario(req, res) {
     }),
   );
 }
+
+// Modo Taller: bahía de órdenes, nivel y experiencia del técnico.
+export function mostrarTaller(req, res) {
+  conTecnico(req, res, (tecnico) =>
+    res.render('taller', {
+      titulo: `Taller · ${tecnico.nombre}`,
+      tecnico,
+      seccion: 'taller',
+      scriptPagina: 'pages/taller.js',
+    }),
+  );
+}
+
+// Orden de trabajo en curso: el mismo escenario en pantalla dividida, con reloj y entrega.
+export function mostrarOrden(req, res) {
+  conTecnico(req, res, (tecnico) =>
+    res.render('escenario', {
+      titulo: `Orden de trabajo · ${tecnico.nombre}`,
+      tecnico,
+      seccion: 'taller',
+      ordenId: req.params.ordenId,
+      scriptPagina: 'pages/escenario.js',
+    }),
+  );
+}

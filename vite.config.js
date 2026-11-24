@@ -22,6 +22,7 @@ export default defineConfig(({ command }) => ({
         tablero: ruta('./client/pages/tablero.js'),
         autobus: ruta('./client/pages/autobus.js'),
         escenario: ruta('./client/pages/escenario.js'),
+        taller: ruta('./client/pages/taller.js'),
       },
     },
   },

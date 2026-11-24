@@ -5,9 +5,11 @@ import {
   mostrarDiagnostico,
   mostrarEscenario,
   mostrarEvaluacion,
+  mostrarOrden,
   mostrarPerfil,
   mostrarPractica,
   mostrarRuta,
+  mostrarTaller,
   mostrarTablero,
 } from '#controllers/vistas.controller.js';
 
@@ -21,6 +23,8 @@ router.get('/tecnicos/:id/ruta', mostrarRuta);
 router.get('/tecnicos/:id/practica/:competenciaId', mostrarPractica);
 router.get('/tecnicos/:id/evaluacion/:competenciaId', mostrarEvaluacion);
 router.get('/tecnicos/:id/autobus', mostrarAutobus);
+router.get('/tecnicos/:id/taller', mostrarTaller);
+router.get('/tecnicos/:id/taller/orden/:ordenId', mostrarOrden);
 router.get('/tecnicos/:id/escenario/:escenarioId', mostrarEscenario);
 
 export default router;
