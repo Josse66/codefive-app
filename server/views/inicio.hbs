@@ -1,9 +1,17 @@
-<section>
-  <h1>Técnicos del Mañana</h1>
-  <p>Diagnosticamos lo que cada técnico sabe por sistema del autobús, lo entrenamos en lo que le falta y le mostramos a Volvo quién está listo.</p>
-  <ul>
+<section class="grid gap-8">
+  <div>
+    <p class="etiqueta">Reto Volvo · Técnicos del Mañana</p>
+    <h1 class="mt-2 text-5xl">Entrenamiento que se adapta a cada técnico</h1>
+    <p class="mt-4 max-w-2xl text-lg text-acero-600">
+      Diagnosticamos lo que cada técnico sabe por sistema del autobús, lo entrenamos en lo que le falta y le mostramos a Volvo quién está listo.
+    </p>
+  </div>
+  <ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
     {{#each modulos}}
-      <li>{{this}}</li>
+      <li class="tarjeta">
+        <span class="font-display text-3xl text-hv-500">{{inc @index}}</span>
+        <p class="mt-2 font-semibold">{{this}}</p>
+      </li>
     {{/each}}
   </ul>
 </section>

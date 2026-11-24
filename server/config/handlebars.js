@@ -15,6 +15,7 @@ export function configurarHandlebars(app) {
       helpers: {
         anio: () => new Date().getFullYear(),
         igual: (a, b) => a === b,
+        inc: (n) => Number(n) + 1,
         viteAssets,
       },
     }),
