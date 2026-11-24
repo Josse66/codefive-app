@@ -3,7 +3,6 @@
 // La usan la exploración por grupos y los escenarios de práctica.
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { HDRLoader } from 'three/examples/jsm/loaders/HDRLoader.js';
 
@@ -561,14 +560,34 @@ export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos 
   escena.add(herramienta);
 
   // ---------- Modo inmersivo: primera persona en el taller ----------
-  // Clic toma el mouse (pointer lock) y mira; WASD camina; Shift se agacha; la mira al centro
-  // apunta y la herramienta va en la mano derecha con el guante en la izquierda.
+  // El cursor siempre se ve (no se "toma" el mouse, así Esc no saca de nada): clic derecho
+  // sostenido mira alrededor, WASD camina, Shift se agacha y el clic izquierdo usa la herramienta
+  // donde está el cursor. La herramienta va en la mano derecha y el guante en la izquierda.
   escena.add(camara);
-  const primeraPersona = new PointerLockControls(camara, renderer.domElement);
-  primeraPersona.addEventListener('change', () => pedirCuadro());
-  const teclas = new Set();
   const OJOS = { parado: 1.65, agachado: 0.95 };
   const inmersivo = { activo: false, guardado: null, altura: OJOS.parado };
+  const mirada = new THREE.Euler(0, 0, 0, 'YXZ');
+  let mirando = false;
+  renderer.domElement.addEventListener('contextmenu', (e) => {
+    if (inmersivo.activo) e.preventDefault();
+  });
+  renderer.domElement.addEventListener('pointerdown', (e) => {
+    if (!inmersivo.activo || e.button !== 2) return;
+    mirando = true;
+    renderer.domElement.setPointerCapture(e.pointerId);
+  });
+  renderer.domElement.addEventListener('pointerup', (e) => {
+    if (e.button === 2) mirando = false;
+  });
+  renderer.domElement.addEventListener('pointermove', (e) => {
+    if (!inmersivo.activo || !mirando) return;
+    mirada.setFromQuaternion(camara.quaternion);
+    mirada.y -= e.movementX * 0.0035;
+    mirada.x = THREE.MathUtils.clamp(mirada.x - e.movementY * 0.0035, -1.35, 1.35);
+    camara.quaternion.setFromEuler(mirada);
+    pedirCuadro();
+  });
+  const teclas = new Set();
   const manoIzquierda = new THREE.Group();
   manoIzquierda.position.set(-0.3, -0.22, -0.6);
   manoIzquierda.visible = false;
@@ -615,7 +634,7 @@ export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos 
       herramienta.scale.setScalar(0.32);
       manoIzquierda.visible = true;
     } else {
-      primeraPersona.unlock();
+      mirando = false;
       teclas.clear();
       escena.add(herramienta);
       herramienta.scale.setScalar(1);
@@ -639,8 +658,13 @@ export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos 
     const subiendo = Math.abs(inmersivo.altura - meta) > 0.005;
     if (!adelante && !lado && !subiendo) return false;
     const velocidad = 2.4 * dt;
-    if (adelante) primeraPersona.moveForward(adelante * velocidad);
-    if (lado) primeraPersona.moveRight(lado * velocidad);
+    // Adelante = hacia donde mira, sobre el piso; lado = perpendicular.
+    const frente = new THREE.Vector3();
+    camara.getWorldDirection(frente);
+    frente.y = 0;
+    frente.normalize();
+    const derecha = new THREE.Vector3(-frente.z, 0, frente.x);
+    camara.position.addScaledVector(frente, adelante * velocidad).addScaledVector(derecha, lado * velocidad);
     inmersivo.altura += (meta - inmersivo.altura) * Math.min(1, dt * 10);
     camara.position.y = inmersivo.altura;
     fueraDelAutobus(camara.position);
@@ -714,7 +738,7 @@ export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos 
 
   function moverHerramienta(x, y, giro) {
     // En modo inmersivo la herramienta va en la mano (pegada a la cámara), no sigue al puntero.
-    if (inmersivo.activo) return piezaEn(0.5, 0.5);
+    if (inmersivo.activo) return piezaEn(x, y);
     const encima = piezaEn(x, y);
     const punto = encima?.punto ?? rayo(x, y).ray.intersectPlane(plano, new THREE.Vector3());
     if (punto) herramienta.position.copy(punto).add(new THREE.Vector3(0, 0, 0.35));
@@ -1053,11 +1077,6 @@ export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos 
     marcarPieza: yRedibujar(marcarPieza),
     enfocar: yRedibujar(enfocar),
     activarInmersivo: yRedibujar(activarInmersivo),
-    tomarMouse: () => primeraPersona.lock(),
-    get mouseTomado() {
-      return primeraPersona.isLocked;
-    },
-    alSoltarMouse: (fn) => primeraPersona.addEventListener('unlock', fn),
     moverHerramienta: yRedibujar(moverHerramienta),
     elegirHerramienta: yRedibujar(elegirHerramienta),
     efecto: yRedibujar(efecto, true),
