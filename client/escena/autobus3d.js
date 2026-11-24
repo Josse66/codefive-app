@@ -4,6 +4,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { HDRLoader } from 'three/examples/jsm/loaders/HDRLoader.js';
 
 const COLOR = {
   papel: 0xeef1f3,
@@ -115,17 +116,64 @@ function cargarModelo() {
   return modeloCargando;
 }
 
+// Piezas, herramientas, baterías del techo y escape, modelados en Blender en un solo GLB.
+// Cada uno es un nodo con el id de la pieza (las herramientas llevan "h_" adelante).
+let bibliotecaCargando = null;
+function cargarBiblioteca() {
+  bibliotecaCargando ??= new GLTFLoader().loadAsync('/modelos/piezas.glb').then((gltf) => gltf.scene);
+  return bibliotecaCargando;
+}
+
+// Luz del taller (HDRI CC0 de Poly Haven) y piso de concreto pintado.
+let ambienteCargando = null;
+function cargarAmbiente() {
+  ambienteCargando ??= new HDRLoader().loadAsync('/modelos/taller_1k.hdr').then((textura) => {
+    const t = textura;
+    t.mapping = THREE.EquirectangularReflectionMapping;
+    return t;
+  });
+  return ambienteCargando;
+}
+const cargadorTexturas = new THREE.TextureLoader();
+
+// Copia de un modelo con materiales propios (para poder resaltarla sin tocar las demás) y sombras.
+function copiaDe(original) {
+  const copia = original.clone(true);
+  copia.position.set(0, 0, 0);
+  copia.traverse((nodo) => {
+    const n = nodo;
+    if (n.isMesh) {
+      n.material = n.material.clone();
+      n.castShadow = true;
+      n.receiveShadow = true;
+    }
+  });
+  return copia;
+}
+
 // Paquete de baterías o escape, encima del techo cuya altura se recibe.
-function agregarExtras(bus, tipo, techo) {
+// Con la biblioteca cargada usa los modelos; si no, cajas.
+function agregarExtras(bus, tipo, techo, biblioteca) {
   const extras = new THREE.Group();
+  const modelo = biblioteca?.getObjectByName(tipo === 'electrico' ? 'baterias_techo' : 'escape');
   if (tipo === 'electrico') {
     // Paquete de baterías de 600 V en el techo, con su marca naranja.
-    const baterias = caja([5.2, 0.3, 1.9], COLOR.hvSuave, [0, techo + 0.15, 0]);
-    baterias.children[0].material.color.set(COLOR.hv);
-    extras.add(baterias);
+    if (modelo) {
+      const baterias = copiaDe(modelo);
+      baterias.position.set(0, techo, 0);
+      extras.add(baterias);
+    } else {
+      const baterias = caja([5.2, 0.3, 1.9], COLOR.hvSuave, [0, techo + 0.15, 0]);
+      baterias.children[0].material.color.set(COLOR.hv);
+      extras.add(baterias);
+    }
     const marca = etiqueta('600 V', { fondo: '#d9480f', tamano: 0.6 });
     marca.position.set(2.4, techo + 0.6, -0.7);
     extras.add(marca);
+  } else if (modelo) {
+    const escape = copiaDe(modelo);
+    escape.position.set(-5.7, techo + 0.2, -0.9);
+    extras.add(escape);
   } else {
     const escape = new THREE.Mesh(
       new THREE.CylinderGeometry(0.08, 0.08, 1.0, 12),
@@ -165,9 +213,9 @@ function construirAutobus(tipo) {
   let extras = agregarExtras(bus, tipo, TECHO);
 
   // Cuando llega el modelo realista, sustituye a los bloques y los extras se acomodan a su techo.
-  cargarModelo()
-    .then((modelo) => {
-      const copia = modelo.clone(true);
+  Promise.all([cargarModelo(), cargarBiblioteca().catch(() => null)])
+    .then(([modelo, biblioteca]) => {
+      const copia = copiaDe(modelo);
       // Las piezas de los escenarios están medidas sobre el techo de 3.25 m de los bloques.
       // La carrocería se estira a lo alto; las ruedas crecen parejo para seguir redondas y en el piso.
       const factor = TECHO / new THREE.Box3().setFromObject(copia).max.y;
@@ -182,7 +230,7 @@ function construirAutobus(tipo) {
       });
       bus.remove(bloques, extras);
       bus.add(copia);
-      extras = agregarExtras(bus, tipo, TECHO);
+      extras = agregarExtras(bus, tipo, TECHO, biblioteca);
     })
     .catch(() => {});
   return bus;
@@ -196,32 +244,91 @@ function construirAutobus(tipo) {
 export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos = false }) {
   const renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   contenedor.append(renderer.domElement);
   renderer.domElement.style.touchAction = 'none';
 
   const escena = new THREE.Scene();
   escena.background = new THREE.Color(COLOR.papel);
-  escena.add(new THREE.HemisphereLight(0xffffff, 0xc9d1d8, 1.6));
-  const sol = new THREE.DirectionalLight(0xffffff, 1.4);
-  sol.position.set(6, 12, 8);
+  escena.add(new THREE.HemisphereLight(0xffffff, 0x8a959f, 0.6));
+  // Lámpara del techo del taller: da las sombras del autobús y las piezas sobre el piso.
+  const sol = new THREE.DirectionalLight(0xffffff, 1.8);
+  sol.position.set(4, 14, 7);
+  sol.castShadow = true;
+  sol.shadow.mapSize.set(2048, 2048);
+  Object.assign(sol.shadow.camera, { left: -9, right: 9, top: 9, bottom: -9, near: 1, far: 40 });
+  sol.shadow.bias = -0.0005;
   escena.add(sol);
-  const rejilla = new THREE.GridHelper(30, 30, COLOR.linea, COLOR.linea);
-  escena.add(rejilla);
 
-  const camara = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
+  // Piso de concreto gris del taller (solo el relieve de la textura) con las líneas amarillas de la bahía.
+  const piso = new THREE.Mesh(
+    new THREE.PlaneGeometry(60, 60),
+    new THREE.MeshStandardMaterial({ color: 0xaab1b7, roughness: 0.82 }),
+  );
+  piso.rotation.x = -Math.PI / 2;
+  piso.receiveShadow = true;
+  escena.add(piso);
+  cargadorTexturas
+    .loadAsync('/modelos/piso_normal.jpg')
+    .then((normal) => {
+      const t = normal;
+      t.wrapS = THREE.RepeatWrapping;
+      t.wrapT = THREE.RepeatWrapping;
+      t.repeat.set(24, 24);
+      t.anisotropy = 8;
+      piso.material.normalMap = t;
+      piso.material.normalScale.set(0.6, 0.6);
+      piso.material.needsUpdate = true;
+    })
+    .catch(() => {});
+  [-2.4, 2.4].forEach((z) => {
+    const linea = new THREE.Mesh(
+      new THREE.PlaneGeometry(16, 0.12),
+      new THREE.MeshStandardMaterial({ color: 0xe0a800, roughness: 0.7 }),
+    );
+    linea.rotation.x = -Math.PI / 2;
+    linea.position.set(0, 0.005, z);
+    linea.receiveShadow = true;
+    escena.add(linea);
+  });
+
+  // El HDRI da reflejos de taller a los metales y queda de fondo, desenfocado.
+  cargarAmbiente()
+    .then((textura) => {
+      escena.environment = textura;
+      escena.environmentIntensity = 0.9;
+      escena.background = textura;
+      escena.backgroundBlurriness = 0.35;
+      escena.backgroundIntensity = 0.7;
+    })
+    .catch(() => {});
+
+  const camara = new THREE.PerspectiveCamera(38, 1, 0.1, 200);
   const objetivo = new THREE.Vector3(...(enfoque?.objetivo ?? [0, 1.6, 0]));
   const distancia = enfoque?.distancia ?? 9;
   // La cámara mira desde el lado derecho, un poco arriba y adelante; distancia es la del JSON.
-  camara.position
-    .copy(objetivo)
-    .add(new THREE.Vector3(0.35, 0.5, 1).normalize().multiplyScalar(distancia * 1.6));
+  const direccion = new THREE.Vector3(0.35, 0.5, 1).normalize();
+  camara.position.copy(objetivo).addScaledVector(direccion, distancia * 1.6);
+  // Entrada: la cámara llega desde lejos y de lado hasta su lugar.
+  const llegada = {
+    t: 0,
+    desde: objetivo.clone().addScaledVector(new THREE.Vector3(1.1, 0.7, 0.9).normalize(), distancia * 3.2),
+    hasta: camara.position.clone(),
+  };
+  camara.position.copy(llegada.desde);
   const controles = new OrbitControls(camara, renderer.domElement);
+  controles.addEventListener('start', () => {
+    llegada.t = 1;
+  });
+  controles.enableDamping = true;
   controles.target.copy(objetivo);
   // Clic izquierdo = usar la herramienta o elegir; derecho gira la vista; la rueda acerca.
   controles.mouseButtons = { LEFT: null, MIDDLE: THREE.MOUSE.DOLLY, RIGHT: THREE.MOUSE.ROTATE };
   controles.enablePan = false;
   controles.minDistance = 3;
-  controles.maxDistance = 25;
+  controles.maxDistance = 34;
   controles.maxPolarAngle = Math.PI * 0.49;
   controles.update();
 
@@ -244,10 +351,49 @@ export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos 
     if (pieza.tipo === 'rueda') malla.rotation.x = Math.PI / 2;
     malla.position.set(...pieza.pos);
     malla.userData.pieza = pieza;
-    conAristas(malla, pieza.tipo === 'rueda' ? COLOR.tinta : COLOR.tinta);
+    // La rueda es del modelo del autobús; su caja invisible no lleva aristas.
+    if (pieza.tipo !== 'rueda') conAristas(malla);
+    malla.castShadow = true;
     escena.add(malla);
     mallasPieza.set(pieza.id, malla);
   });
+
+  // Cuando llega la biblioteca, cada caja se vuelve invisible (sigue sirviendo para señalar)
+  // y adentro aparece la pieza modelada.
+  cargarBiblioteca()
+    .then((biblioteca) => {
+      mallasPieza.forEach((malla, id) => {
+        const original = biblioteca.getObjectByName(id);
+        if (!original) return;
+        const modelo = copiaDe(original);
+        const m = malla;
+        m.material.transparent = true;
+        m.material.opacity = 0;
+        m.material.depthWrite = false;
+        m.castShadow = false;
+        m.children.forEach((hijo) => {
+          const h = hijo;
+          if (h.isLineSegments) h.visible = false;
+        });
+        m.add(modelo);
+        m.userData.modelo = modelo;
+      });
+    })
+    .catch(() => {});
+
+  // Tiñe la pieza (modelo o caja) con un color de brillo.
+  function tenir(malla, hex, intensidad = 1) {
+    const aplicar = (material) => {
+      if (!material.emissive) return;
+      material.emissive.setHex(hex);
+      Object.assign(material, { emissiveIntensity: intensidad });
+    };
+    if (malla.userData.modelo) {
+      malla.userData.modelo.traverse((n) => n.isMesh && aplicar(n.material));
+    } else {
+      aplicar(malla.material);
+    }
+  }
 
   // Recuadros 1 a 9 para explorar por grupo de función.
   const recuadros = new Map();
@@ -303,12 +449,13 @@ export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos 
     return primera?.object.userData.grupo ?? null;
   }
 
+  // La pieza resaltada late con un brillo suave (ver cuadro()).
   let resaltada = null;
   function resaltar(id) {
     if (resaltada === id) return;
-    if (resaltada) mallasPieza.get(resaltada)?.material.emissive?.setHex(0x000000);
+    const anterior = mallasPieza.get(resaltada);
+    if (anterior && anterior.userData.cambio == null) tenir(anterior, 0x000000);
     resaltada = id;
-    if (id) mallasPieza.get(id)?.material.emissive?.setHex(0x333333);
   }
 
   function marcarGrupo(grupo, color) {
@@ -330,8 +477,15 @@ export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos 
     return encima;
   }
 
+  // La herramienta en la mano es el modelo de la biblioteca ("h_" + id), al doble de su tamaño
+  // para que se lea desde lejos; mientras carga, una forma simple.
+  // La pieza de la mano va dentro de "mano" para animarla sin pelear con la posición del puntero.
+  let herramientaActual = null;
+  const mano = new THREE.Group();
+  herramienta.add(mano);
   function elegirHerramienta(id) {
-    herramienta.clear();
+    herramientaActual = id;
+    mano.clear();
     if (!id) {
       herramienta.visible = false;
       return;
@@ -346,9 +500,22 @@ export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos 
         escaner: new THREE.BoxGeometry(0.32, 0.2, 0.06),
         linterna: new THREE.CylinderGeometry(0.05, 0.08, 0.36, 12),
       }[id] ?? new THREE.SphereGeometry(0.14, 16, 12);
-    herramienta.add(conAristas(new THREE.Mesh(forma, material)));
+    mano.add(conAristas(new THREE.Mesh(forma, material)));
     herramienta.visible = true;
+    cargarBiblioteca()
+      .then((biblioteca) => {
+        const original = biblioteca.getObjectByName(`h_${id}`);
+        if (!original || herramientaActual !== id) return;
+        const modelo = copiaDe(original);
+        modelo.scale.setScalar(2);
+        mano.clear();
+        mano.add(modelo);
+      })
+      .catch(() => {});
   }
+
+  // Animación de uso: la herramienta empuja hacia la pieza y regresa.
+  let uso = 1;
 
   let sacudir = 0;
   // Efectos de consecuencia: partículas simples que viven unos segundos.
@@ -361,8 +528,9 @@ export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos 
       agua: { color: 0x3b6e8f, n: 26, vel: 0.6, gravedad: -4, vida: 1.2 },
       calor: { color: 0xc98a00, n: 24, vel: 0.4, gravedad: 0.9, vida: 1.8 },
     }[tipo];
+    if (herramienta.visible) uso = 0;
     if (tipo === 'cambio') {
-      // La pieza sale y entra la nueva: se encoge, cambia a verde y regresa.
+      // La pieza vieja sale hacia el técnico y la nueva entra a su lugar con brillo verde.
       const malla = mallasPieza.get(piezaId);
       if (malla) malla.userData.cambio = 0;
       return;
@@ -405,6 +573,30 @@ export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos 
     malla.add(marca);
   }
 
+  // Polvo en el aire del taller: puntos muy tenues alrededor del autobús.
+  const polvo = (() => {
+    const n = 400;
+    const posiciones = new Float32Array(n * 3);
+    for (let i = 0; i < n; i += 1) {
+      posiciones[i * 3] = (Math.random() - 0.5) * 22;
+      posiciones[i * 3 + 1] = Math.random() * 6;
+      posiciones[i * 3 + 2] = (Math.random() - 0.5) * 14;
+    }
+    const geometria = new THREE.BufferGeometry();
+    geometria.setAttribute('position', new THREE.BufferAttribute(posiciones, 3));
+    return new THREE.Points(
+      geometria,
+      new THREE.PointsMaterial({
+        color: 0xffffff,
+        size: 0.025,
+        transparent: true,
+        opacity: 0.35,
+        depthWrite: false,
+      }),
+    );
+  })();
+  escena.add(polvo);
+
   const reloj = new THREE.Clock();
   let activo = true;
   function cuadro() {
@@ -427,19 +619,70 @@ export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos 
     } else {
       bus.position.set(0, 0, 0);
     }
-    mallasPieza.forEach((malla) => {
-      if (malla.userData.cambio == null) return;
+    const ahora = reloj.elapsedTime;
+    mallasPieza.forEach((malla, id) => {
       const m = malla;
+      const { modelo } = m.userData;
+      if (m.userData.cambio == null) {
+        // Pieza resaltada: brillo que late.
+        if (id === resaltada) tenir(m, 0x3a3020, 0.6 + 0.4 * Math.sin(ahora * 6));
+        return;
+      }
       m.userData.cambio += dt;
-      const t = Math.min(1, m.userData.cambio / 1.2);
-      const escala = t < 0.5 ? 1 - t * 1.6 : 0.2 + (t - 0.5) * 1.6;
-      m.scale.setScalar(Math.max(0.05, escala));
-      if (t >= 0.5) m.material.color.setHex(COLOR.ok);
+      if (!modelo) {
+        // Sin modelo: la caja se encoge, cambia a verde y regresa.
+        const t = Math.min(1, m.userData.cambio / 1.2);
+        const escala = t < 0.5 ? 1 - t * 1.6 : 0.2 + (t - 0.5) * 1.6;
+        m.scale.setScalar(Math.max(0.05, escala));
+        if (t >= 0.5) m.material.color.setHex(COLOR.ok);
+        if (t >= 1) {
+          m.scale.setScalar(1);
+          m.userData.cambio = null;
+        }
+        return;
+      }
+      // Con modelo: 0–40 % sale hacia afuera y se inclina; 40–55 % fuera de vista;
+      // 55–100 % entra la nueva desde afuera con brillo verde que se apaga.
+      const t = Math.min(1, m.userData.cambio / 2.2);
+      const suave = (x) => x * x * (3 - 2 * x);
+      if (t < 0.4) {
+        const k = suave(t / 0.4);
+        modelo.position.set(0, k * 0.25, k * 0.9);
+        modelo.rotation.set(k * 0.5, k * 0.3, 0);
+        modelo.scale.setScalar(1 - k * 0.3);
+      } else if (t < 0.55) {
+        modelo.visible = false;
+      } else {
+        const k = suave((t - 0.55) / 0.45);
+        modelo.visible = true;
+        modelo.position.set(0, (1 - k) * 0.25, (1 - k) * 0.9);
+        modelo.rotation.set(0, 0, 0);
+        modelo.scale.setScalar(0.7 + k * 0.3);
+        tenir(m, COLOR.ok, 1.2 * (1 - k) + 0.15);
+      }
       if (t >= 1) {
-        m.scale.setScalar(1);
+        modelo.position.set(0, 0, 0);
+        modelo.scale.setScalar(1);
+        tenir(m, 0x000000);
         m.userData.cambio = null;
       }
     });
+    // Herramienta: flota un poco en la mano y al usarla empuja hacia la pieza.
+    if (herramienta.visible) {
+      uso = Math.min(1, uso + dt / 0.45);
+      const empuje = Math.sin(uso * Math.PI) * 0.3;
+      mano.position.set(0, Math.sin(ahora * 2.4) * 0.03, -empuje);
+      mano.rotation.z = Math.sin(ahora * 1.7) * 0.05;
+    }
+    // Polvo del taller que flota en la luz.
+    polvo.rotation.y += dt * 0.01;
+    polvo.position.y = Math.sin(ahora * 0.2) * 0.15;
+    // Entrada de la cámara.
+    if (llegada.t < 1) {
+      llegada.t = Math.min(1, llegada.t + dt / 1.8);
+      const k = 1 - (1 - llegada.t) ** 3;
+      camara.position.lerpVectors(llegada.desde, llegada.hasta, k);
+    }
     controles.update();
     renderer.render(escena, camara);
     requestAnimationFrame(cuadro);
