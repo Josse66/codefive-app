@@ -29,6 +29,7 @@
                   title="{{#each competencias}}{{nombre}} ({{dominio}} %){{#unless @last}} · {{/unless}}{{/each}}">
                   {{#if (igual estado 'dominado')}}Dominado ✓{{/if}}{{#if (igual estado 'en_curso')}}En curso{{/if}}{{#if (igual estado 'pendiente')}}Por aprender{{/if}}
                   <span class="block font-normal">{{competencias.length}} {{#if (igual competencias.length 1)}}competencia{{else}}competencias{{/if}}</span>
+                  <span class="sr-only">: {{#each competencias}}{{nombre}}, {{dominio}} %{{#unless @last}}; {{/unless}}{{/each}}</span>
                 </span>
               {{/if}}
             </td>

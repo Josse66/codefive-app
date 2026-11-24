@@ -18,12 +18,12 @@
           <span id="tarjeta-cuenta" class="font-semibold"></span>
           <span class="text-tinta-3">Avanza con los botones o las flechas del teclado</span>
         </div>
-        <div class="h-1.5 bg-placa-2" aria-hidden="true"><div id="tarjeta-barra" class="h-1.5 bg-tinta transition-[width] duration-300 ease-out" style="width: 0%"></div></div>
+        <div class="h-1.5 bg-placa-2" aria-hidden="true"><div id="tarjeta-barra" class="h-1.5 origin-left bg-tinta transition-transform duration-300 ease-out" style="transform: scaleX(0)"></div></div>
       </div>
       <article id="tarjeta" class="grid min-h-[260px] content-start gap-4 border-2 border-tinta bg-white p-6 lg:p-8" aria-live="polite"></article>
       <div class="flex flex-wrap items-center justify-between gap-3">
         <button id="tarjeta-anterior" type="button" class="boton-linea px-6 py-3">← Anterior</button>
-        <button id="tarjeta-siguiente" type="button" class="boton px-8 py-3">Siguiente →</button>
+        <span class="flex flex-wrap items-center gap-3"><span id="tarjeta-falta" class="text-sm text-tinta-3" hidden>Completa la actividad para seguir</span><button id="tarjeta-siguiente" type="button" class="boton px-8 py-3">Siguiente →</button></span>
       </div>
 
       {{! Lista de piezas para elegir sin usar el 3D (también la usa la tarjeta "Toca las piezas"). }}

@@ -111,6 +111,8 @@ function etiqueta(texto, { fondo = '#141c24', tinta = '#ffffff', tamano = 0.42 }
 // Se descarga una sola vez y cada escena usa una copia.
 const RUTA_MODELO = '/modelos/autobus_urbano.glb';
 const TECHO = 3.25;
+// Quien pide menos movimiento ve la cámara llegar sin vuelo.
+const menosMovimiento = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 let modeloCargando = null;
 function cargarModelo() {
   modeloCargando ??= new GLTFLoader().loadAsync(RUTA_MODELO).then((gltf) => gltf.scene);
@@ -339,7 +341,7 @@ export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos 
   // El mismo vuelo sirve para enfocar una pieza después (mueve cámara y punto de mira).
   const llegada = {
     t: 0,
-    duracion: 1.8,
+    duracion: menosMovimiento ? 0.01 : 1.8,
     desde: objetivo.clone().addScaledVector(new THREE.Vector3(1.1, 0.7, 0.9).normalize(), distancia * 3.2),
     hasta: camara.position.clone(),
     miraDesde: objetivo.clone(),
@@ -603,7 +605,7 @@ export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos 
     const lejos = malla ? cerca : distancia * 1.6;
     Object.assign(llegada, {
       t: 0,
-      duracion: 0.9,
+      duracion: menosMovimiento ? 0.01 : 0.9,
       desde: camara.position.clone(),
       hasta: mira.clone().addScaledVector(direccion, lejos),
       miraDesde: controles.target.clone(),

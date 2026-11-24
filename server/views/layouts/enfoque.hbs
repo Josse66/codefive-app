@@ -3,12 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#eef1f3">
   <title>{{#if titulo}}{{titulo}} · {{/if}}Técnicos del Mañana</title>
   {{{viteAssets "main.js"}}}
   {{#if scriptPagina}}{{{viteAssets scriptPagina}}}{{/if}}
 </head>
 {{!-- Pantalla de un solo paso (empezar, diagnóstico, resultados): sin menú ni pie, todo el foco en lo que toca. --}}
 <body class="flex min-h-screen flex-col bg-placa">
+  <a href="#contenido" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:bg-white focus:px-4 focus:py-2">Saltar al contenido</a>
   <header class="flex items-center justify-between gap-4 px-5 py-4 lg:px-10">
     <span class="flex items-center gap-3 font-narrow text-lg font-bold uppercase tracking-wide">
       <span class="recuadro h-6 w-6 text-[13px]" aria-hidden="true">T</span>

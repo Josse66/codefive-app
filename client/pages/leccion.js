@@ -180,11 +180,12 @@ function pintarTarjeta() {
 
   const total = tarjetas.length;
   $('tarjeta-cuenta').textContent = `Tarjeta ${actual + 1} de ${total}`;
-  $('tarjeta-barra').style.width = `${Math.round(((actual + 1) / total) * 100)}%`;
+  $('tarjeta-barra').style.transform = `scaleX(${(actual + 1) / total})`;
   $('tarjeta-anterior').disabled = actual === 0;
   const ultima = actual === total - 1;
   $('tarjeta-siguiente').hidden = ultima;
   $('tarjeta-siguiente').disabled = !completa(tarjeta);
+  $('tarjeta-falta').hidden = completa(tarjeta) || ultima;
   $('cierre').hidden = !(ultima && completa(tarjeta));
 }
 
