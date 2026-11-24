@@ -6,11 +6,13 @@ import {
   mostrarPerfil,
   mostrarPractica,
   mostrarRuta,
+  mostrarTablero,
 } from '#controllers/vistas.controller.js';
 
 const router = Router();
 
 router.get('/', mostrarInicio);
+router.get('/volvo', mostrarTablero);
 router.get('/tecnicos/:id/diagnostico', mostrarDiagnostico);
 router.get('/tecnicos/:id/perfil', mostrarPerfil);
 router.get('/tecnicos/:id/ruta', mostrarRuta);

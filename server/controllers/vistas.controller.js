@@ -103,3 +103,12 @@ export function mostrarEvaluacion(req, res) {
     }),
   );
 }
+
+// Tablero de Volvo: no depende de un técnico; los datos llegan por la API y se actualizan en vivo.
+export function mostrarTablero(_req, res) {
+  res.render('tablero', {
+    titulo: 'Tablero Volvo',
+    seccion: 'tablero',
+    scriptPagina: 'pages/tablero.js',
+  });
+}

@@ -13,7 +13,13 @@
       <div class="ml-auto flex items-center gap-4 py-3 text-sm text-placa-linea">
         <span><span class="font-semibold text-white">{{tecnico.nombre}}</span> · {{tecnico.taller}} · {{nombreTecnologia tecnico.tecnologia}}</span>
         <a href="/" class="text-white underline decoration-placa-linea hover:decoration-white">Cambiar técnico</a>
+        <a href="/volvo" class="text-white underline decoration-placa-linea hover:decoration-white">Tablero Volvo</a>
       </div>
+    {{else}}
+      <nav aria-label="Secciones" class="ml-auto flex gap-1 text-[15px]">
+        <a href="/" class="px-3 py-4 no-underline {{#if (igual seccion 'tablero')}}text-placa-linea hover:text-white{{else}}text-white shadow-[inset_0_-3px_0_#ffffff]{{/if}}" {{#unless (igual seccion 'tablero')}}aria-current="page"{{/unless}}>Técnicos</a>
+        <a href="/volvo" class="px-3 py-4 no-underline {{#if (igual seccion 'tablero')}}text-white shadow-[inset_0_-3px_0_#ffffff]{{else}}text-placa-linea hover:text-white{{/if}}" {{#if (igual seccion 'tablero')}}aria-current="page"{{/if}}>Tablero Volvo</a>
+      </nav>
     {{/if}}
   </div>
 </header>

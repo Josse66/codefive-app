@@ -1,0 +1,81 @@
+<section id="tablero" class="grid gap-6">
+  <div class="flex flex-wrap items-end justify-between gap-4">
+    <div class="grid gap-2">
+      <p class="font-narrow text-sm font-bold uppercase tracking-wider text-tinta-3">Capacitación y postventa</p>
+      <h1 class="text-4xl leading-tight lg:text-5xl">Tablero de técnicos</h1>
+      <p class="max-w-3xl text-tinta-2">Avance, dominio, errores recurrentes y retención de cada técnico. Se actualiza solo cada vez que alguien responde.</p>
+    </div>
+    <p id="estado-conexion" class="flex items-center gap-2 border border-placa-linea bg-white px-3 py-2 text-sm" aria-live="polite">
+      <span id="punto-conexion" class="h-2.5 w-2.5 bg-nada" aria-hidden="true"></span>
+      <span id="texto-conexion">Conectando…</span>
+    </p>
+  </div>
+
+  <dl id="indicadores" class="grid border border-tinta bg-white sm:grid-cols-3 xl:grid-cols-6">
+    {{#each (lista 'diagnosticados' 'listos' 'dominioPromedio' 'gananciaPromedio' 'retencionPromedio' 'alertasSeguridad')}}
+      <div data-indicador="{{this}}" class="grid content-start gap-1 border-placa-linea p-4 max-xl:border-b sm:border-r">
+        <dt data-etiqueta class="text-sm text-tinta-3"></dt>
+        <dd data-valor class="codigo text-4xl">—</dd>
+        <dd data-nota class="text-xs text-tinta-3"></dd>
+      </div>
+    {{/each}}
+  </dl>
+
+  <div class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px] xl:items-start">
+    <div class="grid gap-3">
+      <h2 class="text-2xl">Técnicos</h2>
+      <div class="overflow-x-auto border border-placa-linea bg-white">
+        <table class="tabla-partes min-w-[920px]">
+          <thead>
+            <tr>
+              <th>Clave</th><th>Técnico</th><th>Taller</th><th>Dominadas</th><th>Dominio</th>
+              <th>Retención</th><th>Errores críticos</th><th>Autobús real</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-tecnicos"></tbody>
+        </table>
+      </div>
+      <p class="text-xs text-tinta-3">Autobús real: domina todas las competencias críticas de seguridad de su tecnología y no tiene respuestas "seguro pero equivocado" en ellas. Regla del prototipo, no criterio oficial de Volvo.</p>
+    </div>
+
+    <aside class="grid gap-3" aria-labelledby="actividad-titulo">
+      <h2 id="actividad-titulo" class="text-2xl">Actividad en vivo</h2>
+      <ol id="actividad" class="grid max-h-[560px] overflow-y-auto border border-placa-linea bg-white" aria-live="polite"></ol>
+    </aside>
+  </div>
+
+  <div class="grid gap-6 lg:grid-cols-2">
+    <figure class="grid gap-3 border border-placa-linea bg-white p-5">
+      <figcaption class="grid gap-1">
+        <span class="font-narrow text-xl font-bold">Dominio por competencia</span>
+        <span class="text-sm text-tinta-3">Promedio de los técnicos diagnosticados. Verde dominada (80 % o más), ámbar en desarrollo, rojo brecha.</span>
+      </figcaption>
+      <div class="relative h-[380px]"><canvas id="grafica-dominio" aria-label="Dominio promedio por competencia" role="img"></canvas></div>
+    </figure>
+    <figure class="grid gap-3 border border-placa-linea bg-white p-5">
+      <figcaption class="grid gap-1">
+        <span class="font-narrow text-xl font-bold">Antes, después y diferida</span>
+        <span class="text-sm text-tinta-3">Dominio promedio en cada momento de la evaluación. La diferida se mide tras 7 días sin practicar.</span>
+      </figcaption>
+      <div class="relative h-[380px]">
+        <canvas id="grafica-retencion" aria-label="Dominio antes, después y en la revisión diferida por competencia" role="img"></canvas>
+        <p id="retencion-vacia" class="absolute inset-0 flex items-center justify-center border border-dashed border-placa-linea p-6 text-center text-sm text-tinta-3" hidden>Todavía no hay evaluaciones. Aparecen cuando un técnico hace la evaluación de antes.</p>
+      </div>
+    </figure>
+  </div>
+
+  <div class="grid gap-3">
+    <h2 class="text-2xl">Errores recurrentes</h2>
+    <div class="overflow-x-auto border border-placa-linea bg-white">
+      <table class="tabla-partes min-w-[820px]">
+        <thead>
+          <tr><th>Pregunta</th><th>Competencia</th><th>Fallos</th><th>Seguro y equivocado</th><th>Técnicos</th></tr>
+        </thead>
+        <tbody id="tabla-errores"></tbody>
+      </table>
+    </div>
+    <p class="text-xs text-tinta-3">Dónde reforzar la capacitación o revisar el contenido. "Seguro y equivocado": respondió mal diciendo que estaba seguro, el caso más peligroso en taller.</p>
+  </div>
+
+  <p id="mensaje-error" class="aviso-critico" hidden></p>
+</section>
