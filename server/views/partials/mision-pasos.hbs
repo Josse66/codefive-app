@@ -1,0 +1,20 @@
+{{!-- Barra de la misión: los 4 pasos del ciclo, cuál ya hizo y en cuál está. Recibe mision y clave (paso de esta página). --}}
+{{#if mision}}
+  <nav aria-label="Pasos de la misión" class="grid gap-2 border border-tinta bg-white p-3 sm:p-4">
+    <div class="flex flex-wrap items-baseline justify-between gap-2">
+      <p class="text-sm"><span class="font-narrow font-bold uppercase tracking-wider text-tinta-3">Misión · FG {{mision.competencia.grupo}} {{mision.competencia.nombreGrupo}}</span></p>
+      <a href="{{mision.plan}}" class="text-sm text-tinta-2 underline decoration-placa-linea hover:text-tinta">Volver a Mi plan</a>
+    </div>
+    <p class="font-sans text-lg font-semibold leading-snug">{{mision.competencia.nombre}}</p>
+    <ol class="grid grid-cols-4 gap-1.5">
+      {{#each mision.pasos}}
+        <li>
+          <a href="{{enlace}}" aria-label="Paso {{masUno @index}}: {{nombre}}{{#if hecho}} (hecho){{/if}}" class="grid gap-0.5 border-t-4 pt-1.5 text-sm no-underline {{#if (igual clave ../clave)}}border-tinta font-semibold text-tinta{{else if hecho}}border-ok text-ok{{else}}border-placa-linea text-tinta-3 hover:text-tinta{{/if}}" {{#if (igual clave ../clave)}}aria-current="step"{{/if}}>
+            <span>{{masUno @index}}{{#if hecho}} ✓{{/if}}</span>
+            <span>{{nombre}}</span>
+          </a>
+        </li>
+      {{/each}}
+    </ol>
+  </nav>
+{{/if}}

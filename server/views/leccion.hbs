@@ -1,5 +1,6 @@
 <section id="leccion" class="grid gap-5" data-tecnico-id="{{tecnico.id}}" data-leccion-id="{{leccionId}}">
-  <a href="/tecnicos/{{tecnico.id}}/aprender" class="w-fit text-sm underline">← Temario</a>
+  {{> mision-pasos mision=mision clave="aprende"}}
+  {{#unless mision}}<a href="/tecnicos/{{tecnico.id}}/plan" class="w-fit text-sm underline">← Mi plan</a>{{/unless}}
 
   <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,520px)] lg:items-start">
     <article class="grid gap-6">
@@ -30,6 +31,10 @@
 
       <div id="cierre" class="grid gap-3 border-t-2 border-tinta pt-5">
         <button id="boton-termine" type="button" class="boton w-fit px-8 py-4 text-base">Terminé la lección</button>
+        {{#if siguienteMision}}
+          {{! Dentro de una misión hay un solo camino: el siguiente paso. }}
+          <a id="enlace-mision" href="{{siguienteMision.enlace}}" class="boton w-fit px-8 py-4 text-base" hidden>Siguiente: {{siguienteMision.nombre}} →</a>
+        {{/if}}
         <div id="siguientes" class="grid gap-3 sm:grid-cols-3" hidden>
           <a id="enlace-comprobar" href="#" class="grid gap-1 border border-tinta bg-white p-4 no-underline hover:bg-placa">
             <span class="font-semibold">Comprueba lo aprendido</span>

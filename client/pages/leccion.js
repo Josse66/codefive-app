@@ -34,6 +34,12 @@ function elegirPieza(id) {
 }
 
 function mostrarSiguientes(datos) {
+  // En una misión: solo el botón al siguiente paso.
+  if ($('enlace-mision')) {
+    $('boton-termine').hidden = true;
+    $('enlace-mision').hidden = false;
+    return;
+  }
   const { competencia, escenario, siguiente } = datos;
   $('enlace-comprobar').href = `/tecnicos/${tecnicoId}/practica/${competencia.id}`;
   if (escenario) {

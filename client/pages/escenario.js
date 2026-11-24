@@ -291,7 +291,11 @@ function terminar() {
             ? `, ${estado.criticos} crítico${estado.criticos === 1 ? '' : 's'} de seguridad`
             : ''
         }. Repite el escenario o pasa a la evaluación de después.`;
-  $('enlace-evaluacion').href = `/tecnicos/${tecnicoId}/evaluacion/${competencia}`;
+  if (!$('enlace-evaluacion').dataset.mision) {
+    if (!$('enlace-evaluacion').dataset.mision) {
+      $('enlace-evaluacion').href = `/tecnicos/${tecnicoId}/evaluacion/${competencia}`;
+    }
+  }
   $('final').hidden = false;
 }
 

@@ -1,13 +1,13 @@
-<section id="practica" class="grid gap-6" data-tecnico-id="{{tecnico.id}}" data-competencia-id="{{competenciaId}}">
-  <div class="flex flex-wrap items-end justify-between gap-4">
+<section id="practica" class="grid gap-6" data-tecnico-id="{{tecnico.id}}" data-competencia-id="{{competenciaId}}" {{#if mision}}data-mision="1"{{/if}}>
+  {{> mision-pasos mision=mision clave="hazlo"}}
+  <div class="flex flex-wrap items-end justify-between gap-4" {{#if mision}}hidden{{/if}}>
     <div class="grid gap-2">
       <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1">
-        <span class="codigo text-3xl lg:text-4xl">{{competenciaId}}</span>
         <h1 id="titulo-competencia" class="font-sans text-3xl font-semibold leading-tight tracking-normal">Cargando…</h1>
       </div>
       <p id="detalle-competencia" class="text-tinta-2"></p>
     </div>
-    <a href="/tecnicos/{{tecnico.id}}/ruta" class="boton-linea">Volver a la ruta</a>
+    <a href="/tecnicos/{{tecnico.id}}/plan" class="boton-linea">Volver a Mi plan</a>
   </div>
 
   <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start">
@@ -50,8 +50,8 @@
         <h2 id="resumen-titulo" class="text-3xl"></h2>
         <p id="resumen-texto"></p>
         <div class="flex flex-wrap gap-3">
-          <a href="/tecnicos/{{tecnico.id}}/evaluacion/{{competenciaId}}" class="boton">Evaluación de después</a>
-          <a href="/tecnicos/{{tecnico.id}}/ruta" class="boton-linea">Ver la ruta actualizada</a>
+          <a href="{{#if siguienteMision}}{{siguienteMision.enlace}}{{else}}/tecnicos/{{tecnico.id}}/evaluacion/{{competenciaId}}{{/if}}" class="boton">{{#if siguienteMision}}Siguiente: {{siguienteMision.nombre}} →{{else}}Comprueba lo aprendido{{/if}}</a>
+          <a href="/tecnicos/{{tecnico.id}}/plan" class="boton-linea">Volver a Mi plan</a>
         </div>
       </div>
 

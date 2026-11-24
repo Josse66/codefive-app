@@ -10,6 +10,7 @@ import { listarEscenarios } from '#services/escenarios.js';
 import { resumenTaller } from '#services/taller.service.js';
 import { aplicaAlModelo, modeloDelTecnico } from '#services/modelos.service.js';
 import { yaEmpezo } from '#services/carrera.service.js';
+import { obtenerMision } from '#services/mision.service.js';
 
 // "Mi plan de formación": la página de inicio de cada técnico. Junta su autobús, su siguiente paso
 // y los 9 módulos (grupos de función) con solo lo que aplica a ese autobús.
@@ -36,14 +37,18 @@ function siguientePaso(tecnicoId, diagnosticado) {
       boton: 'Ir al taller',
     };
   }
+  // Cada paso del plan es una misión de 4 pasos; el botón lleva al que toca.
   const leccion = leccionDe.get(paso.competencia.id);
+  const mision = obtenerMision(tecnicoId, paso.competencia.id);
+  const toca = mision?.actual ?? mision?.pasos.find((p) => p.clave === 'hazlo');
   return {
     titulo: leccion?.titulo ?? paso.competencia.nombre,
-    texto: `${paso.motivo}. Estudia la lección y luego practícala en el autobús.`,
-    enlace: leccion
-      ? `/tecnicos/${tecnicoId}/aprender/${leccion.id}`
-      : `/tecnicos/${tecnicoId}/practica/${paso.competencia.id}`,
-    boton: 'Empezar',
+    texto: paso.obligatoria
+      ? 'Es de seguridad: va antes que todo lo demás de este grupo.'
+      : 'Es lo que más te ayuda ahora según tu diagnóstico.',
+    enlace: toca?.enlace ?? `/tecnicos/${tecnicoId}/practica/${paso.competencia.id}`,
+    boton: mision?.pasos.some((p) => p.hecho) ? `Continuar: ${toca?.nombre ?? 'Hazlo'}` : 'Empezar misión',
+    pasos: mision?.pasos ?? [],
     grupo: paso.competencia.grupo,
     obligatoria: paso.obligatoria,
   };

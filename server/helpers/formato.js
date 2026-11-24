@@ -50,3 +50,5 @@ export const nombreModo = (m) => MODOS[m] ?? m;
 
 // Competencias del sistema de tracción de 600 V: llevan la marca naranja de alto voltaje.
 export const altoVoltaje = (tecnologia, grupo) => tecnologia === 'electrica' && Number(grupo) === 3;
+// Número de paso para personas (los índices de Handlebars empiezan en 0).
+export const masUno = (n) => Number(n) + 1;

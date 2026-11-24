@@ -1,4 +1,5 @@
 <section id="escenario" class="relative grid gap-5" data-tecnico-id="{{tecnico.id}}" data-escenario-id="{{escenarioId}}" data-orden-id="{{ordenId}}">
+  {{> mision-pasos mision=mision clave="hazlo"}}
   {{! Orden de trabajo del Taller: folio, cliente, reloj y gasto en refacciones. }}
   <div id="orden-barra" class="flex flex-wrap items-center gap-x-6 gap-y-2 border-2 border-tinta bg-tinta px-4 py-3 text-white" hidden>
     <span class="codigo text-2xl" id="orden-folio"></span>
@@ -51,8 +52,8 @@
         <h2 class="text-2xl text-ok">Escenario completo</h2>
         <p id="final-texto"></p>
         <div class="flex flex-wrap gap-2">
-          <a id="enlace-evaluacion" href="#" class="boton">Evaluación de después</a>
-          <a href="/tecnicos/{{tecnico.id}}/ruta" class="boton-linea">Ver la ruta</a>
+          <a id="enlace-evaluacion" href="{{#if siguienteMision}}{{siguienteMision.enlace}}{{else}}#{{/if}}" class="boton" {{#if siguienteMision}}data-mision="1"{{/if}}>{{#if siguienteMision}}Siguiente: {{siguienteMision.nombre}} →{{else}}Comprueba lo aprendido{{/if}}</a>
+          <a href="/tecnicos/{{tecnico.id}}/plan" class="boton-linea">Volver a Mi plan</a>
           <button id="boton-repetir" type="button" class="boton-linea">Repetir</button>
         </div>
       </article>

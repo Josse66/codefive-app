@@ -1,16 +1,16 @@
 <section id="evaluacion" class="grid gap-6" data-tecnico-id="{{tecnico.id}}" data-competencia-id="{{competenciaId}}">
-  <div class="flex flex-wrap items-end justify-between gap-4">
+  {{> mision-pasos mision=mision clave=claveMision}}
+  <div class="flex flex-wrap items-end justify-between gap-4" {{#if mision}}hidden{{/if}}>
     <div class="grid gap-2">
       <p class="font-narrow text-sm font-bold uppercase tracking-wider text-tinta-3">Evaluación antes, después y diferida</p>
       <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1">
-        <span class="codigo text-3xl lg:text-4xl">{{competenciaId}}</span>
         <h1 id="titulo-competencia" class="font-sans text-3xl font-semibold leading-tight tracking-normal">Cargando…</h1>
       </div>
       <p id="detalle-competencia" class="text-tinta-2"></p>
     </div>
     <div class="flex flex-wrap items-center gap-3">
       <span class="border border-tinta bg-white px-3 py-2 text-sm">Reloj del técnico: <span id="dia-simulado" class="codigo">día 0</span></span>
-      <a href="/tecnicos/{{tecnico.id}}/ruta" class="boton-linea">Volver a la ruta</a>
+      <a href="/tecnicos/{{tecnico.id}}/plan" class="boton-linea">Volver a Mi plan</a>
     </div>
   </div>
 
@@ -45,7 +45,7 @@
         <div class="flex flex-wrap gap-3">
           <button id="boton-accion" type="button" class="boton px-8 py-4 text-base" hidden></button>
           <a id="enlace-accion" href="#" class="boton px-8 py-4 text-base" hidden></a>
-          <a id="enlace-secundario" href="/tecnicos/{{tecnico.id}}/ruta" class="boton-linea px-6 py-4" hidden>Ver la ruta</a>
+          <a id="enlace-secundario" href="/tecnicos/{{tecnico.id}}/plan" class="boton-linea px-6 py-4" hidden>Volver a Mi plan</a>
         </div>
       </article>
 
@@ -75,6 +75,10 @@
       <div id="resultado" class="grid gap-4 border border-tinta bg-white p-6 lg:p-8" hidden>
         <h2 id="resultado-titulo" class="text-3xl"></h2>
         <ol id="resultado-detalle" class="grid gap-3"></ol>
+        <div class="flex flex-wrap gap-3">
+          {{#if siguienteMision}}<a href="{{siguienteMision.enlace}}" class="boton">Siguiente: {{siguienteMision.nombre}} →</a>{{/if}}
+          <a href="/tecnicos/{{tecnico.id}}/plan" class="{{#if siguienteMision}}boton-linea{{else}}boton{{/if}}">Volver a Mi plan</a>
+        </div>
       </div>
 
       <p id="mensaje-error" class="aviso-critico" hidden></p>

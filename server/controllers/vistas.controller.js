@@ -6,6 +6,12 @@ import { RECUADROS, estadoGrupo } from '#helpers/lamina.js';
 import { nombreGrupo } from '#helpers/formato.js';
 import { empezarComoPrincipiante, obtenerCarrera, yaEmpezo } from '#services/carrera.service.js';
 import { modeloDelTecnico } from '#services/modelos.service.js';
+import { competenciaDeLeccion, obtenerMision, pasoDespues } from '#services/mision.service.js';
+import { obtenerEscenario } from '#services/escenarios.js';
+
+// La misión de la página: la que viene en ?mision= o, si no, la de la competencia que se está trabajando.
+const misionDe = (req, tecnico, competenciaId) =>
+  competenciaId ? obtenerMision(tecnico.id, req.query.mision ?? competenciaId) : null;
 
 function conTecnico(req, res, render) {
   const tecnico = obtenerTecnico(req.params.id);
@@ -121,27 +127,36 @@ export function mostrarRuta(req, res) {
 }
 
 export function mostrarPractica(req, res) {
-  conTecnico(req, res, (tecnico) =>
+  conTecnico(req, res, (tecnico) => {
+    const mision = misionDe(req, tecnico, req.params.competenciaId);
     res.render('practica', {
       titulo: `Práctica · ${tecnico.nombre}`,
       tecnico,
       seccion: 'plan',
       competenciaId: req.params.competenciaId,
+      mision,
+      siguienteMision: pasoDespues(mision, 'hazlo'),
       scriptPagina: 'pages/practica.js',
-    }),
-  );
+    });
+  });
 }
 
 export function mostrarEvaluacion(req, res) {
-  conTecnico(req, res, (tecnico) =>
+  conTecnico(req, res, (tecnico) => {
+    const mision = misionDe(req, tecnico, req.params.competenciaId);
+    // Antes de aprender es "¿Qué sabes?"; después, "Comprueba".
+    const claveMision = mision?.pasos.find((p) => p.clave === 'antes')?.hecho ? 'comprueba' : 'antes';
     res.render('evaluacion', {
       titulo: `Evaluación · ${tecnico.nombre}`,
       tecnico,
       seccion: 'plan',
       competenciaId: req.params.competenciaId,
+      mision,
+      claveMision,
+      siguienteMision: pasoDespues(mision, claveMision),
       scriptPagina: 'pages/evaluacion.js',
-    }),
-  );
+    });
+  });
 }
 
 // Tablero de Volvo: no depende de un técnico; los datos llegan por la API y se actualizan en vivo.
@@ -168,15 +183,19 @@ export function mostrarAutobus(req, res) {
 
 // Escenario de práctica en pantalla dividida: hipótesis a la izquierda, autobús 3D a la derecha.
 export function mostrarEscenario(req, res) {
-  conTecnico(req, res, (tecnico) =>
+  conTecnico(req, res, (tecnico) => {
+    const competencia = req.query.mision ?? obtenerEscenario(req.params.escenarioId)?.competencia;
+    const mision = misionDe(req, tecnico, competencia);
     res.render('escenario', {
       titulo: `Escenario · ${tecnico.nombre}`,
       tecnico,
-      seccion: 'autobus',
+      seccion: 'plan',
       escenarioId: req.params.escenarioId,
+      mision,
+      siguienteMision: pasoDespues(mision, 'hazlo'),
       scriptPagina: 'pages/escenario.js',
-    }),
-  );
+    });
+  });
 }
 
 // Modo Taller: bahía de órdenes, nivel y experiencia del técnico.
@@ -218,15 +237,18 @@ export function mostrarTemario(req, res) {
 
 // Lección con el autobús 3D al lado.
 export function mostrarLeccion(req, res) {
-  conTecnico(req, res, (tecnico) =>
+  conTecnico(req, res, (tecnico) => {
+    const mision = misionDe(req, tecnico, competenciaDeLeccion(req.params.leccionId));
     res.render('leccion', {
       titulo: `Lección · ${tecnico.nombre}`,
       tecnico,
       seccion: 'plan',
       leccionId: req.params.leccionId,
+      mision,
+      siguienteMision: pasoDespues(mision, 'aprende'),
       scriptPagina: 'pages/leccion.js',
-    }),
-  );
+    });
+  });
 }
 
 // Mi plan de formación: la página de inicio de cada técnico.

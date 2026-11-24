@@ -214,7 +214,8 @@ pedir(`/api/tecnicos/${tecnicoId}/practica/${competenciaId}`)
           : ''
       }`;
     mostrarDominio(datos.pSaber, datos.modo);
-    if (leccion) {
+    // Dentro de una misión la lección ya se vio en "Aprende": va directo a las preguntas.
+    if (leccion && !raiz.dataset.mision) {
       $('leccion-titulo').textContent = leccion.titulo;
       $('leccion-puntos').replaceChildren(
         ...leccion.puntos.map((texto, indice) => {
