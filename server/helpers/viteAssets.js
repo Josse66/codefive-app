@@ -8,7 +8,9 @@ let manifest = null;
 function leerManifest() {
   if (!manifest) {
     if (!fs.existsSync(rutaManifest)) {
-      throw new Error('No existe public/build/.vite/manifest.json. Corre "npm run build" antes de "npm start".');
+      throw new Error(
+        'No existe public/build/.vite/manifest.json. Corre "npm run build" antes de "npm start".',
+      );
     }
     manifest = JSON.parse(fs.readFileSync(rutaManifest, 'utf8'));
   }

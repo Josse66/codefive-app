@@ -9,7 +9,14 @@
     "import/prefer-default-export": "off",
     "import/no-extraneous-dependencies": [
       "error",
-      { "devDependencies": ["vite.config.js", "tailwind.config.js", "postcss.config.js", "server/config/vite.js"] }
+      {
+        "devDependencies": [
+          "vite.config.js",
+          "tailwind.config.js",
+          "postcss.config.js",
+          "server/config/vite.js"
+        ]
+      }
     ],
     "no-console": "warn",
     "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }]

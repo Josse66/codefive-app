@@ -7,14 +7,20 @@ const { combine, timestamp, printf, colorize, errors, json } = winston.format;
 const carpetaLogs = path.resolve('logs');
 fs.mkdirSync(carpetaLogs, { recursive: true });
 
-const formatoConsola = printf(({ level, message, timestamp: hora, stack }) => `${hora} ${level}: ${stack ?? message}`);
+const formatoConsola = printf(
+  ({ level, message, timestamp: hora, stack }) => `${hora} ${level}: ${stack ?? message}`,
+);
 
 const logger = winston.createLogger({
   level: process.env.LOG_LEVEL ?? (process.env.NODE_ENV === 'production' ? 'info' : 'debug'),
   format: combine(errors({ stack: true }), timestamp({ format: 'YYYY-MM-DD HH:mm:ss' })),
   transports: [
     new winston.transports.Console({ format: combine(colorize(), formatoConsola) }),
-    new winston.transports.File({ filename: path.join(carpetaLogs, 'error.log'), level: 'error', format: json() }),
+    new winston.transports.File({
+      filename: path.join(carpetaLogs, 'error.log'),
+      level: 'error',
+      format: json(),
+    }),
     new winston.transports.File({ filename: path.join(carpetaLogs, 'app.log'), format: json() }),
   ],
   exceptionHandlers: [new winston.transports.File({ filename: path.join(carpetaLogs, 'exceptions.log') })],
