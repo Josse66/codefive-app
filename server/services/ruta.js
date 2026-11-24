@@ -2,7 +2,7 @@
 //
 // Orden:
 //   1. Seguridad crítica que no domina, o en la que estaba "seguro pero equivocado" (refuerzo obligatorio).
-//   2. Lo demás que no domina, de la brecha más grande a la más chica.
+//   2. Lo demás que no domina: primero el nivel más básico y, dentro del mismo nivel, la brecha más grande.
 //   3. Una competencia queda bloqueada si su prerrequisito no está dominado: primero va el prerrequisito.
 // El modo de ayuda se retira conforme sube el dominio: guiado → con pistas → autónomo.
 
@@ -39,7 +39,9 @@ export function armarRuta(competencias, alertas = []) {
     if (conAlerta.has(c.id)) return 2;
     return 3;
   };
-  const ordenadas = [...pendientes].sort((a, b) => prioridad(a) - prioridad(b) || a.pSaber - b.pSaber);
+  const ordenadas = [...pendientes].sort(
+    (a, b) => prioridad(a) - prioridad(b) || (a.nivel ?? 0) - (b.nivel ?? 0) || a.pSaber - b.pSaber,
+  );
 
   // Un prerrequisito pendiente siempre va antes que la competencia que depende de él.
   const ruta = [];

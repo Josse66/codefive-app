@@ -54,6 +54,7 @@ export function obtenerPerfil(tecnicoId) {
     nivel: f.nivel,
     habilidad: f.habilidad,
     critica: f.critica === 1,
+    prerequisito: f.prerequisito,
     pSaber: Math.round(f.p_saber * 100) / 100,
     estado: estadoDominio(f.p_saber),
     evaluada: f.intentos > 0,

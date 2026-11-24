@@ -49,3 +49,11 @@ test('modo de ayuda se retira conforme sube el dominio', () => {
   assert.equal(modoDeAyuda(0.6), 'con_pistas');
   assert.equal(modoDeAyuda(0.9), 'autonomo');
 });
+
+test('con la misma prioridad, primero el nivel más básico', () => {
+  const ruta = armarRuta([c('N3', 0.05, { nivel: 3 }), c('N2', 0.15, { nivel: 2 })]);
+  assert.deepEqual(
+    ruta.map((p) => p.competencia.id),
+    ['N2', 'N3'],
+  );
+});

@@ -5,7 +5,10 @@
       <h1 class="mt-1 text-4xl">{{tecnico.nombre}}</h1>
       <p class="text-acero-600">{{tecnico.taller}} · {{tecnico.anios_experiencia}} años · {{nombreTecnologia tecnico.tecnologia}}</p>
     </div>
-    <a href="/tecnicos/{{tecnico.id}}/diagnostico" class="boton bg-acero-900">Repetir diagnóstico</a>
+    <div class="flex flex-wrap gap-2">
+      <a href="/tecnicos/{{tecnico.id}}/ruta" class="boton">Ver mi ruta</a>
+      <a href="/tecnicos/{{tecnico.id}}/diagnostico" class="boton bg-acero-900">Repetir diagnóstico</a>
+    </div>
   </div>
 
   {{#unless evaluado}}

@@ -1,0 +1,41 @@
+<section class="grid gap-6">
+  <div class="flex flex-wrap items-end justify-between gap-4">
+    <div>
+      <p class="etiqueta">Ruta personalizada</p>
+      <h1 class="mt-1 text-4xl">{{tecnico.nombre}}</h1>
+      <p class="text-acero-600">Solo lo que le falta, en el orden en que conviene practicarlo.</p>
+    </div>
+    <a href="/tecnicos/{{tecnico.id}}/perfil" class="boton bg-acero-900">Ver mapa de competencias</a>
+  </div>
+
+  {{#if pasos.length}}
+    <ol class="grid gap-3">
+      {{#each pasos}}
+        <li class="tarjeta grid gap-3 sm:grid-cols-[3rem_1fr_auto] sm:items-center">
+          <span class="font-display text-4xl text-hv-500">{{orden}}</span>
+          <div>
+            <p class="font-semibold">{{competencia.nombre}}</p>
+            <p class="text-sm text-acero-600">
+              {{nombreTecnologia competencia.tecnologia}} · Grupo {{competencia.grupo}} · Nivel {{competencia.nivel}} · {{porcentaje competencia.pSaber}}%
+            </p>
+            <p class="mt-1 text-sm">
+              <span class="rounded border px-2 py-0.5 font-mono text-xs {{claseEstado competencia.estado}}">{{nombreEstado competencia.estado}}</span>
+              <span class="rounded border border-acero-100 px-2 py-0.5 font-mono text-xs">{{nombreModo modo}}</span>
+              {{#if obligatoria}}<span class="rounded border border-red-600 px-2 py-0.5 font-mono text-xs text-red-700">Obligatoria</span>{{/if}}
+            </p>
+            <p class="mt-1 text-sm">{{motivo}}{{#if bloqueadaPor}} · primero: {{bloqueadaPor.nombre}}{{/if}}</p>
+          </div>
+          <div class="grid gap-2">
+            {{#if escenario}}
+              <span class="rounded border border-acero-100 px-2 py-1 text-center font-mono text-xs">Escenario 3D: {{escenario}}</span>
+            {{/if}}
+          </div>
+        </li>
+      {{/each}}
+    </ol>
+  {{else}}
+    <p class="tarjeta">Domina todas las competencias evaluadas. Siguiente paso: repasos para comprobar que las conserva.</p>
+  {{/if}}
+
+  <p class="text-sm text-acero-600">Orden: seguridad crítica primero, luego prerrequisitos y después la brecha más grande. El modo de ayuda cambia solo conforme mejora: guiado, con pistas y autónomo.</p>
+</section>

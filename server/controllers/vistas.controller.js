@@ -1,5 +1,6 @@
 import { obtenerTecnico } from '#services/tecnicos.service.js';
 import { asegurarDominio, obtenerPerfil } from '#services/dominio.service.js';
+import { obtenerRuta } from '#services/ruta.service.js';
 
 function conTecnico(req, res, render) {
   const tecnico = obtenerTecnico(req.params.id);
@@ -45,5 +46,12 @@ export function mostrarPerfil(req, res) {
         brechas: conteo('brecha'),
       },
     });
+  });
+}
+
+export function mostrarRuta(req, res) {
+  conTecnico(req, res, (tecnico) => {
+    const { pasos } = obtenerRuta(tecnico.id);
+    res.render('ruta', { titulo: `Ruta · ${tecnico.nombre}`, tecnico, pasos });
   });
 }

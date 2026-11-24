@@ -20,3 +20,6 @@ export const nombreTecnologia = (t) => TECNOLOGIAS[t] ?? t;
 export const nombreEstado = (e) => ESTADOS[e] ?? e;
 export const claseEstado = (e) => CLASES_ESTADO[e] ?? '';
 export const nombreHabilidad = (h) => HABILIDADES[h] ?? h;
+
+const MODOS = { guiado: 'Guiado', con_pistas: 'Con pistas', autonomo: 'Autónomo' };
+export const nombreModo = (m) => MODOS[m] ?? m;

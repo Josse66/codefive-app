@@ -1,6 +1,7 @@
 import { iniciarDiagnostico, responderDiagnostico } from '#services/diagnostico.service.js';
 import { obtenerPerfil } from '#services/dominio.service.js';
 import { obtenerTecnico } from '#services/tecnicos.service.js';
+import { obtenerRuta } from '#services/ruta.service.js';
 
 export function iniciar(req, res) {
   res.status(201).json(iniciarDiagnostico(req.body.tecnicoId));
@@ -25,4 +26,8 @@ export function perfil(req, res) {
     return;
   }
   res.json(obtenerPerfil(req.params.id));
+}
+
+export function ruta(req, res) {
+  res.json(obtenerRuta(req.params.id));
 }
