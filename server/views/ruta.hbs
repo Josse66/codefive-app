@@ -23,7 +23,7 @@
       <div class="grid gap-2 lg:min-w-56">
         <a href="/tecnicos/{{tecnico.id}}/evaluacion/{{siguiente.competencia.id}}" class="boton px-8 py-4 text-base">Empezar</a>
         <p class="text-center text-sm text-tinta-3">Evaluación antes, práctica y evaluación después</p>
-        {{#if siguiente.escenario}}<p class="text-center text-sm text-tinta-3">Con escenario 3D: {{siguiente.escenario}}</p>{{/if}}
+        {{#if siguiente.escenario}}<a href="/tecnicos/{{tecnico.id}}/escenario/{{siguiente.escenario}}" class="boton-linea px-8 py-3">Practicar en el autobús 3D</a>{{/if}}
       </div>
     </article>
 
@@ -42,7 +42,7 @@
                   <td class="codigo whitespace-nowrap">{{competencia.id}}</td>
                   <td>
                     {{competencia.nombre}}
-                    <span class="mt-1 block text-xs text-tinta-3">{{nombreGrupo competencia.grupo}} · Nivel {{competencia.nivel}}{{#if escenario}} · escenario 3D{{/if}}</span>
+                    <span class="mt-1 block text-xs text-tinta-3">{{nombreGrupo competencia.grupo}} · Nivel {{competencia.nivel}}{{#if escenario}} · <a href="/tecnicos/{{../tecnico.id}}/escenario/{{escenario}}" class="underline">escenario 3D</a>{{/if}}</span>
                     {{#if (altoVoltaje competencia.tecnologia competencia.grupo)}}<span class="marca-hv mt-1.5">Alto voltaje 600 V</span>{{/if}}
                   </td>
                   <td><span class="chip {{claseEstado competencia.estado}}">{{porcentaje competencia.pSaber}} %</span></td>

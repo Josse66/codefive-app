@@ -112,3 +112,29 @@ export function mostrarTablero(_req, res) {
     scriptPagina: 'pages/tablero.js',
   });
 }
+
+// Autobús en 3D por grupos de función, del tipo de la tecnología del técnico.
+export function mostrarAutobus(req, res) {
+  conTecnico(req, res, (tecnico) =>
+    res.render('autobus', {
+      titulo: `Autobús · ${tecnico.nombre}`,
+      tecnico,
+      seccion: 'autobus',
+      autobus: tecnico.tecnologia === 'electrica' ? 'electrico' : 'diesel',
+      scriptPagina: 'pages/autobus.js',
+    }),
+  );
+}
+
+// Escenario de práctica en pantalla dividida: hipótesis a la izquierda, autobús 3D a la derecha.
+export function mostrarEscenario(req, res) {
+  conTecnico(req, res, (tecnico) =>
+    res.render('escenario', {
+      titulo: `Escenario · ${tecnico.nombre}`,
+      tecnico,
+      seccion: 'autobus',
+      escenarioId: req.params.escenarioId,
+      scriptPagina: 'pages/escenario.js',
+    }),
+  );
+}

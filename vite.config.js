@@ -20,6 +20,8 @@ export default defineConfig(({ command }) => ({
         perfil: ruta('./client/pages/perfil.js'),
         evaluacion: ruta('./client/pages/evaluacion.js'),
         tablero: ruta('./client/pages/tablero.js'),
+        autobus: ruta('./client/pages/autobus.js'),
+        escenario: ruta('./client/pages/escenario.js'),
       },
     },
   },
