@@ -208,6 +208,10 @@ pedir(`/api/tecnicos/${tecnicoId}/practica/${competenciaId}`)
     $('detalle-competencia').textContent =
       `Grupo ${competencia.grupo} · ${TECNOLOGIA[competencia.tecnologia]} · Nivel ${competencia.nivel}${
         competencia.critica ? ' · Seguridad crítica' : ''
+      }${
+        competencia.tecnologia === 'electrica' && competencia.grupo === 3
+          ? ' · Alto voltaje 600 V, solo personal autorizado'
+          : ''
       }`;
     mostrarDominio(datos.pSaber, datos.modo);
     if (leccion) {
@@ -229,7 +233,6 @@ pedir(`/api/tecnicos/${tecnicoId}/practica/${competenciaId}`)
       // Lecciones del sistema de tracción de 600 V: marco y marca naranja de alto voltaje.
       if (competencia.tecnologia === 'electrica' && competencia.grupo === 3) {
         $('leccion').classList.replace('border-tinta', 'border-hv');
-        $('leccion-hv').hidden = false;
       }
       $('leccion').hidden = false;
     } else {
