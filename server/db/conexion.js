@@ -31,6 +31,15 @@ if (
 ) {
   db.exec('ALTER TABLE tecnicos ADD COLUMN modelo_id TEXT');
 }
+// Cómo empezó el técnico su plan: 'diagnostico' o 'principiante' (null = todavía no elige).
+if (
+  !db
+    .prepare('PRAGMA table_info(tecnicos)')
+    .all()
+    .some((c) => c.name === 'inicio')
+) {
+  db.exec('ALTER TABLE tecnicos ADD COLUMN inicio TEXT');
+}
 logger.debug(`Base de datos lista en ${rutaBaseDatos}`);
 
 // Ejecuta varias operaciones como una sola: si algo falla, no se guarda nada.

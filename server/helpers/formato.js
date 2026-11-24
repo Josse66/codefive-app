@@ -35,6 +35,9 @@ const GRUPOS = JSON.parse(fs.readFileSync(path.resolve('data', 'grupos.json'), '
 const MODOS = { guiado: 'Guiado', con_pistas: 'Con pistas', autonomo: 'Autónomo' };
 
 export const porcentaje = (p) => Math.round(Number(p) * 100);
+// Parte de un total, en por ciento entero (0 si el total es 0).
+export const proporcion = (parte, total) =>
+  Number(total) ? Math.round((Number(parte) / Number(total)) * 100) : 0;
 export const nombreTecnologia = (t) => TECNOLOGIAS[t] ?? t;
 export const nombreEstado = (e) => ESTADOS[e] ?? e;
 export const claseEstado = (e) => CLASES_ESTADO[e] ?? '';
