@@ -140,6 +140,118 @@ function cargarAmbiente() {
 }
 const cargadorTexturas = new THREE.TextureLoader();
 
+// Piezas y herramientas del despiece de frenos hechas con geometría de Three.js (el frente mira a +z).
+// Se usan cuando la biblioteca de Blender no trae el modelo.
+const MATERIAL = {
+  acero: () => new THREE.MeshStandardMaterial({ color: 0x8e959c, metalness: 1, roughness: 0.35 }),
+  negro: () => new THREE.MeshStandardMaterial({ color: 0x1b1d20, metalness: 0.3, roughness: 0.5 }),
+  oxido: () => new THREE.MeshStandardMaterial({ color: 0x6b4a2f, metalness: 0.5, roughness: 0.7 }),
+  amarillo: () => new THREE.MeshStandardMaterial({ color: 0xe0a800, roughness: 0.5 }),
+  rojo: () => new THREE.MeshStandardMaterial({ color: 0x9a1414, roughness: 0.45 }),
+};
+function pieza3d(geometria, material, [x, y, z] = [0, 0, 0], [rx, ry, rz] = [0, 0, 0]) {
+  const m = new THREE.Mesh(geometria, material);
+  m.position.set(x, y, z);
+  m.rotation.set(rx, ry, rz);
+  return m;
+}
+const deFrente = [Math.PI / 2, 0, 0]; // cilindro con su eje hacia +z
+const PROCEDURALES = {
+  tuercas_rueda: () => {
+    const g = new THREE.Group();
+    g.add(pieza3d(new THREE.CylinderGeometry(0.16, 0.16, 0.03, 40), MATERIAL.acero(), [0, 0, 0], deFrente));
+    for (let k = 0; k < 10; k += 1) {
+      const a = (k / 10) * Math.PI * 2;
+      g.add(
+        pieza3d(
+          new THREE.CylinderGeometry(0.022, 0.022, 0.05, 6),
+          MATERIAL.acero(),
+          [0.12 * Math.cos(a), 0.12 * Math.sin(a), 0.035],
+          deFrente,
+        ),
+      );
+    }
+    g.add(
+      pieza3d(new THREE.CylinderGeometry(0.06, 0.06, 0.06, 24), MATERIAL.negro(), [0, 0, 0.03], deFrente),
+    );
+    return g;
+  },
+  tambor_freno: () => {
+    const g = new THREE.Group();
+    g.add(pieza3d(new THREE.CylinderGeometry(0.3, 0.3, 0.2, 48), MATERIAL.negro(), [0, 0, 0], deFrente));
+    g.add(
+      pieza3d(new THREE.CylinderGeometry(0.14, 0.14, 0.05, 32), MATERIAL.acero(), [0, 0, 0.12], deFrente),
+    );
+    return g;
+  },
+  balatas: () => {
+    const g = new THREE.Group();
+    g.add(
+      pieza3d(new THREE.CylinderGeometry(0.27, 0.27, 0.015, 48), MATERIAL.acero(), [0, 0, -0.05], deFrente),
+    );
+    [0, Math.PI].forEach((giro) => {
+      g.add(
+        pieza3d(
+          new THREE.TorusGeometry(0.22, 0.035, 8, 32, Math.PI * 0.8),
+          MATERIAL.oxido(),
+          [0, 0, 0],
+          [0, 0, giro + Math.PI * 0.1],
+        ),
+      );
+    });
+    return g;
+  },
+  punto_gato: () => {
+    const g = new THREE.Group();
+    g.add(
+      pieza3d(
+        new THREE.CylinderGeometry(0.07, 0.07, 0.5, 24),
+        MATERIAL.negro(),
+        [0, 0.05, 0],
+        [0, 0, Math.PI / 2],
+      ),
+    );
+    g.add(pieza3d(new THREE.BoxGeometry(0.16, 0.06, 0.16), MATERIAL.acero(), [0, -0.03, 0]));
+    return g;
+  },
+  h_llave: () => {
+    const g = new THREE.Group();
+    g.add(pieza3d(new THREE.BoxGeometry(0.07, 0.16, 0.06), MATERIAL.amarillo(), [0, 0.04, 0]));
+    g.add(
+      pieza3d(new THREE.CylinderGeometry(0.04, 0.04, 0.14, 24), MATERIAL.negro(), [0, 0.1, -0.09], deFrente),
+    );
+    g.add(
+      pieza3d(new THREE.CylinderGeometry(0.025, 0.025, 0.06, 6), MATERIAL.acero(), [0, 0.1, -0.19], deFrente),
+    );
+    return g;
+  },
+  h_gato: () => {
+    const g = new THREE.Group();
+    g.add(pieza3d(new THREE.CylinderGeometry(0.06, 0.06, 0.18, 24), MATERIAL.rojo()));
+    g.add(pieza3d(new THREE.CylinderGeometry(0.035, 0.035, 0.1, 24), MATERIAL.acero(), [0, 0.14, 0]));
+    g.add(pieza3d(new THREE.BoxGeometry(0.16, 0.02, 0.14), MATERIAL.rojo(), [0, -0.1, 0]));
+    return g;
+  },
+  h_calibrador: () => {
+    const g = new THREE.Group();
+    g.add(pieza3d(new THREE.BoxGeometry(0.02, 0.22, 0.004), MATERIAL.acero()));
+    g.add(pieza3d(new THREE.BoxGeometry(0.05, 0.012, 0.006), MATERIAL.acero(), [0.02, 0.1, 0]));
+    g.add(pieza3d(new THREE.BoxGeometry(0.05, 0.012, 0.006), MATERIAL.acero(), [0.02, 0.03, 0]));
+    return g;
+  },
+  h_torquimetro: () => {
+    const g = new THREE.Group();
+    g.add(pieza3d(new THREE.CylinderGeometry(0.012, 0.012, 0.4, 16), MATERIAL.acero()));
+    g.add(pieza3d(new THREE.CylinderGeometry(0.016, 0.016, 0.12, 16), MATERIAL.negro(), [0, -0.15, 0]));
+    g.add(
+      pieza3d(new THREE.CylinderGeometry(0.025, 0.025, 0.03, 24), MATERIAL.acero(), [0, 0.21, 0], deFrente),
+    );
+    return g;
+  },
+};
+const modeloDe = (biblioteca, nombre) =>
+  biblioteca.getObjectByName(nombre) ?? PROCEDURALES[nombre]?.() ?? null;
+
 // Copia de un modelo con materiales propios (para poder resaltarla sin tocar las demás) y sombras.
 function copiaDe(original) {
   const copia = original.clone(true);
@@ -399,7 +511,7 @@ export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos 
   cargarBiblioteca()
     .then((biblioteca) => {
       mallasPieza.forEach((malla, id) => {
-        const original = biblioteca.getObjectByName(id);
+        const original = modeloDe(biblioteca, id);
         if (!original) return;
         const modelo = copiaDe(original);
         const m = malla;
@@ -640,7 +752,7 @@ export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos 
     herramienta.visible = true;
     cargarBiblioteca()
       .then((biblioteca) => {
-        const original = biblioteca.getObjectByName(`h_${id}`);
+        const original = modeloDe(biblioteca, `h_${id}`);
         if (!original || herramientaActual !== id) return;
         const modelo = copiaDe(original);
         modelo.scale.setScalar(2);
@@ -654,6 +766,40 @@ export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos 
   // Animación de uso: la herramienta empuja hacia la pieza y regresa.
   let uso = 1;
 
+  // Despiece: una pieza retirada viaja al piso junto al autobús y al montarla regresa a su lugar.
+  // La rueda trasera mueve también la rueda del modelo del autobús (nodo rueda_7, lado de la puerta).
+  const movimientos = [];
+  // Lugar en el piso de cada pieza retirada: en fila junto al autobús para no encimarse.
+  const enElPiso = new Map();
+  function moverPieza(piezaId, retirar) {
+    const objeto = mallasPieza.get(piezaId);
+    if (!objeto) return;
+    objeto.userData.base ??= objeto.position.clone();
+    const { base } = objeto.userData;
+    const alto = objeto.userData.pieza.tamano?.[1] ?? 0.4;
+    if (retirar && !enElPiso.has(piezaId)) enElPiso.set(piezaId, enElPiso.size);
+    if (!retirar) enElPiso.delete(piezaId);
+    const lugar = enElPiso.get(piezaId) ?? 0;
+    const fuera = new THREE.Vector3(
+      base.x + 1.1 - lugar * 1.15,
+      objeto.userData.pieza.tipo === 'rueda' ? base.y : alto / 2 + 0.02,
+      base.z + 1.7,
+    );
+    const hasta = retirar ? fuera : base.clone();
+    const delta = hasta.clone().sub(objeto.position);
+    movimientos.push({ obj: objeto, desde: objeto.position.clone(), hasta, t: 0 });
+    if (objeto.userData.pieza.tipo === 'rueda') {
+      const ruedaBus = bus.getObjectByName('rueda_7');
+      if (ruedaBus)
+        movimientos.push({
+          obj: ruedaBus,
+          desde: ruedaBus.position.clone(),
+          hasta: ruedaBus.position.clone().add(delta),
+          t: 0,
+        });
+    }
+  }
+
   let sacudir = 0;
   // Efectos de consecuencia: partículas simples que viven unos segundos.
   const particulas = [];
@@ -666,6 +812,10 @@ export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos 
       calor: { color: 0xc98a00, n: 24, vel: 0.4, gravedad: 0.9, vida: 1.8 },
     }[tipo];
     if (herramienta.visible) uso = 0;
+    if (tipo === 'retirar' || tipo === 'montar') {
+      moverPieza(piezaId, tipo === 'retirar');
+      return;
+    }
     if (tipo === 'cambio') {
       // La pieza vieja sale hacia el técnico y la nueva entra a su lugar con brillo verde.
       const malla = mallasPieza.get(piezaId);
@@ -761,6 +911,7 @@ export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos 
       sacudir > 0 ||
       llegada.t < 1 ||
       uso < 1 ||
+      movimientos.length > 0 ||
       [...mallasPieza.values()].some((m) => m.userData.cambio != null);
     // Caminar en primera persona o el amortiguado de la cámara también piden cuadros.
     const camaraMovida = moverPrimeraPersona(dt) || (!inmersivo.activo && controles.update());
@@ -842,6 +993,18 @@ export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos 
         renderer.shadowMap.needsUpdate = true;
       }
     });
+    for (let i = movimientos.length - 1; i >= 0; i -= 1) {
+      const mov = movimientos[i];
+      mov.t = Math.min(1, mov.t + dt / (menosMovimiento ? 0.01 : 1.1));
+      const k = mov.t * mov.t * (3 - 2 * mov.t);
+      mov.obj.position.lerpVectors(mov.desde, mov.hasta, k);
+      // Se levanta un poco en el camino para que se vea que la pieza sale.
+      mov.obj.position.y += Math.sin(k * Math.PI) * 0.25;
+      if (mov.t >= 1) {
+        movimientos.splice(i, 1);
+        renderer.shadowMap.needsUpdate = true;
+      }
+    }
     // Herramienta: al usarla empuja hacia la pieza y regresa.
     if (uso < 1) {
       uso = Math.min(1, uso + dt / 0.45);

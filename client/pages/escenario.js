@@ -495,6 +495,8 @@ carga
     });
     conectarEntradas();
     conectarInmersivo();
+    // Solo en desarrollo: acceso a la escena para pruebas desde la consola.
+    if (import.meta.env.DEV) window.escenaDepuracion = { escena: estado.escena, usarHerramientaEn };
     pintarPaso();
   })
   .catch((error) => mostrarError(error.message));

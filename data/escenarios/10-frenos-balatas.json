@@ -1,0 +1,383 @@
+{
+  "id": "frenos-balatas",
+  "grupo": 5,
+  "tecnologia": "ambas",
+  "autobus": null,
+  "competencia": "A5-1-MAN",
+  "nivel": 1,
+  "profundidad": "completo",
+  "titulo": "Cambio de balatas de la rueda trasera",
+  "sintoma": "En la inspección, la carrera de la varilla de la cámara de freno trasera derecha salió fuera de límite. Hay que revisar balatas y tambor.",
+  "fuente": "Prácticas públicas de servicio de frenos de tambor en vehículos pesados; Bendix BW1231",
+  "enfoque": {
+    "objetivo": [-3.6, 0.6, 1.2],
+    "distancia": 5.5
+  },
+  "herramientas": [
+    {
+      "id": "mano",
+      "nombre": "Mano"
+    },
+    {
+      "id": "calzas",
+      "nombre": "Calzas"
+    },
+    {
+      "id": "llave",
+      "nombre": "Llave de impacto"
+    },
+    {
+      "id": "gato",
+      "nombre": "Gato hidráulico"
+    },
+    {
+      "id": "calibrador",
+      "nombre": "Calibrador"
+    },
+    {
+      "id": "torquimetro",
+      "nombre": "Torquímetro"
+    }
+  ],
+  "datosDemo": true,
+  "piezas": [
+    {
+      "id": "rueda_trasera",
+      "nombre": "Rueda trasera",
+      "pos": [-3.8, 0.55, 1.42],
+      "tamano": [1.1, 1.1, 0.2],
+      "tipo": "rueda"
+    },
+    {
+      "id": "tuercas_rueda",
+      "nombre": "Tuercas de la rueda",
+      "pos": [-3.8, 0.55, 1.6],
+      "tamano": [0.34, 0.34, 0.08],
+      "tipo": "metal"
+    },
+    {
+      "id": "punto_gato",
+      "nombre": "Punto de apoyo del gato (eje)",
+      "pos": [-3.1, 0.3, 1.3],
+      "tamano": [0.5, 0.2, 0.2],
+      "tipo": "metal"
+    },
+    {
+      "id": "tambor_freno",
+      "nombre": "Tambor de freno",
+      "pos": [-3.8, 0.55, 1.22],
+      "tamano": [0.62, 0.62, 0.22],
+      "tipo": "metal"
+    },
+    {
+      "id": "balatas",
+      "nombre": "Balatas",
+      "pos": [-3.8, 0.55, 1.08],
+      "tamano": [0.52, 0.52, 0.1],
+      "tipo": "metal"
+    }
+  ],
+  "pasos": [
+    {
+      "id": "asegurar",
+      "tipo": "accion",
+      "competencia": "A5-1-SEG",
+      "instruccion": "Antes de tocar la rueda, asegura la unidad: pon las calzas.",
+      "correcta": ["calzas>rueda_trasera"],
+      "explicacion": "Con calzas la unidad no se mueve aunque liberes o desarmes el freno.",
+      "pista": "La seguridad va primero: ¿qué impide que el autobús ruede?",
+      "errores": {
+        "gato>punto_gato": {
+          "codigo": "BA-01",
+          "critico": true,
+          "consecuencia": "bloqueo",
+          "efecto": "golpe",
+          "mensaje": "Levantaste la unidad sin calzas: puede rodar y caerse del gato."
+        },
+        "llave>tuercas_rueda": {
+          "codigo": "BA-01",
+          "critico": true,
+          "consecuencia": "bloqueo",
+          "efecto": "golpe",
+          "mensaje": "Primero calza la unidad; nunca se trabaja en una rueda sin asegurarla."
+        },
+        "*": {
+          "codigo": null,
+          "critico": false,
+          "consecuencia": "reintentar",
+          "mensaje": "Primero asegura la unidad con las calzas."
+        }
+      }
+    },
+    {
+      "id": "aflojar",
+      "tipo": "accion",
+      "instruccion": "Con la rueda todavía en el piso, afloja las tuercas con la llave de impacto.",
+      "correcta": ["llave>tuercas_rueda"],
+      "explicacion": "Se aflojan con la rueda apoyada: si la levantas antes, la rueda gira y no puedes aflojarlas.",
+      "pista": "¿Por qué conviene aflojar antes de levantar?",
+      "errores": {
+        "gato>punto_gato": {
+          "codigo": "BA-02",
+          "critico": false,
+          "consecuencia": "reintentar",
+          "mensaje": "Si levantas primero, la rueda gira y no puedes aflojar las tuercas. Aflójalas en el piso."
+        },
+        "*": {
+          "codigo": null,
+          "critico": false,
+          "consecuencia": "reintentar",
+          "mensaje": "Afloja las tuercas con la llave de impacto."
+        }
+      }
+    },
+    {
+      "id": "levantar",
+      "tipo": "accion",
+      "instruccion": "Levanta la unidad con el gato en el punto de apoyo del eje.",
+      "correcta": ["gato>punto_gato"],
+      "explicacion": "El gato va en el punto de apoyo del eje, nunca en la carrocería ni en el tanque de aire.",
+      "pista": "Busca el apoyo marcado en el eje, cerca de la rueda.",
+      "errores": {
+        "mano>rueda_trasera": {
+          "codigo": null,
+          "critico": false,
+          "consecuencia": "reintentar",
+          "mensaje": "La rueda sigue cargando el peso: primero levanta la unidad."
+        },
+        "*": {
+          "codigo": null,
+          "critico": false,
+          "consecuencia": "reintentar",
+          "mensaje": "Levanta la unidad con el gato en el eje."
+        }
+      }
+    },
+    {
+      "id": "quitar_tuercas",
+      "tipo": "accion",
+      "instruccion": "Quita las tuercas a mano y déjalas a un lado.",
+      "correcta": ["mano>tuercas_rueda"],
+      "efecto": "retirar",
+      "explicacion": "Las tuercas ya están flojas: salen a mano y se guardan juntas para no perderlas.",
+      "pista": "Primero lo que sujeta la rueda.",
+      "errores": {
+        "*": {
+          "codigo": null,
+          "critico": false,
+          "consecuencia": "reintentar",
+          "mensaje": "Primero quita las tuercas."
+        }
+      }
+    },
+    {
+      "id": "quitar_rueda",
+      "tipo": "accion",
+      "instruccion": "Retira la rueda.",
+      "correcta": ["mano>rueda_trasera"],
+      "efecto": "retirar",
+      "explicacion": "La rueda se retira derecha para no dañar los birlos.",
+      "pista": "Sin tuercas, la rueda ya sale.",
+      "errores": {
+        "*": {
+          "codigo": null,
+          "critico": false,
+          "consecuencia": "reintentar",
+          "mensaje": "Retira la rueda."
+        }
+      }
+    },
+    {
+      "id": "quitar_tambor",
+      "tipo": "accion",
+      "instruccion": "Retira el tambor de freno para ver las balatas.",
+      "correcta": ["mano>tambor_freno"],
+      "efecto": "retirar",
+      "explicacion": "Sin el tambor quedan a la vista las balatas, el resorte y la leva.",
+      "pista": "Las balatas están dentro del tambor.",
+      "errores": {
+        "*": {
+          "codigo": null,
+          "critico": false,
+          "consecuencia": "reintentar",
+          "mensaje": "Retira el tambor."
+        }
+      }
+    },
+    {
+      "id": "medir",
+      "tipo": "accion",
+      "instruccion": "Mide el espesor de las balatas con el calibrador.",
+      "correcta": ["calibrador>balatas"],
+      "explicacion": "Mediste 4 mm. El mínimo de demostración es 6 mm.",
+      "pista": "Se mide, no se calcula a ojo.",
+      "errores": {
+        "*": {
+          "codigo": null,
+          "critico": false,
+          "consecuencia": "reintentar",
+          "mensaje": "Mide las balatas con el calibrador."
+        }
+      }
+    },
+    {
+      "id": "decidir",
+      "tipo": "hipotesis",
+      "pregunta": "Las balatas miden 4 mm y el mínimo es 6 mm. ¿Qué haces?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Cambio las balatas de los dos lados del eje"
+        },
+        {
+          "id": "b",
+          "texto": "Cambio solo las de esta rueda"
+        },
+        {
+          "id": "c",
+          "texto": "Ajusto el freno para que la carrera salga bien"
+        },
+        {
+          "id": "d",
+          "texto": "Las dejo, todavía frenan"
+        }
+      ],
+      "correcta": "a",
+      "explicacion": "Se cambian por eje: si solo cambias un lado, la unidad frena disparejo y se jala.",
+      "pista": "Piensa en cómo frena el autobús si un lado tiene balatas nuevas y el otro gastadas.",
+      "errores": {
+        "d": {
+          "codigo": "BA-03",
+          "critico": true,
+          "consecuencia": "bloqueo",
+          "efecto": "golpe",
+          "mensaje": "Abajo del mínimo la balata ya no tiene margen: la unidad puede quedarse sin frenos."
+        },
+        "*": {
+          "codigo": null,
+          "critico": false,
+          "consecuencia": "reintentar",
+          "mensaje": "Revisa: abajo del mínimo se cambian, y siempre por eje."
+        }
+      }
+    },
+    {
+      "id": "cambiar",
+      "tipo": "reemplazo",
+      "pieza": "balatas",
+      "pregunta": "¿Qué refacción pides?",
+      "opciones": [
+        {
+          "id": "juego",
+          "texto": "Juego de balatas del eje (ambos lados)",
+          "costo": 1450
+        },
+        {
+          "id": "una",
+          "texto": "Balatas de una sola rueda",
+          "costo": 760
+        },
+        {
+          "id": "tambor",
+          "texto": "Tambor de freno nuevo",
+          "costo": 3200
+        },
+        {
+          "id": "camara",
+          "texto": "Cámara de freno",
+          "costo": 1900
+        }
+      ],
+      "correcta": "juego",
+      "explicacion": "Juego completo del eje: frenado parejo y el tambor estaba bien.",
+      "pista": "Cambia lo que está gastado, y por eje.",
+      "errores": {
+        "una": {
+          "codigo": null,
+          "critico": false,
+          "consecuencia": "reintentar",
+          "mensaje": "Por eje: con un solo lado nuevo la unidad frena disparejo."
+        },
+        "*": {
+          "codigo": null,
+          "critico": false,
+          "consecuencia": "reintentar",
+          "mensaje": "Esa pieza estaba bien: cambiaste algo que no hacía falta."
+        }
+      }
+    },
+    {
+      "id": "montar_tambor",
+      "tipo": "accion",
+      "instruccion": "Monta de nuevo el tambor de freno.",
+      "correcta": ["mano>tambor_freno"],
+      "efecto": "montar",
+      "explicacion": "El tambor regresa a su lugar sobre las balatas nuevas.",
+      "pista": "Toma el tambor que dejaste junto al autobús.",
+      "errores": {
+        "*": {
+          "codigo": null,
+          "critico": false,
+          "consecuencia": "reintentar",
+          "mensaje": "Primero monta el tambor."
+        }
+      }
+    },
+    {
+      "id": "montar_rueda",
+      "tipo": "accion",
+      "instruccion": "Monta la rueda.",
+      "correcta": ["mano>rueda_trasera"],
+      "efecto": "montar",
+      "explicacion": "La rueda entra derecha sobre los birlos.",
+      "pista": "Toma la rueda que dejaste junto al autobús.",
+      "errores": {
+        "*": {
+          "codigo": null,
+          "critico": false,
+          "consecuencia": "reintentar",
+          "mensaje": "Monta la rueda."
+        }
+      }
+    },
+    {
+      "id": "poner_tuercas",
+      "tipo": "accion",
+      "instruccion": "Pon las tuercas a mano.",
+      "correcta": ["mano>tuercas_rueda"],
+      "efecto": "montar",
+      "explicacion": "A mano primero para no barrer la cuerda.",
+      "pista": "Las dejaste junto al autobús.",
+      "errores": {
+        "*": {
+          "codigo": null,
+          "critico": false,
+          "consecuencia": "reintentar",
+          "mensaje": "Pon las tuercas a mano."
+        }
+      }
+    },
+    {
+      "id": "apretar",
+      "tipo": "accion",
+      "instruccion": "Baja la unidad y aprieta las tuercas en estrella con el torquímetro.",
+      "correcta": ["gato>punto_gato", "torquimetro>tuercas_rueda"],
+      "explicacion": "Con la rueda en el piso y en estrella al par especificado, la rueda asienta pareja. Se reaprietan tras los primeros kilómetros.",
+      "pista": "El par final no se da con la llave de impacto.",
+      "errores": {
+        "llave>tuercas_rueda": {
+          "codigo": "BA-04",
+          "critico": false,
+          "consecuencia": "reintentar",
+          "mensaje": "La llave de impacto no da el par correcto: el apriete final va con torquímetro, en estrella."
+        },
+        "*": {
+          "codigo": null,
+          "critico": false,
+          "consecuencia": "reintentar",
+          "mensaje": "Baja la unidad y aprieta con el torquímetro."
+        }
+      }
+    }
+  ]
+}

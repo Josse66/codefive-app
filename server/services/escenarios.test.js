@@ -25,9 +25,9 @@ function avanzarHasta(escenario, pasoId) {
   return progreso;
 }
 
-test('hay un escenario por cada grupo de función del 1 al 9', () => {
+test('hay al menos un escenario por cada grupo de función del 1 al 9', () => {
   assert.deepEqual(
-    listarEscenarios().map((e) => e.grupo),
+    [...new Set(listarEscenarios().map((e) => e.grupo))].sort((a, b) => a - b),
     [1, 2, 3, 4, 5, 6, 7, 8, 9],
   );
 });
