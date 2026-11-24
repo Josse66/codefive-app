@@ -1,0 +1,20 @@
+{
+  "name": "codefive-app",
+  "version": "0.1.0",
+  "description": "CodeFive: entrenamiento adaptativo para técnicos de autobuses (Reto Volvo, HackaTec 2026)",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon server/bin/www.js",
+    "start": "node server/bin/www.js"
+  },
+  "engines": {
+    "node": ">=22.13"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
+}
