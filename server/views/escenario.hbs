@@ -1,0 +1,98 @@
+<section id="escenario" class="relative grid gap-5" data-tecnico-id="{{tecnico.id}}" data-escenario-id="{{escenarioId}}">
+  <div class="flex flex-wrap items-end justify-between gap-4">
+    <div class="grid gap-2">
+      <p class="font-narrow text-sm font-bold uppercase tracking-wider text-tinta-3">Práctica en el autobús · <span id="profundidad"></span></p>
+      <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+        <span id="grupo" class="recuadro h-9 w-9 text-xl"></span>
+        <h1 id="titulo" class="font-sans text-3xl font-semibold leading-tight tracking-normal">Cargando…</h1>
+      </div>
+      <p id="sintoma" class="max-w-3xl text-[17px] text-tinta-2"></p>
+    </div>
+    <div class="flex flex-wrap items-center gap-2">
+      <span id="marca-hv" class="marca-hv" hidden>Alto voltaje 600 V</span>
+      <span class="chip border-tinta-3 text-tinta-2">Datos de demostración</span>
+      <a href="/tecnicos/{{tecnico.id}}/autobus" class="boton-linea">Ver el autobús</a>
+    </div>
+  </div>
+
+  <div class="grid gap-5 lg:grid-cols-[400px_minmax(0,1fr)] lg:items-start">
+    <div class="grid gap-4">
+      <ol id="pasos" class="flex flex-wrap gap-1.5" aria-label="Pasos del escenario"></ol>
+
+      <article id="paso" class="grid gap-4 border-2 border-tinta bg-white p-5" hidden aria-live="polite">
+        <p id="paso-numero" class="text-sm font-semibold text-tinta-2"></p>
+        <h2 id="paso-texto" class="font-sans text-xl font-semibold leading-snug tracking-normal"></h2>
+        <div id="opciones" class="grid gap-2" role="radiogroup" aria-labelledby="paso-texto"></div>
+        <div id="herramientas" class="grid gap-2" hidden>
+          <p class="text-sm text-tinta-3">Elige una herramienta y úsala sobre la pieza en el autobús: clic, pinza con la cámara o botón del guante.</p>
+          <div id="bandeja" class="grid grid-cols-2 gap-2"></div>
+        </div>
+        <p id="subpaso" class="text-sm font-semibold text-tinta-2" hidden></p>
+        <div id="pista" class="border border-med bg-med-suave p-3 text-[15px]" hidden></div>
+        <div id="retro" class="grid gap-1 border p-3 text-[15px]" hidden></div>
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <button id="boton-pista" type="button" class="boton-linea px-4 py-2" hidden>Ver pista</button>
+          <button id="boton-continuar" type="button" class="boton ml-auto" hidden>Continuar</button>
+        </div>
+      </article>
+
+      <article id="final" class="grid gap-3 border-2 border-ok bg-white p-5" hidden>
+        <h2 class="text-2xl text-ok">Escenario completo</h2>
+        <p id="final-texto"></p>
+        <div class="flex flex-wrap gap-2">
+          <a id="enlace-evaluacion" href="#" class="boton">Evaluación de después</a>
+          <a href="/tecnicos/{{tecnico.id}}/ruta" class="boton-linea">Ver la ruta</a>
+          <button id="boton-repetir" type="button" class="boton-linea">Repetir</button>
+        </div>
+      </article>
+
+      <div class="grid gap-2 border border-placa-linea bg-white p-4">
+        <div class="flex items-baseline justify-between text-sm">
+          <span class="font-semibold">Dominio <span id="dominio-codigo" class="codigo"></span></span>
+          <span id="dominio-texto" class="codigo">—</span>
+        </div>
+        <div class="relative h-2 bg-placa-2" aria-hidden="true">
+          <div id="dominio-barra" class="h-2 bg-tinta transition-[width] duration-700 ease-out" style="width: 0%"></div>
+          <span class="absolute inset-y-[-4px] left-[40%] w-px bg-tinta-3"></span>
+          <span class="absolute inset-y-[-4px] left-[80%] w-px bg-tinta-3"></span>
+        </div>
+        <p id="fuente" class="text-xs text-tinta-3"></p>
+      </div>
+
+      <details class="border border-placa-linea bg-white p-4">
+        <summary class="cursor-pointer font-semibold">Entradas: mouse, cámara y guante</summary>
+        <div class="mt-3 grid gap-3">
+          <div class="flex flex-wrap gap-1.5">
+            <span data-fuente="mouse" class="chip border-ok bg-ok-suave text-ok">Mouse</span>
+            <span data-fuente="camara" class="chip border-nada bg-nada-suave text-tinta-3">Cámara</span>
+            <span data-fuente="guante" class="chip border-nada bg-nada-suave text-tinta-3">Guante</span>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button id="boton-guante" type="button" class="boton-linea px-3 py-2 text-sm">Conectar guante</button>
+            <button id="boton-camara" type="button" class="boton-linea px-3 py-2 text-sm">Iniciar cámara</button>
+          </div>
+          <video id="video" class="w-full -scale-x-100 bg-tinta" playsinline muted hidden></video>
+          <p id="entradas-mensaje" class="text-xs text-tinta-3">Si la cámara o el guante se desconectan, el mouse sigue funcionando.</p>
+        </div>
+      </details>
+      <p id="mensaje-error" class="aviso-critico" hidden></p>
+    </div>
+
+    <div class="relative h-[460px] border border-tinta bg-placa lg:sticky lg:top-6 lg:h-[680px]">
+      <div id="lienzo" class="absolute inset-0"></div>
+      <p id="etiqueta-pieza" class="pointer-events-none absolute left-3 top-3 border border-tinta bg-white px-2 py-1 text-sm font-semibold" hidden></p>
+      <p class="pointer-events-none absolute bottom-3 left-3 bg-white/90 px-2 py-1 text-xs text-tinta-3">Clic derecho y arrastrar: girar · rueda: acercar</p>
+    </div>
+  </div>
+
+  {{! Error crítico: la acción se bloquea y se avisa al responsable, como en el taller. }}
+  <div id="bloqueo" class="fixed inset-0 z-40 grid place-items-center bg-mal/90 p-6" role="alertdialog" aria-modal="true" aria-labelledby="bloqueo-titulo" hidden>
+    <div class="grid max-w-xl gap-4 border-2 border-white bg-mal p-8 text-white">
+      <p class="font-narrow text-sm font-bold uppercase tracking-wider">Acción bloqueada · error crítico de seguridad</p>
+      <h2 id="bloqueo-titulo" class="codigo text-6xl"></h2>
+      <p id="bloqueo-mensaje" class="text-xl leading-snug"></p>
+      <p class="text-[15px] text-white/90">Se registró en la bitácora y se avisó al responsable en el tablero de Volvo.</p>
+      <button id="boton-bloqueo" type="button" class="w-fit border-2 border-white bg-white px-6 py-3 font-semibold text-mal hover:bg-mal-suave">Entendido, repetir el paso</button>
+    </div>
+  </div>
+</section>
