@@ -8,7 +8,8 @@ const TECNOLOGIA = { diesel: 'Diésel', electrica: 'Eléctrico', ambas: 'Diésel
 const MODO = { guiado: 'Modo guiado', con_pistas: 'Modo con pistas', autonomo: 'Modo autónomo' };
 const ESTADO = { dominada: 'Dominada', en_desarrollo: 'En desarrollo', brecha: 'Brecha' };
 const CLASE_OPCION =
-  'w-full rounded border-2 border-acero-100 bg-white p-4 text-left transition hover:border-acero-600 aria-checked:border-hv-500 aria-checked:bg-hv-100 disabled:cursor-default';
+  'flex w-full items-start gap-3 border border-placa-linea bg-white p-4 text-left text-[16px] transition-colors duration-150 hover:border-tinta aria-checked:border-tinta aria-checked:bg-placa-2 aria-checked:shadow-[inset_0_0_0_1px_#141c24] disabled:cursor-default disabled:hover:border-placa-linea';
+const CLASE_LETRA = 'codigo flex h-6 w-6 shrink-0 items-center justify-center border border-tinta text-sm';
 
 const estado = {
   datos: null,
@@ -34,7 +35,7 @@ function mostrarError(mensaje) {
 
 function mostrarDominio(pSaber, modo) {
   const porcentaje = Math.round(pSaber * 100);
-  $('dominio-texto').textContent = `${porcentaje}%`;
+  $('dominio-texto').textContent = `${porcentaje} %`;
   $('dominio-barra').style.width = `${porcentaje}%`;
   $('modo-texto').textContent = MODO[modo];
 }
@@ -64,7 +65,12 @@ function mostrarPregunta() {
       boton.dataset.id = opcion.id;
       boton.setAttribute('role', 'radio');
       boton.setAttribute('aria-checked', 'false');
-      boton.textContent = opcion.texto;
+      const letra = document.createElement('span');
+      letra.className = CLASE_LETRA;
+      letra.textContent = opcion.id.toUpperCase();
+      const texto = document.createElement('span');
+      texto.textContent = opcion.texto;
+      boton.append(letra, texto);
       boton.addEventListener('click', () => {
         estado.opcion = opcion.id;
         marcar($('pregunta-opciones'), boton);
@@ -89,18 +95,16 @@ function mostrarPregunta() {
 
 function mostrarRetroalimentacion(resultado) {
   const caja = $('retroalimentacion');
-  caja.className = `grid gap-1 rounded border-l-4 p-4 ${
-    resultado.correcta
-      ? 'border-green-600 bg-green-50 text-green-900'
-      : 'border-red-600 bg-red-50 text-red-900'
+  caja.className = `grid gap-1 border p-4 text-[15px] ${
+    resultado.correcta ? 'border-ok bg-ok-suave' : 'border-mal bg-mal-suave'
   }`;
   const titulo = document.createElement('p');
-  titulo.className = 'font-semibold';
+  titulo.className = `font-semibold ${resultado.correcta ? 'text-ok' : 'text-mal'}`;
   titulo.textContent = resultado.correcta ? 'Correcto' : 'No es correcto';
   const explicacion = document.createElement('p');
   explicacion.textContent = resultado.explicacion;
   const fuente = document.createElement('p');
-  fuente.className = 'text-sm opacity-80';
+  fuente.className = 'text-sm text-tinta-3';
   fuente.textContent = `Fuente: ${resultado.fuente}`;
   caja.replaceChildren(titulo, explicacion, fuente);
   caja.hidden = false;
@@ -109,7 +113,9 @@ function mostrarRetroalimentacion(resultado) {
     .querySelectorAll('button')
     .forEach((b) => {
       b.setAttribute('disabled', '');
-      if (b.dataset.id === resultado.correctaId) b.classList.add('border-green-600', 'bg-green-50');
+      if (b.dataset.id === resultado.correctaId) {
+        b.classList.add('!border-ok', '!bg-ok-suave', '!shadow-[inset_0_0_0_1px_#2f7d43]');
+      }
     });
   $('confianza').disabled = true;
   $('boton-comprobar').hidden = true;
@@ -124,7 +130,7 @@ function mostrarResumen(dominio) {
   $('tarjeta-pregunta').hidden = true;
   $('resumen-titulo').textContent = `${estado.aciertos} de ${estado.datos.preguntas.length} correctas`;
   $('resumen-texto').textContent =
-    `Dominio estimado: ${Math.round(dominio.despues * 100)}% (${ESTADO[dominio.estado]}). ${
+    `Dominio estimado: ${Math.round(dominio.despues * 100)} % (${ESTADO[dominio.estado]}). ${
       dominio.estado === 'dominada'
         ? 'Esta competencia sale de tu ruta; volverá como repaso para comprobar que la conservas.'
         : 'Sigue en tu ruta: la próxima vez tendrás menos ayuda conforme avances.'
@@ -137,7 +143,7 @@ let ultimoDominio = null;
 $('confianza')
   .querySelectorAll('button')
   .forEach((boton) => {
-    boton.setAttribute('class', CLASE_OPCION);
+    boton.setAttribute('class', `${CLASE_OPCION} justify-center font-semibold`);
     boton.setAttribute('role', 'radio');
     boton.setAttribute('aria-checked', 'false');
     boton.addEventListener('click', () => {
@@ -197,16 +203,22 @@ pedir(`/api/tecnicos/${tecnicoId}/practica/${competenciaId}`)
     const { competencia, leccion } = datos;
     $('titulo-competencia').textContent = competencia.nombre;
     $('detalle-competencia').textContent =
-      `${TECNOLOGIA[competencia.tecnologia]} · Grupo ${competencia.grupo} · Nivel ${competencia.nivel}${
+      `Grupo ${competencia.grupo} · ${TECNOLOGIA[competencia.tecnologia]} · Nivel ${competencia.nivel}${
         competencia.critica ? ' · Seguridad crítica' : ''
       }`;
     mostrarDominio(datos.pSaber, datos.modo);
     if (leccion) {
       $('leccion-titulo').textContent = leccion.titulo;
       $('leccion-puntos').replaceChildren(
-        ...leccion.puntos.map((texto) => {
+        ...leccion.puntos.map((texto, indice) => {
           const li = document.createElement('li');
-          li.textContent = texto;
+          li.className = 'flex items-start gap-3 text-[17px] leading-relaxed';
+          const numero = document.createElement('span');
+          numero.className = 'recuadro mt-0.5 bg-ref';
+          numero.textContent = indice + 1;
+          const contenido = document.createElement('span');
+          contenido.textContent = texto;
+          li.append(numero, contenido);
           return li;
         }),
       );

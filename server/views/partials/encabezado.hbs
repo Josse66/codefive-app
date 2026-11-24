@@ -1,8 +1,19 @@
-<header class="border-b-4 border-hv-500 bg-acero-900 text-white">
-  <div class="contenedor flex flex-wrap items-center justify-between gap-4 py-3">
-    <a href="/" class="font-display text-2xl font-bold tracking-wide">CodeFive</a>
-    <nav class="flex gap-5 text-sm">
-      <a href="/" class="hover:text-hv-100">Inicio</a>
-    </nav>
+<header class="bg-tinta text-white">
+  <div class="contenedor flex min-h-14 flex-wrap items-center gap-x-10 gap-y-1">
+    <a href="/" class="flex items-center gap-3 py-3 font-narrow text-xl font-bold uppercase tracking-wide no-underline">
+      <span class="recuadro h-6 w-6 bg-ref text-[13px]" aria-hidden="true">T</span>
+      Técnicos del Mañana
+    </a>
+    {{#if tecnico}}
+      <nav aria-label="Secciones del técnico" class="flex gap-1 text-[15px]">
+        <a href="/tecnicos/{{tecnico.id}}/diagnostico" class="px-3 py-4 no-underline {{#if (igual seccion 'diagnostico')}}text-white shadow-[inset_0_-3px_0_#b3121f]{{else}}text-placa-linea hover:text-white{{/if}}" {{#if (igual seccion 'diagnostico')}}aria-current="page"{{/if}}>Diagnóstico</a>
+        <a href="/tecnicos/{{tecnico.id}}/perfil" class="px-3 py-4 no-underline {{#if (igual seccion 'competencias')}}text-white shadow-[inset_0_-3px_0_#b3121f]{{else}}text-placa-linea hover:text-white{{/if}}" {{#if (igual seccion 'competencias')}}aria-current="page"{{/if}}>Competencias</a>
+        <a href="/tecnicos/{{tecnico.id}}/ruta" class="px-3 py-4 no-underline {{#if (igual seccion 'ruta')}}text-white shadow-[inset_0_-3px_0_#b3121f]{{else}}text-placa-linea hover:text-white{{/if}}" {{#if (igual seccion 'ruta')}}aria-current="page"{{/if}}>Ruta</a>
+      </nav>
+      <div class="ml-auto flex items-center gap-4 py-3 text-sm text-placa-linea">
+        <span><span class="font-semibold text-white">{{tecnico.nombre}}</span> · {{tecnico.taller}} · {{nombreTecnologia tecnico.tecnologia}}</span>
+        <a href="/" class="text-white underline decoration-placa-linea hover:decoration-white">Cambiar técnico</a>
+      </div>
+    {{/if}}
   </div>
 </header>

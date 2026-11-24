@@ -1,42 +1,66 @@
-<section class="grid gap-6">
-  <div class="flex flex-wrap items-end justify-between gap-4">
-    <div>
-      <p class="etiqueta">Ruta personalizada</p>
-      <h1 class="mt-1 text-4xl">{{tecnico.nombre}}</h1>
-      <p class="text-acero-600">Solo lo que le falta, en el orden en que conviene practicarlo.</p>
-    </div>
-    <a href="/tecnicos/{{tecnico.id}}/perfil" class="boton bg-acero-900">Ver mapa de competencias</a>
+<section class="grid gap-8">
+  <div class="grid gap-2">
+    <h1 class="text-4xl leading-tight lg:text-5xl">Ruta de {{tecnico.nombre}}</h1>
+    <p class="max-w-2xl text-tinta-2">Solo lo que le falta, en el orden en que conviene practicarlo: seguridad crítica primero, luego requisitos y después la brecha más grande.</p>
   </div>
 
-  {{#if pasos.length}}
-    <ol class="grid gap-3">
-      {{#each pasos}}
-        <li class="tarjeta grid gap-3 sm:grid-cols-[3rem_1fr_auto] sm:items-center">
-          <span class="font-display text-4xl text-hv-500">{{orden}}</span>
-          <div>
-            <p class="font-semibold">{{competencia.nombre}}</p>
-            <p class="text-sm text-acero-600">
-              {{nombreTecnologia competencia.tecnologia}} · Grupo {{competencia.grupo}} · Nivel {{competencia.nivel}} · {{porcentaje competencia.pSaber}}%
-            </p>
-            <p class="mt-1 text-sm">
-              <span class="rounded border px-2 py-0.5 font-mono text-xs {{claseEstado competencia.estado}}">{{nombreEstado competencia.estado}}</span>
-              <span class="rounded border border-acero-100 px-2 py-0.5 font-mono text-xs">{{nombreModo modo}}</span>
-              {{#if obligatoria}}<span class="rounded border border-red-600 px-2 py-0.5 font-mono text-xs text-red-700">Obligatoria</span>{{/if}}
-            </p>
-            <p class="mt-1 text-sm">{{motivo}}{{#if bloqueadaPor}} · primero: {{bloqueadaPor.nombre}}{{/if}}</p>
-          </div>
-          <div class="grid gap-2">
-            <a href="/tecnicos/{{../tecnico.id}}/practica/{{competencia.id}}" class="boton">Practicar</a>
-            {{#if escenario}}
-              <span class="rounded border border-acero-100 px-2 py-1 text-center font-mono text-xs">Escenario 3D: {{escenario}}</span>
-            {{/if}}
-          </div>
-        </li>
-      {{/each}}
-    </ol>
-  {{else}}
-    <p class="tarjeta">Domina todas las competencias evaluadas. Siguiente paso: repasos para comprobar que las conserva.</p>
-  {{/if}}
+  {{#if siguiente}}
+    <article class="grid gap-6 border border-tinta bg-white p-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:p-8">
+      <div class="grid gap-3">
+        <p class="text-sm font-semibold text-tinta-2">Siguiente pieza</p>
+        <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+          <span class="codigo text-4xl lg:text-5xl">{{siguiente.competencia.id}}</span>
+          <h2 class="font-sans text-2xl font-semibold tracking-normal">{{siguiente.competencia.nombre}}</h2>
+        </div>
+        <p class="text-tinta-2">{{nombreGrupo siguiente.competencia.grupo}} · {{nombreTecnologia siguiente.competencia.tecnologia}} · Nivel {{siguiente.competencia.nivel}}</p>
+        <div class="flex flex-wrap gap-2">
+          <span class="chip {{claseEstado siguiente.competencia.estado}}">{{porcentaje siguiente.competencia.pSaber}} % · {{nombreEstado siguiente.competencia.estado}}</span>
+          <span class="chip border-tinta-3 text-tinta-2">Modo {{nombreModo siguiente.modo}}</span>
+          {{#if siguiente.obligatoria}}<span class="chip border-mal bg-mal text-white">Obligatoria</span>{{/if}}
+        </div>
+        <p class="text-[15px]">{{siguiente.motivo}}{{#if siguiente.bloqueadaPor}} · primero: {{siguiente.bloqueadaPor.nombre}}{{/if}}</p>
+      </div>
+      <div class="grid gap-2 lg:min-w-56">
+        <a href="/tecnicos/{{tecnico.id}}/practica/{{siguiente.competencia.id}}" class="boton px-8 py-4 text-base">Practicar ahora</a>
+        {{#if siguiente.escenario}}<p class="text-center text-sm text-tinta-3">Con escenario 3D: {{siguiente.escenario}}</p>{{/if}}
+      </div>
+    </article>
 
-  <p class="text-sm text-acero-600">Orden: seguridad crítica primero, luego prerrequisitos y después la brecha más grande. El modo de ayuda cambia solo conforme mejora: guiado, con pistas y autónomo.</p>
+    {{#if despues.length}}
+      <div class="grid gap-3">
+        <h2 class="text-2xl">Después</h2>
+        <div class="overflow-x-auto border border-placa-linea bg-white">
+          <table class="tabla-partes min-w-[900px]">
+            <thead>
+              <tr><th>#</th><th>Código</th><th>Competencia</th><th>Dominio</th><th>Modo</th><th>Por qué</th><th><span class="sr-only">Acción</span></th></tr>
+            </thead>
+            <tbody>
+              {{#each despues}}
+                <tr>
+                  <td class="codigo text-tinta-3">{{orden}}</td>
+                  <td class="codigo whitespace-nowrap">{{competencia.id}}</td>
+                  <td>
+                    {{competencia.nombre}}
+                    <span class="mt-1 block text-xs text-tinta-3">{{nombreGrupo competencia.grupo}} · Nivel {{competencia.nivel}}{{#if escenario}} · escenario 3D{{/if}}</span>
+                  </td>
+                  <td><span class="chip {{claseEstado competencia.estado}}">{{porcentaje competencia.pSaber}} %</span></td>
+                  <td class="whitespace-nowrap">{{nombreModo modo}}</td>
+                  <td class="text-sm">
+                    {{#if obligatoria}}<span class="font-semibold text-mal">Obligatoria.</span> {{/if}}{{motivo}}{{#if bloqueadaPor}} · primero {{bloqueadaPor.id}}{{/if}}
+                  </td>
+                  <td class="text-right"><a href="/tecnicos/{{../tecnico.id}}/practica/{{competencia.id}}" class="font-semibold underline">Practicar</a></td>
+                </tr>
+              {{/each}}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    {{/if}}
+  {{else}}
+    <div class="grid gap-3 border border-ok bg-ok-suave p-6">
+      <h2 class="text-2xl text-ok">Domina todas las competencias evaluadas</h2>
+      <p>Lo siguiente son repasos para comprobar que las conserva con el tiempo.</p>
+      <a href="/tecnicos/{{tecnico.id}}/perfil" class="boton w-fit">Ver competencias</a>
+    </div>
+  {{/if}}
 </section>

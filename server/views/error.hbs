@@ -1,9 +1,8 @@
-<section class="tarjeta max-w-3xl">
-  <p class="etiqueta">Error</p>
-  <h1 class="mt-2 text-4xl">Algo salió mal</h1>
-  <p class="mt-3">{{mensaje}}</p>
+<section class="grid max-w-3xl gap-4 border border-mal bg-white p-6 lg:p-8">
+  <h1 class="text-4xl">Algo salió mal</h1>
+  <p>{{mensaje}} Vuelve a intentarlo; si se repite, revisa los logs del servidor.</p>
   {{#if detalle}}
-    <pre class="mt-4 overflow-x-auto rounded bg-acero-900 p-4 font-mono text-xs text-acero-50">{{detalle}}</pre>
+    <pre class="overflow-x-auto bg-tinta p-4 text-xs text-placa">{{detalle}}</pre>
   {{/if}}
-  <a href="/" class="boton mt-5">Volver al inicio</a>
+  <a href="/" class="boton w-fit">Ir a técnicos</a>
 </section>

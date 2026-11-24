@@ -3,15 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{{#if titulo}}{{titulo}} · {{/if}}CodeFive</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+  <title>{{#if titulo}}{{titulo}} · {{/if}}Técnicos del Mañana</title>
   {{{viteAssets "main.js"}}}
   {{#if scriptPagina}}{{{viteAssets scriptPagina}}}{{/if}}
 </head>
 <body class="flex min-h-screen flex-col">
+  <a href="#contenido" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:bg-white focus:px-4 focus:py-2">Saltar al contenido</a>
   {{> encabezado}}
-  <main class="contenedor flex-1 py-8">
+  <main id="contenido" class="contenedor flex-1 py-8 lg:py-10">
     {{{body}}}
   </main>
   {{> pie}}

@@ -1,76 +1,81 @@
-<section class="grid gap-6">
-  <div class="flex flex-wrap items-end justify-between gap-4">
-    <div>
-      <p class="etiqueta">Mapa de competencias</p>
-      <h1 class="mt-1 text-4xl">{{tecnico.nombre}}</h1>
-      <p class="text-acero-600">{{tecnico.taller}} · {{tecnico.anios_experiencia}} años · {{nombreTecnologia tecnico.tecnologia}}</p>
+<section class="grid gap-8 lg:grid-cols-[minmax(0,1fr)_440px] lg:items-start">
+  <div class="grid gap-5">
+    <div class="grid gap-2">
+      <h1 class="text-4xl leading-tight lg:text-5xl">Competencias de {{tecnico.nombre}}</h1>
+      <p class="max-w-2xl text-tinta-2">Cada recuadro es un grupo de función del autobús. El color dice cómo va el técnico en ese grupo; selecciona uno para ver sus competencias.</p>
     </div>
-    <div class="flex flex-wrap gap-2">
-      <a href="/tecnicos/{{tecnico.id}}/ruta" class="boton">Ver mi ruta</a>
-      <a href="/tecnicos/{{tecnico.id}}/diagnostico" class="boton bg-acero-900">Repetir diagnóstico</a>
-    </div>
-  </div>
 
-  {{#unless evaluado}}
-    <p class="tarjeta">Este técnico todavía no hace el diagnóstico. Lo que se ve es el punto de partida estimado por su perfil.</p>
-  {{/unless}}
+    {{#unless evaluado}}
+      <p class="border border-placa-linea bg-white p-4 text-[15px]">Todavía no hace el diagnóstico. Los colores son el punto de partida estimado por su experiencia, no un resultado.
+        <a href="/tecnicos/{{tecnico.id}}/diagnostico" class="font-semibold underline">Hacer diagnóstico</a></p>
+    {{/unless}}
 
-  <div class="grid gap-3 sm:grid-cols-3">
-    <div class="tarjeta border-l-4 border-l-green-600"><p class="text-3xl font-display">{{resumen.dominadas}}</p><p>Dominadas</p></div>
-    <div class="tarjeta border-l-4 border-l-amber-500"><p class="text-3xl font-display">{{resumen.enDesarrollo}}</p><p>En desarrollo</p></div>
-    <div class="tarjeta border-l-4 border-l-red-600"><p class="text-3xl font-display">{{resumen.brechas}}</p><p>Brechas</p></div>
-  </div>
-
-  {{#if alertas.length}}
-    <div class="rounded border-l-4 border-red-600 bg-red-50 p-4">
-      <p class="font-semibold text-red-900">Seguro pero equivocado</p>
-      <p class="text-sm text-red-900">Respondió con total seguridad y se equivocó. Es el caso más riesgoso: refuerzo obligatorio antes de avanzar.</p>
-      <ul class="mt-2 list-disc pl-5 text-sm text-red-900">
-        {{#each alertas}}
-          <li>{{nombre}}{{#if critica}} · <strong>seguridad crítica</strong>{{/if}}</li>
+    <figure class="grid gap-3 border border-placa-linea bg-white p-4 lg:p-6">
+      {{> lamina-autobus grupos=grupos}}
+      <div class="flex flex-wrap gap-2 lg:hidden" role="group" aria-label="Grupos de función">
+        {{#each grupos}}
+          {{#if competencias.length}}
+            <button type="button" class="boton-grupo recuadro h-10 w-10 text-base aria-pressed:outline aria-pressed:outline-[3px] aria-pressed:outline-offset-2 aria-pressed:outline-ref" style="background: {{rellenoEstado estado}}" data-grupo="{{numero}}" aria-pressed="{{#if seleccionado}}true{{else}}false{{/if}}" aria-label="Grupo {{numero}}, {{nombre}}">{{numero}}</button>
+          {{/if}}
         {{/each}}
-      </ul>
-    </div>
-  {{/if}}
-
-  <div class="overflow-x-auto">
-    <table class="w-full min-w-[720px] border-separate border-spacing-2">
-      <thead>
-        <tr class="text-left font-mono text-xs uppercase tracking-wider text-acero-600">
-          <th class="w-48">Área</th>
-          <th>Nivel 1 · Básico</th>
-          <th>Nivel 2 · Diseño y función</th>
-          <th>Nivel 3 · Diagnóstico y reparación</th>
-        </tr>
-      </thead>
-      <tbody>
-        {{#each filas}}
-          <tr>
-            <th class="align-top text-left">
-              <p class="font-display text-xl">Grupo {{grupo}}</p>
-              <p class="text-sm font-normal text-acero-600">{{nombreTecnologia tecnologia}}</p>
-              <p class="mt-1 font-mono text-xs font-normal">Nivel alcanzado: {{nivelAlcanzado}}</p>
-            </th>
-            {{#each niveles}}
-              <td class="align-top">
-                <div class="grid gap-2">
-                  {{#each competencias}}
-                    <div class="rounded border-l-4 p-3 {{claseEstado estado}}">
-                      <p class="text-sm font-semibold">{{nombre}}</p>
-                      <p class="mt-1 font-mono text-xs">
-                        {{porcentaje pSaber}}% · {{nombreEstado estado}} · {{nombreHabilidad habilidad}}{{#if critica}} · crítica{{/if}}{{#unless evaluada}} · inferida{{/unless}}
-                      </p>
-                    </div>
-                  {{else}}
-                    <p class="text-sm text-acero-600">—</p>
-                  {{/each}}
-                </div>
-              </td>
-            {{/each}}
-          </tr>
-        {{/each}}
-      </tbody>
-    </table>
+      </div>
+      <figcaption class="flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-placa-linea pt-3 text-sm text-tinta-2">
+        <span class="flex items-center gap-2"><span class="h-3.5 w-3.5 bg-ok"></span>Dominado · {{resumen.dominadas}}</span>
+        <span class="flex items-center gap-2"><span class="h-3.5 w-3.5 bg-med"></span>En desarrollo · {{resumen.enDesarrollo}}</span>
+        <span class="flex items-center gap-2"><span class="h-3.5 w-3.5 bg-mal"></span>Brecha · {{resumen.brechas}}</span>
+        <span class="flex items-center gap-2"><span class="h-3.5 w-3.5 bg-nada"></span>Sin competencias en el prototipo</span>
+      </figcaption>
+    </figure>
   </div>
-  <p class="text-sm text-acero-600">Porcentaje = probabilidad estimada de dominio. "Inferida" significa que no se preguntó directo: se dedujo de otras respuestas del mismo grupo. Umbrales del prototipo: dominada desde 80%, en desarrollo desde 40%.</p>
+
+  <div class="grid gap-4 lg:sticky lg:top-6">
+    {{#each grupos}}
+      <article id="grupo-{{numero}}" class="panel-grupo grid gap-4 border border-placa-linea bg-white p-5" {{#unless seleccionado}}hidden{{/unless}} aria-live="polite">
+        <div class="flex items-start gap-3">
+          <span class="recuadro h-9 w-9 text-lg" style="background: {{rellenoEstado estado}}">{{numero}}</span>
+          <div class="grid gap-1">
+            <h2 class="text-2xl leading-tight">{{nombre}}</h2>
+            <span class="chip w-fit {{claseEstado estado}}">{{nombreEstado estado}}</span>
+          </div>
+        </div>
+
+        {{#if alertas.length}}
+          <div class="aviso-critico grid gap-1">
+            <p class="font-semibold text-mal">Respondió seguro y se equivocó</p>
+            <p>Es el caso más riesgoso. Refuerzo obligatorio antes de avanzar en:</p>
+            <ul class="list-disc pl-5">
+              {{#each alertas}}<li><span class="codigo">{{id}}</span> {{nombre}}</li>{{/each}}
+            </ul>
+          </div>
+        {{/if}}
+
+        {{#if competencias.length}}
+          <table class="tabla-partes">
+            <thead><tr><th>Código</th><th>Competencia</th><th class="text-right">Dominio</th></tr></thead>
+            <tbody>
+              {{#each competencias}}
+                <tr>
+                  <td class="codigo whitespace-nowrap">{{id}}</td>
+                  <td>
+                    {{nombre}}
+                    <span class="mt-1 block text-xs text-tinta-3">Nivel {{nivel}} · {{nombreHabilidad habilidad}} · {{nombreTecnologia tecnologia}}{{#if critica}} · <span class="font-semibold text-mal">seguridad crítica</span>{{/if}}{{#unless evaluada}} · deducida{{/unless}}</span>
+                  </td>
+                  <td class="text-right"><span class="chip {{claseEstado estado}}">{{porcentaje pSaber}} %</span></td>
+                </tr>
+              {{/each}}
+            </tbody>
+          </table>
+          <div class="flex flex-wrap gap-2">
+            {{#if siguiente}}
+              <a href="/tecnicos/{{../tecnico.id}}/practica/{{siguiente.id}}" class="boton">Practicar {{siguiente.id}}</a>
+            {{/if}}
+            <a href="/tecnicos/{{../tecnico.id}}/ruta" class="boton-linea">Ver ruta completa</a>
+          </div>
+        {{else}}
+          <p class="text-[15px] text-tinta-2">Este grupo todavía no tiene competencias en el prototipo. Se agregan como datos, sin cambiar la app.</p>
+        {{/if}}
+      </article>
+    {{/each}}
+    <p class="text-sm text-tinta-3">Dominio = probabilidad estimada de que domine la competencia. "Deducida": no se preguntó directo; se infirió de otras respuestas del grupo. Umbrales del prototipo: dominada desde 80 %, en desarrollo desde 40 %.</p>
+  </div>
 </section>

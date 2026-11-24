@@ -5,6 +5,7 @@ const { tecnicoId } = raiz.dataset;
 const el = {
   tarjeta: document.getElementById('tarjeta-pregunta'),
   area: document.getElementById('pregunta-area'),
+  grupo: document.getElementById('pregunta-grupo'),
   enunciado: document.getElementById('pregunta-enunciado'),
   opciones: document.getElementById('pregunta-opciones'),
   confianza: document.getElementById('confianza'),
@@ -15,8 +16,20 @@ const el = {
 };
 
 const TECNOLOGIA = { diesel: 'Diésel', electrica: 'Eléctrico', ambas: 'Diésel y eléctrico' };
+const GRUPO = {
+  1: 'Servicio y mantenimiento',
+  2: 'Motor',
+  3: 'Sistema eléctrico',
+  4: 'Transmisión',
+  5: 'Frenos',
+  6: 'Ejes, suspensión y dirección',
+  7: 'Bastidor y ruedas',
+  8: 'Carrocería e interior',
+  9: 'Misceláneos',
+};
 const CLASE_OPCION =
-  'w-full rounded border-2 border-acero-100 bg-white p-4 text-left transition hover:border-acero-600 aria-checked:border-hv-500 aria-checked:bg-hv-100';
+  'flex w-full items-start gap-3 border border-placa-linea bg-white p-4 text-left text-[16px] transition-colors duration-150 hover:border-tinta aria-checked:border-tinta aria-checked:bg-placa-2 aria-checked:shadow-[inset_0_0_0_1px_#141c24]';
+const CLASE_LETRA = 'codigo flex h-6 w-6 shrink-0 items-center justify-center border border-tinta text-sm';
 
 const estado = { sesionId: null, pregunta: null, opcion: null, confianza: null, inicio: 0 };
 
@@ -54,7 +67,8 @@ function mostrarProgreso({ respondidas, estimado }) {
 function mostrarPregunta(pregunta, progreso) {
   Object.assign(estado, { pregunta, opcion: null, confianza: null, inicio: performance.now() });
   const { competencia } = pregunta;
-  el.area.textContent = `${TECNOLOGIA[competencia.tecnologia]} · Grupo ${competencia.grupo} · Nivel ${competencia.nivel}`;
+  el.grupo.textContent = competencia.grupo;
+  el.area.textContent = `${GRUPO[competencia.grupo]} · ${TECNOLOGIA[competencia.tecnologia]} · Nivel ${competencia.nivel}`;
   el.enunciado.textContent = pregunta.enunciado;
   el.opciones.replaceChildren(
     ...pregunta.opciones.map((opcion) => {
@@ -63,7 +77,12 @@ function mostrarPregunta(pregunta, progreso) {
       boton.className = CLASE_OPCION;
       boton.setAttribute('role', 'radio');
       boton.setAttribute('aria-checked', 'false');
-      boton.textContent = opcion.texto;
+      const letra = document.createElement('span');
+      letra.className = CLASE_LETRA;
+      letra.textContent = opcion.id.toUpperCase();
+      const texto = document.createElement('span');
+      texto.textContent = opcion.texto;
+      boton.append(letra, texto);
       boton.addEventListener('click', () => {
         estado.opcion = opcion.id;
         marcar(el.opciones, boton);
@@ -82,7 +101,7 @@ function mostrarPregunta(pregunta, progreso) {
 }
 
 el.confianza.querySelectorAll('button').forEach((boton) => {
-  boton.setAttribute('class', CLASE_OPCION);
+  boton.setAttribute('class', `${CLASE_OPCION} justify-center font-semibold`);
   boton.setAttribute('role', 'radio');
   boton.setAttribute('aria-checked', 'false');
   boton.addEventListener('click', () => {

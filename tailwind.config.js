@@ -4,13 +4,22 @@ export default {
   theme: {
     extend: {
       colors: {
-        acero: { 50: '#eef3f8', 100: '#d9e4ef', 600: '#24527a', 700: '#1c4062', 900: '#17202a' },
-        hv: { 500: '#d9480f', 100: '#fdebe1' },
+        // Lámina de despiece del manual de servicio.
+        placa: { DEFAULT: '#eef1f3', 2: '#e3e8ec', linea: '#c9d1d8' },
+        tinta: { DEFAULT: '#141c24', 2: '#33404c', 3: '#55616c' },
+        ref: { DEFAULT: '#b3121f', suave: '#f8e4e5' },
+        hv: { DEFAULT: '#d9480f', texto: '#a63a0d', suave: '#fbe9df' },
+        ok: { DEFAULT: '#2f7d43', suave: '#e3f1e6' },
+        med: { DEFAULT: '#c98a00', texto: '#7d5400', suave: '#fbf0d6' },
+        mal: { DEFAULT: '#b3121f', suave: '#f8e4e5' },
+        nada: { DEFAULT: '#8a959f', suave: '#e8ecef' },
       },
       fontFamily: {
-        display: ['"Barlow Condensed"', '"Arial Narrow"', 'sans-serif'],
-        sans: ['"IBM Plex Sans"', '"Segoe UI"', 'system-ui', 'sans-serif'],
-        mono: ['"IBM Plex Mono"', 'Consolas', 'monospace'],
+        sans: ['Archivo', 'system-ui', 'sans-serif'],
+        narrow: ['"Archivo Narrow"', 'Archivo', 'sans-serif'],
+      },
+      borderRadius: {
+        DEFAULT: '2px',
       },
     },
   },
