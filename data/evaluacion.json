@@ -882,5 +882,1253 @@
     "correcta": "c",
     "explicacion": "El sistema protege a los pasajeros: la unidad no sale hasta que funcione.",
     "fuente": "Mapa temático de capacitación Volvo, Detección y supresión de incendios (mentoría); datos de demostración"
+  },
+  {
+    "id": "V-A1-2-01",
+    "competencia_id": "A1-2-COM",
+    "enunciado": "Terminaste un servicio preventivo. ¿Qué falta para darlo por terminado?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Nada, ya se cambió todo"
+      },
+      {
+        "id": "b",
+        "texto": "Registrar en la bitácora qué se hizo y cuándo toca el siguiente"
+      },
+      {
+        "id": "c",
+        "texto": "Lavar la unidad"
+      },
+      {
+        "id": "d",
+        "texto": "Avisar por teléfono"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "El registro es parte del servicio: da garantía e historial para diagnósticos futuros.",
+    "fuente": "Mapa temático de capacitación Volvo (mentoría, foto_23); prácticas generales de mantenimiento de flotas"
+  },
+  {
+    "id": "V-A1-2-02",
+    "competencia_id": "A1-2-COM",
+    "enunciado": "Una unidad nunca ha llegado a los kilómetros del servicio pero pasó un año desde el último. ¿Qué toca?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Nada hasta llegar a los kilómetros"
+      },
+      {
+        "id": "b",
+        "texto": "El servicio por tiempo: los aceites y fluidos se degradan aunque no se usen"
+      },
+      {
+        "id": "c",
+        "texto": "Solo revisar llantas"
+      },
+      {
+        "id": "d",
+        "texto": "Cambiar la batería"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "El tiempo calendario también es disparador: los fluidos envejecen aunque la unidad ruede poco.",
+    "fuente": "Mapa temático de capacitación Volvo (mentoría, foto_23); prácticas generales de mantenimiento de flotas"
+  },
+  {
+    "id": "V-A1-3-01",
+    "competencia_id": "A1-3-DIA",
+    "enunciado": "Un compañero borra todos los códigos para \"ver si regresan\" sin anotarlos. ¿Qué problema hay?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Ninguno"
+      },
+      {
+        "id": "b",
+        "texto": "Se pierde la evidencia del diagnóstico y el historial de la falla"
+      },
+      {
+        "id": "c",
+        "texto": "Se daña la computadora"
+      },
+      {
+        "id": "d",
+        "texto": "Se apaga el tablero"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Los códigos y sus contadores son evidencia: se anotan antes de borrar.",
+    "fuente": "SAE J1939 (red CAN de vehículos pesados), documentación pública; mapa temático Volvo (mentoría)"
+  },
+  {
+    "id": "V-A1-3-02",
+    "competencia_id": "A1-3-DIA",
+    "enunciado": "La presión que marca un sensor en datos en vivo es imposible (por ejemplo, negativa). ¿Qué sugiere?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Que el sistema está vacío"
+      },
+      {
+        "id": "b",
+        "texto": "Falla del sensor o su circuito"
+      },
+      {
+        "id": "c",
+        "texto": "Que la unidad está bien"
+      },
+      {
+        "id": "d",
+        "texto": "Que falta aceite"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Un valor físicamente imposible apunta al sensor o al cableado, no al sistema.",
+    "fuente": "SAE J1939 (red CAN de vehículos pesados), documentación pública; mapa temático Volvo (mentoría)"
+  },
+  {
+    "id": "V-E2-1-01",
+    "competencia_id": "E2-1-COM",
+    "enunciado": "¿En qué orden fluye la energía para mover el autobús?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Motor → batería → inversor"
+      },
+      {
+        "id": "b",
+        "texto": "Batería → inversor → motor → reductor → ruedas"
+      },
+      {
+        "id": "c",
+        "texto": "Inversor → batería → ruedas"
+      },
+      {
+        "id": "d",
+        "texto": "Reductor → motor → batería"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "La batería alimenta al inversor, este al motor, y el reductor lleva el giro a las ruedas.",
+    "fuente": "NFPA 70E y guías públicas de seguridad en vehículos eléctricos; mapa temático Volvo (mentoría)"
+  },
+  {
+    "id": "V-E2-1-02",
+    "competencia_id": "E2-1-COM",
+    "enunciado": "Ves un cable naranja suelto cerca del motor de tracción. ¿Qué haces?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Lo acomodas con la mano"
+      },
+      {
+        "id": "b",
+        "texto": "No lo tocas, delimitas y escalas al responsable de alto voltaje"
+      },
+      {
+        "id": "c",
+        "texto": "Lo cubres con cinta"
+      },
+      {
+        "id": "d",
+        "texto": "Arrancas la unidad para probar"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Los cables naranjas son de alto voltaje: solo personal calificado, con bloqueo y verificación.",
+    "fuente": "NFPA 70E y guías públicas de seguridad en vehículos eléctricos; mapa temático Volvo (mentoría)"
+  },
+  {
+    "id": "V-E2-2-01",
+    "competencia_id": "E2-2-COM",
+    "enunciado": "¿Qué es el modo de protección (derating) del tren motriz?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Un modo para ahorrar llantas"
+      },
+      {
+        "id": "b",
+        "texto": "El sistema limita la potencia para proteger componentes, por ejemplo por temperatura"
+      },
+      {
+        "id": "c",
+        "texto": "Un modo de carga rápida"
+      },
+      {
+        "id": "d",
+        "texto": "La marcha atrás"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Cuando algo se sale de rango, como la temperatura, el sistema baja la potencia para protegerse.",
+    "fuente": "NFPA 70E y guías públicas de seguridad en vehículos eléctricos; mapa temático Volvo (mentoría)"
+  },
+  {
+    "id": "V-E2-2-02",
+    "competencia_id": "E2-2-COM",
+    "enunciado": "El refrigerante del circuito de tracción está bajo. ¿Qué haces antes de rellenar?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Rellenar con agua"
+      },
+      {
+        "id": "b",
+        "texto": "Bloquear la unidad y buscar la fuga"
+      },
+      {
+        "id": "c",
+        "texto": "Arrancar para que circule"
+      },
+      {
+        "id": "d",
+        "texto": "Nada, es normal"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Un nivel bajo indica una fuga; se trabaja bloqueado y se localiza antes de rellenar con el refrigerante especificado.",
+    "fuente": "NFPA 70E y guías públicas de seguridad en vehículos eléctricos; mapa temático Volvo (mentoría)"
+  },
+  {
+    "id": "V-E2-3-01",
+    "competencia_id": "E2-3-DIA",
+    "enunciado": "¿Qué haces antes de solicitar un inversor nuevo?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Pedirlo de inmediato"
+      },
+      {
+        "id": "b",
+        "texto": "Confirmar la causa con códigos, datos en vivo y descartar enfriamiento y batería"
+      },
+      {
+        "id": "c",
+        "texto": "Cambiar el motor primero"
+      },
+      {
+        "id": "d",
+        "texto": "Reiniciar la unidad varias veces"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Una refacción mayor se pide con la causa confirmada; muchas pérdidas de potencia son de enfriamiento o batería.",
+    "fuente": "NFPA 70E y guías públicas de seguridad en vehículos eléctricos; mapa temático Volvo (mentoría)"
+  },
+  {
+    "id": "V-E2-3-02",
+    "competencia_id": "E2-3-DIA",
+    "enunciado": "La pérdida de potencia viene acompañada de una alarma de aislamiento. ¿Qué priorizas?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Seguir operando"
+      },
+      {
+        "id": "b",
+        "texto": "Tratarla como falla de seguridad: bloquear y escalar al responsable de alto voltaje"
+      },
+      {
+        "id": "c",
+        "texto": "Borrar la alarma"
+      },
+      {
+        "id": "d",
+        "texto": "Revisar llantas"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Una alarma de aislamiento es un riesgo de choque eléctrico y va antes que cualquier otra cosa.",
+    "fuente": "NFPA 70E y guías públicas de seguridad en vehículos eléctricos; mapa temático Volvo (mentoría)"
+  },
+  {
+    "id": "V-A3-1-01",
+    "competencia_id": "A3-1-MAN",
+    "enunciado": "Una de las dos baterías marca 12.6 V y la otra 11.2 V en reposo. ¿Qué indica?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Que todo está bien"
+      },
+      {
+        "id": "b",
+        "texto": "Que la segunda batería está débil y debe revisarse o cambiarse"
+      },
+      {
+        "id": "c",
+        "texto": "Que el alternador está mal"
+      },
+      {
+        "id": "d",
+        "texto": "Que falta agua al motor"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "En serie, una batería débil se descarga más y daña a la otra; se revisan por separado.",
+    "fuente": "Mapa temático de capacitación Volvo (mentoría, foto_23); prácticas generales de mantenimiento de flotas"
+  },
+  {
+    "id": "V-A3-1-02",
+    "competencia_id": "A3-1-MAN",
+    "enunciado": "¿Qué riesgo hay al conectar un cargador con chispa junto a la batería?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Ninguno"
+      },
+      {
+        "id": "b",
+        "texto": "Explosión por el hidrógeno que desprende la batería"
+      },
+      {
+        "id": "c",
+        "texto": "Que se descargue"
+      },
+      {
+        "id": "d",
+        "texto": "Que se borren los códigos"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Las baterías liberan hidrógeno; una chispa puede encenderlo.",
+    "fuente": "Mapa temático de capacitación Volvo (mentoría, foto_23); prácticas generales de mantenimiento de flotas"
+  },
+  {
+    "id": "V-A3-2-01",
+    "competencia_id": "A3-2-COM",
+    "enunciado": "¿Por qué los cables CAN van trenzados?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Por estética"
+      },
+      {
+        "id": "b",
+        "texto": "Para resistir el ruido eléctrico"
+      },
+      {
+        "id": "c",
+        "texto": "Para que sean más largos"
+      },
+      {
+        "id": "d",
+        "texto": "Para que no se calienten"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "El par trenzado reduce la interferencia y protege la comunicación.",
+    "fuente": "SAE J1939 (red CAN de vehículos pesados), documentación pública; mapa temático Volvo (mentoría)"
+  },
+  {
+    "id": "V-A3-2-02",
+    "competencia_id": "A3-2-COM",
+    "enunciado": "Con la red apagada mides casi 0 Ω entre CAN alto y bajo. ¿Qué indica?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Red normal"
+      },
+      {
+        "id": "b",
+        "texto": "Corto entre CAN alto y bajo"
+      },
+      {
+        "id": "c",
+        "texto": "Falta una resistencia"
+      },
+      {
+        "id": "d",
+        "texto": "Módulo nuevo"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Una resistencia cercana a cero indica un corto entre los dos cables de la red.",
+    "fuente": "SAE J1939 (red CAN de vehículos pesados), documentación pública; mapa temático Volvo (mentoría)"
+  },
+  {
+    "id": "V-A3-3-01",
+    "competencia_id": "A3-3-DIA",
+    "enunciado": "¿Cómo debe estar el circuito para medir caída de tensión?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Apagado"
+      },
+      {
+        "id": "b",
+        "texto": "Encendido y con su carga trabajando"
+      },
+      {
+        "id": "c",
+        "texto": "Desconectado de la batería"
+      },
+      {
+        "id": "d",
+        "texto": "Con el fusible quitado"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "La caída de tensión solo aparece cuando circula corriente.",
+    "fuente": "SAE J1939 (red CAN de vehículos pesados), documentación pública; mapa temático Volvo (mentoría)"
+  },
+  {
+    "id": "V-A3-3-02",
+    "competencia_id": "A3-3-DIA",
+    "enunciado": "En el lado de tierra de una lámpara mides 2 V de caída. ¿Qué concluyes?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Tierra correcta"
+      },
+      {
+        "id": "b",
+        "texto": "Tierra con resistencia alta: limpiar o reparar la conexión"
+      },
+      {
+        "id": "c",
+        "texto": "Lámpara fundida"
+      },
+      {
+        "id": "d",
+        "texto": "Batería sobrecargada"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Una tierra buena casi no tiene caída; 2 V indica una conexión mala.",
+    "fuente": "SAE J1939 (red CAN de vehículos pesados), documentación pública; mapa temático Volvo (mentoría)"
+  },
+  {
+    "id": "V-D4-1-01",
+    "competencia_id": "D4-1-MAN",
+    "enunciado": "¿Cómo debe estar la unidad para revisar el nivel de la transmisión?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "En pendiente"
+      },
+      {
+        "id": "b",
+        "texto": "En plano, calzada y como lo indique el fabricante"
+      },
+      {
+        "id": "c",
+        "texto": "En movimiento"
+      },
+      {
+        "id": "d",
+        "texto": "Con el motor apagado siempre"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "El nivel se lee en plano y con el procedimiento del fabricante; en pendiente la lectura es falsa.",
+    "fuente": "Retícula de cursos Volvo buses (mentoría, foto_18); manuales públicos de transmisiones automatizadas"
+  },
+  {
+    "id": "V-D4-1-02",
+    "competencia_id": "D4-1-MAN",
+    "enunciado": "Encuentras goteo en el sello del eje de salida. ¿Qué pasa si no se atiende?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Nada"
+      },
+      {
+        "id": "b",
+        "texto": "Baja el nivel y la transmisión puede patinar o dañarse"
+      },
+      {
+        "id": "c",
+        "texto": "Mejora el cambio"
+      },
+      {
+        "id": "d",
+        "texto": "Se enfría mejor"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Una fuga continua baja el nivel y daña la transmisión.",
+    "fuente": "Retícula de cursos Volvo buses (mentoría, foto_18); manuales públicos de transmisiones automatizadas"
+  },
+  {
+    "id": "V-D4-2-01",
+    "competencia_id": "D4-2-COM",
+    "enunciado": "¿En qué se diferencia una caja automatizada de una automática con convertidor?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Son iguales"
+      },
+      {
+        "id": "b",
+        "texto": "La automatizada es una caja mecánica con embrague y cambios hechos por actuadores"
+      },
+      {
+        "id": "c",
+        "texto": "La automatizada no tiene marchas"
+      },
+      {
+        "id": "d",
+        "texto": "La automática usa aire"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "La automatizada conserva la caja mecánica y el embrague; solo automatiza su operación.",
+    "fuente": "Retícula de cursos Volvo buses (mentoría, foto_18); manuales públicos de transmisiones automatizadas"
+  },
+  {
+    "id": "V-D4-2-02",
+    "competencia_id": "D4-2-COM",
+    "enunciado": "Antes de desconectar una línea de aire del actuador, ¿qué haces?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Nada"
+      },
+      {
+        "id": "b",
+        "texto": "Descargar la presión del circuito"
+      },
+      {
+        "id": "c",
+        "texto": "Arrancar el motor"
+      },
+      {
+        "id": "d",
+        "texto": "Quitar el aceite"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Una línea con presión puede latiguear y lastimar.",
+    "fuente": "Retícula de cursos Volvo buses (mentoría, foto_18); manuales públicos de transmisiones automatizadas"
+  },
+  {
+    "id": "V-D4-3-01",
+    "competencia_id": "D4-3-DIA",
+    "enunciado": "La computadora marca desgaste de embrague al límite. ¿Qué significa?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Que el embrague está nuevo"
+      },
+      {
+        "id": "b",
+        "texto": "Que ya no puede compensar el desgaste y hay que planear el cambio"
+      },
+      {
+        "id": "c",
+        "texto": "Que falta aire"
+      },
+      {
+        "id": "d",
+        "texto": "Que la batería está baja"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "La computadora compensa el desgaste hasta un límite; después toca reemplazar.",
+    "fuente": "Retícula de cursos Volvo buses (mentoría, foto_18); manuales públicos de transmisiones automatizadas"
+  },
+  {
+    "id": "V-D4-3-02",
+    "competencia_id": "D4-3-DIA",
+    "enunciado": "¿Por qué no basta cambiar el actuador sin calibrar?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Sí basta"
+      },
+      {
+        "id": "b",
+        "texto": "Porque la computadora necesita aprender las posiciones del nuevo actuador"
+      },
+      {
+        "id": "c",
+        "texto": "Porque se pierde el aceite"
+      },
+      {
+        "id": "d",
+        "texto": "Porque se borra el kilometraje"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Las posiciones del nuevo actuador se enseñan a la computadora con la calibración.",
+    "fuente": "Retícula de cursos Volvo buses (mentoría, foto_18); manuales públicos de transmisiones automatizadas"
+  },
+  {
+    "id": "V-E4-1-01",
+    "competencia_id": "E4-1-MAN",
+    "enunciado": "¿Cómo se revisa el nivel de aceite del reductor?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Con la herramienta de diagnóstico siempre"
+      },
+      {
+        "id": "b",
+        "texto": "Por el tapón de llenado, en plano, como indique el fabricante"
+      },
+      {
+        "id": "c",
+        "texto": "Mirando el tablero"
+      },
+      {
+        "id": "d",
+        "texto": "No lleva aceite"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "El nivel se revisa por el tapón de llenado con la unidad en plano.",
+    "fuente": "Guías públicas de mantenimiento de autobuses eléctricos; mapa temático Volvo (mentoría, foto_23)"
+  },
+  {
+    "id": "V-E4-1-02",
+    "competencia_id": "E4-1-MAN",
+    "enunciado": "¿Por qué la unidad debe estar bloqueada para revisar el reductor?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "No es necesario"
+      },
+      {
+        "id": "b",
+        "texto": "Porque el motor de tracción de alto voltaje está junto al reductor"
+      },
+      {
+        "id": "c",
+        "texto": "Por el ruido"
+      },
+      {
+        "id": "d",
+        "texto": "Por el aceite caliente únicamente"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "El motor de tracción está al lado: se trabaja con el sistema de alto voltaje bloqueado.",
+    "fuente": "Guías públicas de mantenimiento de autobuses eléctricos; mapa temático Volvo (mentoría, foto_23)"
+  },
+  {
+    "id": "V-E4-2-01",
+    "competencia_id": "E4-2-COM",
+    "enunciado": "¿Por qué se limita la regeneración con la batería llena?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Por error del sistema"
+      },
+      {
+        "id": "b",
+        "texto": "Porque la batería no puede recibir más energía"
+      },
+      {
+        "id": "c",
+        "texto": "Porque el motor se apaga"
+      },
+      {
+        "id": "d",
+        "texto": "Porque hace frío"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Con la batería llena no hay dónde guardar la energía; frenan más los frenos de aire.",
+    "fuente": "Guías públicas de mantenimiento de autobuses eléctricos; mapa temático Volvo (mentoría, foto_23)"
+  },
+  {
+    "id": "V-E4-2-02",
+    "competencia_id": "E4-2-COM",
+    "enunciado": "Al frenar suave en un eléctrico, ¿qué frena primero normalmente?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Los frenos de aire"
+      },
+      {
+        "id": "b",
+        "texto": "El motor regenerando"
+      },
+      {
+        "id": "c",
+        "texto": "El freno de mano"
+      },
+      {
+        "id": "d",
+        "texto": "Nada"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "La regeneración actúa primero y los frenos de aire completan si hace falta.",
+    "fuente": "Guías públicas de mantenimiento de autobuses eléctricos; mapa temático Volvo (mentoría, foto_23)"
+  },
+  {
+    "id": "V-E4-3-01",
+    "competencia_id": "E4-3-DIA",
+    "enunciado": "¿Qué revisas primero ante una vibración que cambia con la velocidad del vehículo?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "El inversor"
+      },
+      {
+        "id": "b",
+        "texto": "Llantas, rines y baleros de rueda"
+      },
+      {
+        "id": "c",
+        "texto": "La red CAN"
+      },
+      {
+        "id": "d",
+        "texto": "Las puertas"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Lo que depende de la velocidad del vehículo suele venir de llantas o baleros.",
+    "fuente": "Guías públicas de mantenimiento de autobuses eléctricos; mapa temático Volvo (mentoría, foto_23)"
+  },
+  {
+    "id": "V-E4-3-02",
+    "competencia_id": "E4-3-DIA",
+    "enunciado": "¿Por qué se oyen más los ruidos mecánicos en un autobús eléctrico?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Porque son más frágiles"
+      },
+      {
+        "id": "b",
+        "texto": "Porque no hay ruido de motor de combustión que los tape"
+      },
+      {
+        "id": "c",
+        "texto": "Porque tienen más engranes"
+      },
+      {
+        "id": "d",
+        "texto": "No se oyen más"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Sin motor de combustión, los ruidos de engranes y baleros quedan expuestos.",
+    "fuente": "Guías públicas de mantenimiento de autobuses eléctricos; mapa temático Volvo (mentoría, foto_23)"
+  },
+  {
+    "id": "V-A5-1-01",
+    "competencia_id": "A5-1-MAN",
+    "enunciado": "¿Qué sostiene la unidad cuando mides la carrera con el freno de estacionamiento liberado?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "El freno de motor"
+      },
+      {
+        "id": "b",
+        "texto": "Las calzas"
+      },
+      {
+        "id": "c",
+        "texto": "La transmisión"
+      },
+      {
+        "id": "d",
+        "texto": "Nada"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Por eso las calzas son obligatorias antes de liberar frenos.",
+    "fuente": "Bendix BW1231, Air Brake System Troubleshooting; Bendix SD-13-4869 (ABS), documentación pública"
+  },
+  {
+    "id": "V-A5-1-02",
+    "competencia_id": "A5-1-MAN",
+    "enunciado": "Las balatas están en el espesor mínimo. ¿Qué haces?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Esperar al siguiente servicio"
+      },
+      {
+        "id": "b",
+        "texto": "Cambiarlas y revisar el tambor"
+      },
+      {
+        "id": "c",
+        "texto": "Ajustar el freno"
+      },
+      {
+        "id": "d",
+        "texto": "Subir la presión de aire"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "En el mínimo ya no hay margen de seguridad.",
+    "fuente": "Bendix BW1231, Air Brake System Troubleshooting; Bendix SD-13-4869 (ABS), documentación pública"
+  },
+  {
+    "id": "V-A5-3-01",
+    "competencia_id": "A5-3-DIA",
+    "enunciado": "¿Cómo sabe el ABS que una rueda se va a bloquear?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Por la presión de aire"
+      },
+      {
+        "id": "b",
+        "texto": "Comparando la velocidad de cada rueda con su sensor"
+      },
+      {
+        "id": "c",
+        "texto": "Por la temperatura"
+      },
+      {
+        "id": "d",
+        "texto": "Por el conductor"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Si una rueda baja de velocidad mucho más que las otras, el módulo actúa.",
+    "fuente": "Bendix BW1231, Air Brake System Troubleshooting; Bendix SD-13-4869 (ABS), documentación pública"
+  },
+  {
+    "id": "V-A5-3-02",
+    "competencia_id": "A5-3-DIA",
+    "enunciado": "¿Dónde apoyas la unidad para girar una rueda y probar el sensor?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Solo en el gato"
+      },
+      {
+        "id": "b",
+        "texto": "En soportes adecuados"
+      },
+      {
+        "id": "c",
+        "texto": "Sobre bloques de madera sueltos"
+      },
+      {
+        "id": "d",
+        "texto": "No hace falta levantarla"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Nunca se trabaja con la unidad sostenida solo por el gato.",
+    "fuente": "Bendix BW1231, Air Brake System Troubleshooting; Bendix SD-13-4869 (ABS), documentación pública"
+  },
+  {
+    "id": "V-A6-2-01",
+    "competencia_id": "A6-2-COM",
+    "enunciado": "La unidad jala a la derecha con llantas y presiones iguales. ¿Qué ángulo revisas?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Convergencia solamente"
+      },
+      {
+        "id": "b",
+        "texto": "Avance y caída de cada lado"
+      },
+      {
+        "id": "c",
+        "texto": "La red CAN"
+      },
+      {
+        "id": "d",
+        "texto": "El freno de mano"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Una diferencia de avance o caída entre lados hace que la unidad jale.",
+    "fuente": "Mapa temático Volvo (mentoría, foto_23); manuales públicos de dirección hidráulica y suspensión neumática"
+  },
+  {
+    "id": "V-A6-2-02",
+    "competencia_id": "A6-2-COM",
+    "enunciado": "Un hombro de la llanta está mucho más gastado. ¿Qué ángulo lo causa?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Caída"
+      },
+      {
+        "id": "b",
+        "texto": "Avance"
+      },
+      {
+        "id": "c",
+        "texto": "Convergencia en escamas"
+      },
+      {
+        "id": "d",
+        "texto": "Ninguno"
+      }
+    ],
+    "correcta": "a",
+    "explicacion": "La caída excesiva carga un hombro de la llanta.",
+    "fuente": "Mapa temático Volvo (mentoría, foto_23); manuales públicos de dirección hidráulica y suspensión neumática"
+  },
+  {
+    "id": "V-A6-3-01",
+    "competencia_id": "A6-3-DIA",
+    "enunciado": "Mediste juego de dirección fuera de límite. El jefe quiere sacar la unidad hoy. ¿Qué haces?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "La liberas"
+      },
+      {
+        "id": "b",
+        "texto": "La detienes: es una condición crítica de seguridad"
+      },
+      {
+        "id": "c",
+        "texto": "La liberas con aviso al conductor"
+      },
+      {
+        "id": "d",
+        "texto": "Ajustas la presión de llantas"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "La dirección es crítica: con juego fuera de límite la unidad no sale.",
+    "fuente": "Mapa temático Volvo (mentoría, foto_23); manuales públicos de dirección hidráulica y suspensión neumática"
+  },
+  {
+    "id": "V-A6-3-02",
+    "competencia_id": "A6-3-DIA",
+    "enunciado": "El fluido de dirección tiene espuma. ¿Qué indica?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Normal"
+      },
+      {
+        "id": "b",
+        "texto": "Entra aire al sistema, por ejemplo por una fuga en la succión"
+      },
+      {
+        "id": "c",
+        "texto": "Fluido nuevo"
+      },
+      {
+        "id": "d",
+        "texto": "Exceso de presión"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "La espuma indica aire en el sistema; se busca la entrada de aire y se purga.",
+    "fuente": "Mapa temático Volvo (mentoría, foto_23); manuales públicos de dirección hidráulica y suspensión neumática"
+  },
+  {
+    "id": "V-A7-1-01",
+    "competencia_id": "A7-1-MAN",
+    "enunciado": "¿Cuándo se revisa la presión de las llantas?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "En caliente, después de la ruta"
+      },
+      {
+        "id": "b",
+        "texto": "En frío"
+      },
+      {
+        "id": "c",
+        "texto": "Nunca, se ve a simple vista"
+      },
+      {
+        "id": "d",
+        "texto": "Solo en invierno"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "En caliente la presión sube y la lectura engaña.",
+    "fuente": "Prácticas públicas de servicio de ruedas de vehículos pesados (par de apriete y secuencia en estrella)"
+  },
+  {
+    "id": "V-A7-1-02",
+    "competencia_id": "A7-1-MAN",
+    "enunciado": "Acabas de montar una rueda. ¿Qué falta?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Nada"
+      },
+      {
+        "id": "b",
+        "texto": "Programar el reapriete después de los primeros kilómetros"
+      },
+      {
+        "id": "c",
+        "texto": "Inflarla al doble"
+      },
+      {
+        "id": "d",
+        "texto": "Quitar el tapón"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Los asientos se acomodan; el reapriete evita que las tuercas se aflojen.",
+    "fuente": "Prácticas públicas de servicio de ruedas de vehículos pesados (par de apriete y secuencia en estrella)"
+  },
+  {
+    "id": "V-A7-3-01",
+    "competencia_id": "A7-3-DIA",
+    "enunciado": "¿Qué hace el sensor de altura en una suspensión electrónica?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Mide la presión de llantas"
+      },
+      {
+        "id": "b",
+        "texto": "Informa al módulo la distancia entre eje y carrocería"
+      },
+      {
+        "id": "c",
+        "texto": "Mide la velocidad"
+      },
+      {
+        "id": "d",
+        "texto": "Controla las puertas"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Con esa distancia el módulo decide inflar o desinflar las bolsas.",
+    "fuente": "Mapa temático Volvo (mentoría, foto_23); manuales públicos de dirección hidráulica y suspensión neumática"
+  },
+  {
+    "id": "V-A7-3-02",
+    "competencia_id": "A7-3-DIA",
+    "enunciado": "Un lado queda más bajo y no hay códigos. ¿Qué revisas primero?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "El módulo"
+      },
+      {
+        "id": "b",
+        "texto": "Fugas en la bolsa y líneas de ese lado"
+      },
+      {
+        "id": "c",
+        "texto": "La batería"
+      },
+      {
+        "id": "d",
+        "texto": "La red CAN"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Sin códigos, una fuga en la bolsa o sus líneas es lo más probable.",
+    "fuente": "Mapa temático Volvo (mentoría, foto_23); manuales públicos de dirección hidráulica y suspensión neumática"
+  },
+  {
+    "id": "V-A8-1-01",
+    "competencia_id": "A8-1-MAN",
+    "enunciado": "¿Con qué pruebas la protección contra atrapamiento de una puerta?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Con la mano"
+      },
+      {
+        "id": "b",
+        "texto": "Con un objeto blando en el paso de la puerta"
+      },
+      {
+        "id": "c",
+        "texto": "No se prueba"
+      },
+      {
+        "id": "d",
+        "texto": "Con la herramienta de diagnóstico solamente"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Un objeto blando simula a un pasajero sin riesgo.",
+    "fuente": "Mapa temático Volvo (mentoría, foto_23): carrocería, puertas, climatización y accesibilidad"
+  },
+  {
+    "id": "V-A8-1-02",
+    "competencia_id": "A8-1-MAN",
+    "enunciado": "Hay una lámina con filo suelta junto al acceso. ¿Qué haces?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Nada"
+      },
+      {
+        "id": "b",
+        "texto": "Reportarla y repararla antes de liberar la unidad"
+      },
+      {
+        "id": "c",
+        "texto": "Pintarla"
+      },
+      {
+        "id": "d",
+        "texto": "Taparla con cinta"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Un filo en el acceso puede cortar a un pasajero.",
+    "fuente": "Mapa temático Volvo (mentoría, foto_23): carrocería, puertas, climatización y accesibilidad"
+  },
+  {
+    "id": "V-A8-3-01",
+    "competencia_id": "A8-3-DIA",
+    "enunciado": "¿Qué se hace con el refrigerante al abrir el sistema?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Se libera al aire"
+      },
+      {
+        "id": "b",
+        "texto": "Se recupera con equipo y lo maneja personal certificado"
+      },
+      {
+        "id": "c",
+        "texto": "Se tira al drenaje"
+      },
+      {
+        "id": "d",
+        "texto": "Se deja en el sistema abierto"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "El refrigerante se recupera; liberarlo contamina y está regulado.",
+    "fuente": "Mapa temático Volvo (mentoría, foto_23): carrocería, puertas, climatización y accesibilidad"
+  },
+  {
+    "id": "V-A8-3-02",
+    "competencia_id": "A8-3-DIA",
+    "enunciado": "¿Antes de conectar manómetros, qué revisas?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Nada"
+      },
+      {
+        "id": "b",
+        "texto": "Filtros sucios y que los ventiladores funcionen"
+      },
+      {
+        "id": "c",
+        "texto": "La presión de llantas"
+      },
+      {
+        "id": "d",
+        "texto": "El aceite del motor"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Lo simple primero: filtros y ventiladores causan muchas quejas de poco enfriamiento.",
+    "fuente": "Mapa temático Volvo (mentoría, foto_23): carrocería, puertas, climatización y accesibilidad"
+  },
+  {
+    "id": "V-A9-2-01",
+    "competencia_id": "A9-2-COM",
+    "enunciado": "Una boquilla está cubierta de grasa. ¿Qué puede pasar?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Nada"
+      },
+      {
+        "id": "b",
+        "texto": "El agente no sale bien hacia esa zona"
+      },
+      {
+        "id": "c",
+        "texto": "Mejora la descarga"
+      },
+      {
+        "id": "d",
+        "texto": "Se enciende el motor"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Una boquilla tapada no distribuye el agente.",
+    "fuente": "Mapa temático Volvo (mentoría, foto_23); guías públicas de sistemas de supresión de incendios en autobuses"
+  },
+  {
+    "id": "V-A9-2-02",
+    "competencia_id": "A9-2-COM",
+    "enunciado": "¿Dónde se colocan los detectores?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "En la cabina del conductor"
+      },
+      {
+        "id": "b",
+        "texto": "En los compartimientos con riesgo: motor o equipo de alto voltaje"
+      },
+      {
+        "id": "c",
+        "texto": "En las llantas"
+      },
+      {
+        "id": "d",
+        "texto": "En el techo exterior"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Los detectores vigilan donde puede empezar un incendio.",
+    "fuente": "Mapa temático Volvo (mentoría, foto_23); guías públicas de sistemas de supresión de incendios en autobuses"
+  },
+  {
+    "id": "V-A9-3-01",
+    "competencia_id": "A9-3-DIA",
+    "enunciado": "¿Qué haces antes de trabajar cerca del cilindro de supresión?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Nada"
+      },
+      {
+        "id": "b",
+        "texto": "Poner su seguro para evitar una descarga accidental"
+      },
+      {
+        "id": "c",
+        "texto": "Vaciarlo"
+      },
+      {
+        "id": "d",
+        "texto": "Desconectar la batería de 24 V solamente"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Una descarga accidental puede lesionar; el seguro lo evita.",
+    "fuente": "Mapa temático Volvo (mentoría, foto_23); guías públicas de sistemas de supresión de incendios en autobuses"
+  },
+  {
+    "id": "V-A9-3-02",
+    "competencia_id": "A9-3-DIA",
+    "enunciado": "¿Cuándo puede salir a ruta la unidad después de una reparación del sistema?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "De inmediato"
+      },
+      {
+        "id": "b",
+        "texto": "Cuando el panel no muestre fallas y el cilindro esté a presión"
+      },
+      {
+        "id": "c",
+        "texto": "Al día siguiente"
+      },
+      {
+        "id": "d",
+        "texto": "Cuando lo pida el conductor"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "El sistema debe quedar completo y en servicio.",
+    "fuente": "Mapa temático Volvo (mentoría, foto_23); guías públicas de sistemas de supresión de incendios en autobuses"
   }
 ]

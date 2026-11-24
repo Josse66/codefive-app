@@ -182,7 +182,7 @@
       {
         "id": "riel",
         "nombre": "Riel común",
-        "pos": [-5.0, 1.45, 1.33],
+        "pos": [-5, 1.45, 1.33],
         "tamano": [0.9, 0.12, 0.12],
         "tipo": "metal",
         "que": "Tubo que guarda el combustible a muy alta presión para todos los inyectores.",
@@ -657,5 +657,905 @@
     ],
     "seguridad": "El sistema contra incendios protege a los pasajeros: nunca se desactiva.",
     "fuente": "Mapa temático de capacitación Volvo, Detección y supresión de incendios (mentoría)"
+  },
+  {
+    "id": "L-A1-2-COM",
+    "competencia": "A1-2-COM",
+    "escenario": null,
+    "minutos": 6,
+    "titulo": "Intervalos de servicio y plan de mantenimiento",
+    "objetivo": "Leer el plan de mantenimiento de la unidad y decidir qué servicio toca según kilómetros, horas y tiempo.",
+    "conceptos": [
+      "Cada servicio tiene un disparador: kilómetros recorridos, horas de operación o tiempo calendario; manda el que llegue primero.",
+      "Las condiciones severas (ciudad con muchas paradas, calor, polvo) acortan los intervalos de aceites y filtros.",
+      "La bitácora de mantenimiento es evidencia: sin registro no hay garantía ni historial para diagnosticar."
+    ],
+    "piezas": [
+      {
+        "id": "conector_diagnostico",
+        "pos": [5.3, 1.3, 1.32],
+        "tipo": "tablero",
+        "tamano": [0.35, 0.25, 0.1],
+        "que": "Puerto donde la herramienta de diagnóstico lee kilómetros, horas de motor y códigos.",
+        "falla": "Si está dañado no se puede leer el historial de la unidad.",
+        "revisa": "Que la tapa cierre y los pines estén limpios y derechos."
+      }
+    ],
+    "pasos": [
+      "Leer kilómetros y horas de la unidad.",
+      "Ubicar en el plan el servicio que corresponde.",
+      "Revisar si la operación es severa para acortar intervalos.",
+      "Hacer el servicio con las refacciones y aceites especificados.",
+      "Registrar en la bitácora qué se hizo y cuándo toca el siguiente."
+    ],
+    "seguridad": "Nunca alargues un intervalo de frenos o dirección para \"aprovechar\" la unidad: es un riesgo para los pasajeros.",
+    "fuente": "Mapa temático de capacitación Volvo (mentoría, foto_23); prácticas generales de mantenimiento de flotas"
+  },
+  {
+    "id": "L-A1-3-DIA",
+    "competencia": "A1-3-DIA",
+    "escenario": null,
+    "minutos": 8,
+    "titulo": "Diagnosticar con la herramienta: códigos y datos en vivo",
+    "objetivo": "Usar la herramienta de diagnóstico con método: leer códigos, interpretar datos en vivo y confirmar la causa antes de cambiar piezas.",
+    "conceptos": [
+      "Un código de falla dice qué sistema detectó algo fuera de rango, no qué pieza cambiar.",
+      "Los datos en vivo (presiones, temperaturas, voltajes) muestran cómo se comporta el sistema mientras opera; se comparan con los valores esperados.",
+      "Un código activo ocurre ahora; uno inactivo o histórico ya ocurrió. Borrar códigos sin reparar la causa solo esconde el problema."
+    ],
+    "piezas": [
+      {
+        "id": "conector_diagnostico",
+        "pos": [5.3, 1.3, 1.32],
+        "tipo": "tablero",
+        "tamano": [0.35, 0.25, 0.1],
+        "que": "Conector de diagnóstico de la red de la unidad (J1939).",
+        "falla": "Pines doblados o sin alimentación impiden la comunicación.",
+        "revisa": "Que haya 24 V en el pin de alimentación y la herramienta enlace."
+      }
+    ],
+    "pasos": [
+      "Conectar la herramienta con contacto encendido.",
+      "Leer y anotar los códigos activos e históricos.",
+      "Revisar datos en vivo del sistema afectado.",
+      "Formular hipótesis y probar la más probable primero.",
+      "Reparar, borrar códigos y verificar que no regresen en prueba."
+    ],
+    "seguridad": "Con el motor encendido para ver datos en vivo, la unidad debe estar calzada y con freno de estacionamiento.",
+    "fuente": "SAE J1939 (red CAN de vehículos pesados), documentación pública; mapa temático Volvo (mentoría)"
+  },
+  {
+    "id": "L-E2-1-COM",
+    "competencia": "E2-1-COM",
+    "escenario": null,
+    "minutos": 6,
+    "titulo": "El tren motriz eléctrico",
+    "objetivo": "Reconocer las partes del tren motriz eléctrico y en qué orden fluye la energía de la batería a las ruedas.",
+    "conceptos": [
+      "La energía va de las baterías de tracción al inversor, que convierte la corriente directa en alterna para el motor de tracción.",
+      "El motor mueve el eje a través de un reductor; al frenar, el motor funciona como generador y regresa energía a la batería (frenado regenerativo).",
+      "Todo el circuito de tracción es de alto voltaje: cables naranjas, solo personal calificado y con bloqueo."
+    ],
+    "piezas": [
+      {
+        "id": "inversor_traccion",
+        "pos": [-3.6, 3.5, 0.6],
+        "tipo": "hv",
+        "tamano": [0.9, 0.25, 0.7],
+        "que": "Convierte la corriente directa de la batería en alterna para el motor y controla su velocidad y par.",
+        "falla": "Sobretemperatura si falla el enfriamiento; pierde potencia o se apaga por protección.",
+        "revisa": "Testigos y códigos del inversor; estado del circuito de enfriamiento."
+      },
+      {
+        "id": "motor_traccion",
+        "pos": [-3, 0.6, 1.33],
+        "tipo": "hv",
+        "tamano": [0.5, 0.45, 0.15],
+        "que": "Motor eléctrico que mueve las ruedas y genera energía al frenar.",
+        "falla": "Ruido de baleros, sobretemperatura o falla de aislamiento.",
+        "revisa": "Ruidos, temperatura en datos en vivo y monitoreo de aislamiento."
+      }
+    ],
+    "pasos": [
+      "Identificar baterías, inversor, motor y reductor.",
+      "Seguir el recorrido de los cables naranjas.",
+      "Ubicar el circuito de enfriamiento del inversor y motor.",
+      "Reconocer las etiquetas de alto voltaje.",
+      "Escalar al responsable de alto voltaje antes de intervenir."
+    ],
+    "seguridad": "Los cables naranjas siempre se tratan como energizados hasta comprobar la ausencia de tensión.",
+    "fuente": "NFPA 70E y guías públicas de seguridad en vehículos eléctricos; mapa temático Volvo (mentoría)"
+  },
+  {
+    "id": "L-E2-2-COM",
+    "competencia": "E2-2-COM",
+    "escenario": null,
+    "minutos": 7,
+    "titulo": "Inversor, motor y su enfriamiento",
+    "objetivo": "Entender cómo se controla el motor de tracción y por qué el enfriamiento limita la potencia.",
+    "conceptos": [
+      "El inversor regula la frecuencia y la corriente que recibe el motor: así controla velocidad y par.",
+      "Inversor y motor generan calor; un circuito de refrigerante con bomba y radiador lo retira.",
+      "Si sube la temperatura, el sistema reduce potencia para protegerse (modo de protección o \"derating\")."
+    ],
+    "piezas": [
+      {
+        "id": "inversor_traccion",
+        "pos": [-3.6, 3.5, 0.6],
+        "tipo": "hv",
+        "tamano": [0.9, 0.25, 0.7],
+        "que": "Electrónica de potencia del motor de tracción.",
+        "falla": "Con el refrigerante bajo o la bomba fallando, se calienta y limita potencia.",
+        "revisa": "Nivel de refrigerante, funcionamiento de la bomba y temperatura en datos en vivo."
+      },
+      {
+        "id": "motor_traccion",
+        "pos": [-3, 0.6, 1.33],
+        "tipo": "hv",
+        "tamano": [0.5, 0.45, 0.15],
+        "que": "Motor de tracción con su propio circuito de enfriamiento.",
+        "falla": "Sobretemperatura por falta de flujo de refrigerante.",
+        "revisa": "Temperatura del motor en datos en vivo contra la del inversor."
+      }
+    ],
+    "pasos": [
+      "Ubicar depósito de refrigerante, bomba y radiador del circuito de tracción.",
+      "Revisar nivel y fugas con el sistema desenergizado.",
+      "Leer temperaturas de inversor y motor en datos en vivo.",
+      "Comparar con valores esperados en operación.",
+      "Reportar si hay pérdida de potencia por temperatura."
+    ],
+    "seguridad": "El circuito de enfriamiento está junto a componentes de alto voltaje: se trabaja con la unidad bloqueada.",
+    "fuente": "NFPA 70E y guías públicas de seguridad en vehículos eléctricos; mapa temático Volvo (mentoría)"
+  },
+  {
+    "id": "L-E2-3-DIA",
+    "competencia": "E2-3-DIA",
+    "escenario": null,
+    "minutos": 9,
+    "titulo": "Diagnosticar pérdida de potencia de tracción",
+    "objetivo": "Separar con método si la pérdida de potencia viene de la batería, del enfriamiento, del inversor o del motor.",
+    "conceptos": [
+      "La potencia de tracción depende del estado de carga y temperatura de la batería, de la temperatura del inversor y motor y del aislamiento.",
+      "Los datos en vivo dicen quién está limitando: el sistema registra la causa del límite de potencia.",
+      "Cambiar un inversor o motor es caro: solo se hace con la causa confirmada y siguiendo el procedimiento de alto voltaje."
+    ],
+    "piezas": [
+      {
+        "id": "inversor_traccion",
+        "pos": [-3.6, 3.5, 0.6],
+        "tipo": "hv",
+        "tamano": [0.9, 0.25, 0.7],
+        "que": "Registra temperaturas, corrientes y la causa de los límites de potencia.",
+        "falla": "Puede limitar por temperatura, por voltaje de batería o por una falla interna.",
+        "revisa": "Códigos y datos en vivo del inversor."
+      },
+      {
+        "id": "motor_traccion",
+        "pos": [-3, 0.6, 1.33],
+        "tipo": "hv",
+        "tamano": [0.5, 0.45, 0.15],
+        "que": "Mide su temperatura y velocidad.",
+        "falla": "Sensor de temperatura dañado puede limitar sin un problema real.",
+        "revisa": "Comparar su temperatura con la del refrigerante."
+      }
+    ],
+    "pasos": [
+      "Leer códigos y la causa registrada del límite de potencia.",
+      "Revisar estado de carga y temperatura de la batería.",
+      "Revisar temperaturas de inversor y motor y el flujo de refrigerante.",
+      "Descartar alarmas de aislamiento.",
+      "Confirmar la causa antes de pedir una refacción mayor."
+    ],
+    "seguridad": "Cualquier intervención en inversor o motor exige bloqueo, etiquetado y verificación de ausencia de tensión.",
+    "fuente": "NFPA 70E y guías públicas de seguridad en vehículos eléctricos; mapa temático Volvo (mentoría)"
+  },
+  {
+    "id": "L-A3-1-MAN",
+    "competencia": "A3-1-MAN",
+    "escenario": null,
+    "minutos": 6,
+    "titulo": "Baterías de 24 V",
+    "objetivo": "Inspeccionar y cargar las baterías de 24 V que alimentan luces, módulos y el arranque (o el encendido del sistema en un eléctrico).",
+    "conceptos": [
+      "El sistema de 24 V usa dos baterías de 12 V en serie; alimenta módulos, luces y el arranque.",
+      "Terminales sulfatadas o flojas causan caídas de voltaje, fallas intermitentes y códigos falsos en los módulos.",
+      "En un autobús eléctrico también existe un sistema de 24 V: sin él no se activan los contactores de alto voltaje."
+    ],
+    "piezas": [
+      {
+        "id": "bateria_24v",
+        "pos": [3, 0.55, 1.33],
+        "tipo": "equipo",
+        "tamano": [0.6, 0.35, 0.15],
+        "que": "Banco de dos baterías de 12 V en serie: 24 V para la unidad.",
+        "falla": "Sulfatación, terminales flojas o una batería débil que descarga a la otra.",
+        "revisa": "Voltaje en reposo de cada batería, limpieza y apriete de terminales."
+      }
+    ],
+    "pasos": [
+      "Desconectar el interruptor maestro antes de tocar terminales.",
+      "Medir el voltaje de cada batería por separado.",
+      "Limpiar y apretar terminales; proteger con grasa dieléctrica.",
+      "Cargar con un cargador de 24 V o por separado a 12 V.",
+      "Medir de nuevo y registrar."
+    ],
+    "seguridad": "Las baterías desprenden hidrógeno: nada de chispas ni flama cerca; usa lentes y guantes.",
+    "fuente": "Mapa temático de capacitación Volvo (mentoría, foto_23); prácticas generales de mantenimiento de flotas"
+  },
+  {
+    "id": "L-A3-2-COM",
+    "competencia": "A3-2-COM",
+    "escenario": null,
+    "minutos": 8,
+    "titulo": "Red CAN y diagramas eléctricos",
+    "objetivo": "Entender cómo se comunican los módulos por la red CAN y leer un diagrama para seguir un circuito.",
+    "conceptos": [
+      "Los módulos (motor, transmisión, frenos, carrocería) comparten información por un par de cables trenzados: CAN alto y CAN bajo.",
+      "La red lleva una resistencia de 120 Ω en cada extremo; entre CAN alto y bajo, con todo apagado, se miden unos 60 Ω.",
+      "Un diagrama eléctrico muestra alimentación, tierra, conectores y pines: se sigue el circuito de la fuente al consumidor."
+    ],
+    "piezas": [
+      {
+        "id": "conector_diagnostico",
+        "pos": [5.3, 1.3, 1.32],
+        "tipo": "tablero",
+        "tamano": [0.35, 0.25, 0.1],
+        "que": "Da acceso a la red CAN de la unidad.",
+        "falla": "Si la red tiene un corto o le falta una resistencia, varios módulos pierden comunicación.",
+        "revisa": "Resistencia entre CAN alto y bajo con la unidad apagada."
+      }
+    ],
+    "pasos": [
+      "Ubicar en el diagrama el módulo y su alimentación, tierra y red.",
+      "Con todo apagado, medir resistencia entre CAN alto y bajo.",
+      "Interpretar: 60 Ω normal, 120 Ω falta una resistencia, cerca de 0 Ω corto.",
+      "Revisar conectores y empalmes en la ruta del cable.",
+      "Confirmar que los módulos vuelven a comunicarse."
+    ],
+    "seguridad": "Mide resistencia solo con el circuito desenergizado.",
+    "fuente": "SAE J1939 (red CAN de vehículos pesados), documentación pública; mapa temático Volvo (mentoría)"
+  },
+  {
+    "id": "L-A3-3-DIA",
+    "competencia": "A3-3-DIA",
+    "escenario": null,
+    "minutos": 9,
+    "titulo": "Caída de tensión y continuidad",
+    "objetivo": "Encontrar conexiones con resistencia alta midiendo caída de tensión con el circuito trabajando.",
+    "conceptos": [
+      "Un circuito puede tener continuidad y aun así fallar: una conexión corroída deja pasar poca corriente.",
+      "La prueba de caída de tensión se hace con el circuito encendido y con carga: se mide el voltaje que \"se pierde\" en un cable o conexión.",
+      "Como regla práctica, más de unos décimos de volt de caída en un cable de alimentación o tierra indica una conexión mala."
+    ],
+    "piezas": [
+      {
+        "id": "bateria_24v",
+        "pos": [3, 0.55, 1.33],
+        "tipo": "equipo",
+        "tamano": [0.6, 0.35, 0.15],
+        "que": "Fuente de 24 V y punto de referencia de tierra.",
+        "falla": "Tierras corroídas causan fallas raras en varios sistemas.",
+        "revisa": "Caída de tensión entre el borne negativo y la tierra del componente con carga."
+      }
+    ],
+    "pasos": [
+      "Encender el circuito con su carga normal.",
+      "Medir el voltaje en el componente.",
+      "Medir la caída en el lado positivo (batería a componente).",
+      "Medir la caída en el lado de tierra (componente a batería).",
+      "Reparar la conexión con mayor caída y volver a medir."
+    ],
+    "seguridad": "No uses el multímetro en función de resistencia en un circuito energizado.",
+    "fuente": "SAE J1939 (red CAN de vehículos pesados), documentación pública; mapa temático Volvo (mentoría)"
+  },
+  {
+    "id": "L-D4-1-MAN",
+    "competencia": "D4-1-MAN",
+    "escenario": null,
+    "minutos": 5,
+    "titulo": "Fugas y nivel de la transmisión",
+    "objetivo": "Revisar el nivel de aceite de la transmisión y detectar fugas en sellos, carter y líneas.",
+    "conceptos": [
+      "El nivel se revisa como indica el fabricante: algunas con varilla, otras con tapón de nivel o en la herramienta de diagnóstico.",
+      "Una fuga pequeña en el sello del eje de salida o en el carter acaba en nivel bajo y patinamiento.",
+      "El aceite quemado (oscuro y con olor) indica sobrecalentamiento y se reporta."
+    ],
+    "piezas": [
+      {
+        "id": "actuador_caja",
+        "pos": [-3, 0.7, 1.33],
+        "tipo": "aire",
+        "tamano": [0.5, 0.25, 0.1],
+        "que": "Actuador y línea de aire que operan la caja automatizada.",
+        "falla": "Fugas de aire o de aceite en sus conexiones.",
+        "revisa": "Inspección visual de fugas con la unidad calzada."
+      }
+    ],
+    "pasos": [
+      "Estacionar en plano y calzar la unidad.",
+      "Revisar el nivel con el método indicado.",
+      "Buscar fugas en sellos, carter, enfriador y líneas.",
+      "Observar color y olor del aceite.",
+      "Registrar y reportar hallazgos."
+    ],
+    "seguridad": "Nunca te metas bajo la unidad con el motor encendido sin calzas y freno de estacionamiento.",
+    "fuente": "Retícula de cursos Volvo buses (mentoría, foto_18); manuales públicos de transmisiones automatizadas"
+  },
+  {
+    "id": "L-D4-2-COM",
+    "competencia": "D4-2-COM",
+    "escenario": null,
+    "minutos": 7,
+    "titulo": "Cómo funciona la caja automatizada",
+    "objetivo": "Entender cómo la computadora de la transmisión opera embrague y marchas con actuadores de aire.",
+    "conceptos": [
+      "Una caja automatizada es mecánica, pero el embrague y los cambios los hacen actuadores controlados por una computadora.",
+      "Los actuadores usan aire comprimido; si la presión es baja, la caja no cambia o no engrana.",
+      "La computadora usa velocidad, carga del motor y pendiente para decidir cuándo cambiar."
+    ],
+    "piezas": [
+      {
+        "id": "actuador_caja",
+        "pos": [-3, 0.7, 1.33],
+        "tipo": "aire",
+        "tamano": [0.5, 0.25, 0.1],
+        "que": "Actuador neumático que mueve el embrague o el selector.",
+        "falla": "Fugas de aire o válvulas solenoides pegadas impiden el cambio.",
+        "revisa": "Presión de aire en el actuador y códigos de la transmisión."
+      }
+    ],
+    "pasos": [
+      "Identificar embrague, actuadores y módulo de la transmisión.",
+      "Verificar presión de aire del sistema.",
+      "Revisar en datos en vivo la posición del embrague y la marcha.",
+      "Relacionar los códigos con el actuador correspondiente.",
+      "Explicar la secuencia de un cambio."
+    ],
+    "seguridad": "Antes de desconectar líneas de aire, descarga la presión del circuito.",
+    "fuente": "Retícula de cursos Volvo buses (mentoría, foto_18); manuales públicos de transmisiones automatizadas"
+  },
+  {
+    "id": "L-D4-3-DIA",
+    "competencia": "D4-3-DIA",
+    "escenario": null,
+    "minutos": 9,
+    "titulo": "Diagnóstico avanzado de la caja automatizada",
+    "objetivo": "Diagnosticar patinamiento, cambios duros o fallas de actuador y saber cuándo calibrar el embrague.",
+    "conceptos": [
+      "El desgaste del embrague cambia su punto de acoplamiento; la computadora lo compensa hasta un límite y luego marca código.",
+      "Después de cambiar embrague, actuador o computadora se hace la calibración con la herramienta de diagnóstico.",
+      "Cambios duros con presión de aire correcta suelen venir de un actuador lento o de un sensor de posición."
+    ],
+    "piezas": [
+      {
+        "id": "actuador_caja",
+        "pos": [-3, 0.7, 1.33],
+        "tipo": "aire",
+        "tamano": [0.5, 0.25, 0.1],
+        "que": "Actuador del embrague o del selector.",
+        "falla": "Respuesta lenta, fugas internas o sensor de posición fuera de rango.",
+        "revisa": "Tiempos de respuesta y posiciones en la prueba con la herramienta."
+      }
+    ],
+    "pasos": [
+      "Leer códigos y datos de desgaste del embrague.",
+      "Confirmar presión de aire estable.",
+      "Hacer las pruebas de actuadores con la herramienta.",
+      "Reparar o cambiar el componente con falla confirmada.",
+      "Calibrar y hacer prueba de ruta."
+    ],
+    "seguridad": "Las pruebas de actuadores se hacen con la unidad calzada y nadie bajo ella.",
+    "fuente": "Retícula de cursos Volvo buses (mentoría, foto_18); manuales públicos de transmisiones automatizadas"
+  },
+  {
+    "id": "L-E4-1-MAN",
+    "competencia": "E4-1-MAN",
+    "escenario": null,
+    "minutos": 5,
+    "titulo": "Eje motriz y reductor",
+    "objetivo": "Revisar fugas, nivel de aceite del reductor y estado del eje motriz de un autobús eléctrico.",
+    "conceptos": [
+      "En lugar de caja de velocidades, el motor de tracción mueve las ruedas a través de un reductor de engranes y el diferencial.",
+      "El reductor lleva aceite que se revisa por nivel y se cambia por intervalo; las fugas se ven en sellos y respiradero.",
+      "El eje motriz sigue teniendo baleros, sellos y frenos como en un autobús diésel."
+    ],
+    "piezas": [
+      {
+        "id": "reductor",
+        "pos": [-2.3, 0.5, 1.33],
+        "tipo": "metal",
+        "tamano": [0.4, 0.35, 0.15],
+        "que": "Engranes que bajan la velocidad del motor y aumentan el par hacia las ruedas.",
+        "falla": "Fugas por sellos, nivel bajo de aceite o ruido de engranes.",
+        "revisa": "Nivel por el tapón de llenado, fugas y respiradero limpio."
+      }
+    ],
+    "pasos": [
+      "Bloquear la unidad y calzar.",
+      "Revisar fugas en sellos y respiradero.",
+      "Revisar nivel por el tapón de llenado.",
+      "Inspeccionar el eje y las mangueras cercanas.",
+      "Registrar y reportar."
+    ],
+    "seguridad": "Aunque el reductor no es de alto voltaje, el motor de tracción junto a él sí: la unidad va bloqueada.",
+    "fuente": "Guías públicas de mantenimiento de autobuses eléctricos; mapa temático Volvo (mentoría, foto_23)"
+  },
+  {
+    "id": "L-E4-2-COM",
+    "competencia": "E4-2-COM",
+    "escenario": null,
+    "minutos": 7,
+    "titulo": "Reductor, diferencial y regeneración",
+    "objetivo": "Explicar cómo llega el par del motor a las ruedas y cómo se reparte el frenado entre regeneración y frenos de aire.",
+    "conceptos": [
+      "El diferencial deja que las ruedas giren a distinta velocidad en las curvas.",
+      "Al soltar el acelerador o frenar suave, el motor regenera; si se necesita más frenado, entran los frenos neumáticos.",
+      "Con la batería llena o muy fría, la regeneración se limita y los frenos de aire trabajan más."
+    ],
+    "piezas": [
+      {
+        "id": "reductor",
+        "pos": [-2.3, 0.5, 1.33],
+        "tipo": "metal",
+        "tamano": [0.4, 0.35, 0.15],
+        "que": "Reduce velocidad y aumenta par.",
+        "falla": "Desgaste de engranes por aceite contaminado.",
+        "revisa": "Muestra de aceite y ruido en prueba."
+      },
+      {
+        "id": "motor_traccion",
+        "pos": [-3, 0.6, 1.33],
+        "tipo": "hv",
+        "tamano": [0.5, 0.45, 0.15],
+        "que": "Mueve y frena el autobús al regenerar.",
+        "falla": "Si no regenera, los frenos de aire se desgastan más rápido.",
+        "revisa": "Datos de regeneración en la herramienta."
+      }
+    ],
+    "pasos": [
+      "Seguir el par del motor al reductor, diferencial y ruedas.",
+      "Explicar la mezcla de frenado regenerativo y neumático.",
+      "Revisar en datos en vivo la energía regenerada.",
+      "Relacionar desgaste de balatas con regeneración baja.",
+      "Registrar observaciones."
+    ],
+    "seguridad": "Las pruebas en movimiento se hacen en área controlada y con un conductor autorizado.",
+    "fuente": "Guías públicas de mantenimiento de autobuses eléctricos; mapa temático Volvo (mentoría, foto_23)"
+  },
+  {
+    "id": "L-E4-3-DIA",
+    "competencia": "E4-3-DIA",
+    "escenario": null,
+    "minutos": 8,
+    "titulo": "Ruidos y vibraciones del tren motriz",
+    "objetivo": "Ubicar el origen de un ruido o vibración: motor, reductor, diferencial, baleros o llantas.",
+    "conceptos": [
+      "Sin motor de combustión, los ruidos mecánicos se oyen más; un zumbido nuevo suele venir de baleros o engranes.",
+      "Si el ruido cambia con la velocidad del vehículo y no con la carga, apunta a baleros o llantas; si cambia al acelerar o regenerar, a engranes o soportes.",
+      "Una muestra de aceite con limadura confirma desgaste interno del reductor."
+    ],
+    "piezas": [
+      {
+        "id": "reductor",
+        "pos": [-2.3, 0.5, 1.33],
+        "tipo": "metal",
+        "tamano": [0.4, 0.35, 0.15],
+        "que": "Engranes y baleros del reductor.",
+        "falla": "Zumbido que cambia con la carga; limadura en el aceite.",
+        "revisa": "Muestra de aceite y tapón magnético."
+      },
+      {
+        "id": "motor_traccion",
+        "pos": [-3, 0.6, 1.33],
+        "tipo": "hv",
+        "tamano": [0.5, 0.45, 0.15],
+        "que": "Baleros del motor.",
+        "falla": "Zumbido constante a cierta velocidad.",
+        "revisa": "Escuchar con estetoscopio de taller en prueba controlada."
+      }
+    ],
+    "pasos": [
+      "Reproducir el ruido en prueba con el técnico de seguridad.",
+      "Anotar si cambia con velocidad, carga o regeneración.",
+      "Revisar llantas y baleros de rueda primero.",
+      "Revisar aceite y tapón magnético del reductor.",
+      "Confirmar la causa antes de desmontar."
+    ],
+    "seguridad": "Nunca te acerques a partes giratorias en una prueba en elevador o con ruedas levantadas.",
+    "fuente": "Guías públicas de mantenimiento de autobuses eléctricos; mapa temático Volvo (mentoría, foto_23)"
+  },
+  {
+    "id": "L-A5-1-MAN",
+    "competencia": "A5-1-MAN",
+    "escenario": "frenos-fuga",
+    "minutos": 6,
+    "titulo": "Balatas, tambores y carrera de la varilla",
+    "objetivo": "Medir desgaste de balatas y tambores y comprobar que la carrera de la varilla de la cámara esté dentro del límite.",
+    "conceptos": [
+      "Cada cámara de freno tiene una carrera máxima de la varilla; si se pasa, el freno pierde fuerza.",
+      "Los ajustadores automáticos compensan el desgaste; una carrera fuera de límite indica balatas gastadas o ajustador dañado.",
+      "Balatas por debajo del espesor mínimo o tambores fuera de diámetro se cambian; nunca se ajusta \"a mano\" para ocultar el problema."
+    ],
+    "piezas": [
+      {
+        "id": "camara_freno",
+        "pos": [-3.1, 0.45, 1.33],
+        "tipo": "metal",
+        "tamano": [0.3, 0.3, 0.15],
+        "que": "Convierte la presión de aire en fuerza sobre el ajustador y la leva.",
+        "falla": "Carrera excesiva o diafragma roto.",
+        "revisa": "Medir carrera de la varilla con aplicación de freno."
+      },
+      {
+        "id": "rueda_trasera",
+        "pos": [-3.8, 0.55, 1.42],
+        "tipo": "rueda",
+        "tamano": [1.1, 1.1, 0.2],
+        "que": "Rueda con su tambor y balatas.",
+        "falla": "Balatas gastadas o tambor agrietado.",
+        "revisa": "Espesor de balatas por la mirilla y estado del tambor."
+      }
+    ],
+    "pasos": [
+      "Calzar la unidad y liberar el freno de estacionamiento.",
+      "Marcar la varilla en reposo.",
+      "Aplicar el freno con presión indicada y medir la carrera.",
+      "Comparar con el límite de esa cámara.",
+      "Revisar balatas y tambor y registrar."
+    ],
+    "seguridad": "Con el freno de estacionamiento liberado, solo las calzas sostienen la unidad.",
+    "fuente": "Bendix BW1231, Air Brake System Troubleshooting; Bendix SD-13-4869 (ABS), documentación pública"
+  },
+  {
+    "id": "L-A5-3-DIA",
+    "competencia": "A5-3-DIA",
+    "escenario": null,
+    "minutos": 9,
+    "titulo": "Diagnóstico del ABS y la estabilidad",
+    "objetivo": "Diagnosticar fallas del ABS: sensores de velocidad, moduladores y su cableado.",
+    "conceptos": [
+      "Cada rueda con ABS tiene un sensor de velocidad y un anillo dentado; el módulo compara las velocidades para evitar que se bloqueen.",
+      "Un sensor muy separado del anillo, sucio o con el cable dañado da señal débil y enciende el testigo de ABS.",
+      "Con falla de ABS los frenos normales siguen funcionando, pero sin antibloqueo: se repara antes de liberar la unidad."
+    ],
+    "piezas": [
+      {
+        "id": "rueda_trasera",
+        "pos": [-3.8, 0.55, 1.42],
+        "tipo": "rueda",
+        "tamano": [1.1, 1.1, 0.2],
+        "que": "Rueda con sensor de velocidad y anillo dentado.",
+        "falla": "Sensor separado o anillo dañado.",
+        "revisa": "Señal del sensor girando la rueda y resistencia del sensor."
+      },
+      {
+        "id": "conector_diagnostico",
+        "pos": [5.3, 1.3, 1.32],
+        "tipo": "tablero",
+        "tamano": [0.35, 0.25, 0.1],
+        "que": "Acceso a los códigos del módulo de ABS.",
+        "falla": "Sin comunicación no se leen las fallas del ABS.",
+        "revisa": "Leer códigos y hacer pruebas de moduladores."
+      }
+    ],
+    "pasos": [
+      "Leer códigos del ABS.",
+      "Ubicar la rueda y el componente del código.",
+      "Medir resistencia y señal del sensor girando la rueda.",
+      "Acercar el sensor o reparar cable; probar moduladores con la herramienta.",
+      "Borrar códigos y verificar que el testigo se apague en prueba."
+    ],
+    "seguridad": "Para girar la rueda a mano, la unidad va levantada y apoyada en soportes, nunca solo en el gato.",
+    "fuente": "Bendix BW1231, Air Brake System Troubleshooting; Bendix SD-13-4869 (ABS), documentación pública"
+  },
+  {
+    "id": "L-A6-2-COM",
+    "competencia": "A6-2-COM",
+    "escenario": null,
+    "minutos": 7,
+    "titulo": "Geometría de dirección y alineación",
+    "objetivo": "Relacionar convergencia, caída y avance con el desgaste de llantas y la estabilidad.",
+    "conceptos": [
+      "La convergencia es qué tanto apuntan las llantas hacia adentro o afuera; desajustada gasta la llanta en \"escamas\".",
+      "La caída es la inclinación de la llanta vista de frente; gasta un hombro de la llanta.",
+      "El avance ayuda a que el volante regrese al centro; con avance desigual la unidad \"jala\" a un lado."
+    ],
+    "piezas": [
+      {
+        "id": "terminal_direccion",
+        "pos": [3.4, 0.42, 1.33],
+        "tipo": "metal",
+        "tamano": [0.35, 0.18, 0.12],
+        "que": "Une la barra de dirección con el brazo de la rueda; su ajuste da la convergencia.",
+        "falla": "Juego en la terminal desajusta la convergencia.",
+        "revisa": "Juego y estado de la funda."
+      },
+      {
+        "id": "rueda_delantera",
+        "pos": [3.54, 0.57, 1.42],
+        "tipo": "rueda",
+        "tamano": [1.1, 1.1, 0.2],
+        "que": "Rueda direccional.",
+        "falla": "Desgaste irregular por mala alineación.",
+        "revisa": "Patrón de desgaste de la llanta."
+      }
+    ],
+    "pasos": [
+      "Leer el patrón de desgaste de las llantas delanteras.",
+      "Relacionarlo con convergencia, caída o avance.",
+      "Revisar juego en terminales antes de alinear.",
+      "Alinear con equipo y especificación.",
+      "Probar en ruta que no jale."
+    ],
+    "seguridad": "No se alinea una dirección con juego: primero se reparan las piezas gastadas.",
+    "fuente": "Mapa temático Volvo (mentoría, foto_23); manuales públicos de dirección hidráulica y suspensión neumática"
+  },
+  {
+    "id": "L-A6-3-DIA",
+    "competencia": "A6-3-DIA",
+    "escenario": null,
+    "minutos": 9,
+    "titulo": "Diagnóstico de la dirección hidráulica",
+    "objetivo": "Diagnosticar dirección dura, con juego o con fugas, separando bomba, caja y varillaje.",
+    "conceptos": [
+      "La bomba da presión y la caja de dirección la usa para ayudar al volante; si la presión baja, la dirección se pone dura.",
+      "El juego del volante puede venir de terminales, de la caja o de los pernos de la columna: se revisa de la rueda hacia el volante.",
+      "La dirección es crítica de seguridad: una unidad con juego fuera de límite no sale a ruta."
+    ],
+    "piezas": [
+      {
+        "id": "terminal_direccion",
+        "pos": [3.4, 0.42, 1.33],
+        "tipo": "metal",
+        "tamano": [0.35, 0.18, 0.12],
+        "que": "Terminal del varillaje de dirección.",
+        "falla": "Juego que se siente en el volante y desgasta llantas.",
+        "revisa": "Mover la rueda con alguien girando el volante y ubicar dónde está el juego."
+      }
+    ],
+    "pasos": [
+      "Revisar nivel y estado del fluido hidráulico.",
+      "Medir presión de la bomba con manómetro si hay dirección dura.",
+      "Ubicar el juego del varillaje a la caja.",
+      "Buscar fugas en mangueras, bomba y caja.",
+      "Reparar, purgar y verificar en prueba."
+    ],
+    "seguridad": "Una unidad con juego de dirección fuera de límite se detiene hasta repararla.",
+    "fuente": "Mapa temático Volvo (mentoría, foto_23); manuales públicos de dirección hidráulica y suspensión neumática"
+  },
+  {
+    "id": "L-A7-1-MAN",
+    "competencia": "A7-1-MAN",
+    "escenario": null,
+    "minutos": 6,
+    "titulo": "Ruedas, llantas y apriete de tuercas",
+    "objetivo": "Revisar presión y desgaste de llantas y apretar tuercas de rueda con el par y la secuencia correctos.",
+    "conceptos": [
+      "La presión se revisa en frío; una llanta baja se calienta, se desgasta y puede reventar.",
+      "Las tuercas de rueda se aprietan en estrella con torquímetro al par especificado; nunca con pistola de impacto hasta el final.",
+      "Después de montar una rueda se reaprieta tras los primeros kilómetros: los asientos se acomodan."
+    ],
+    "piezas": [
+      {
+        "id": "rueda_delantera",
+        "pos": [3.54, 0.57, 1.42],
+        "tipo": "rueda",
+        "tamano": [1.1, 1.1, 0.2],
+        "que": "Rueda direccional con sus tuercas.",
+        "falla": "Tuercas flojas, rin agrietado o llanta con desgaste irregular.",
+        "revisa": "Presión en frío, profundidad de dibujo y marcas de óxido en birlos."
+      }
+    ],
+    "pasos": [
+      "Medir presión en frío y profundidad del dibujo.",
+      "Buscar cortes, abultamientos y desgaste irregular.",
+      "Revisar birlos y tuercas: óxido corriendo indica tuerca floja.",
+      "Apretar en estrella con torquímetro al par especificado.",
+      "Registrar y programar el reapriete."
+    ],
+    "seguridad": "Una rueda mal apretada puede desprenderse en ruta: el apriete es crítico de seguridad.",
+    "fuente": "Prácticas públicas de servicio de ruedas de vehículos pesados (par de apriete y secuencia en estrella)"
+  },
+  {
+    "id": "L-A7-3-DIA",
+    "competencia": "A7-3-DIA",
+    "escenario": "altura-suspension",
+    "minutos": 8,
+    "titulo": "Calibrar el control electrónico de altura",
+    "objetivo": "Diagnosticar y calibrar la suspensión con control electrónico de altura y su función de arrodillamiento.",
+    "conceptos": [
+      "En la suspensión electrónica, sensores de altura le dicen a un módulo cuánto inflar o desinflar cada bolsa.",
+      "Después de cambiar un sensor, bolsas o el módulo, se calibran las alturas de referencia con la herramienta.",
+      "El arrodillamiento baja un lado para el ascenso de pasajeros; si no regresa, la unidad no debe moverse."
+    ],
+    "piezas": [
+      {
+        "id": "bolsa_aire",
+        "pos": [-3, 0.85, 1.33],
+        "tipo": "aire",
+        "tamano": [0.4, 0.4, 0.15],
+        "que": "Resorte de aire que sostiene la carrocería.",
+        "falla": "Fugas que impiden alcanzar la altura.",
+        "revisa": "Prueba de fugas con solución jabonosa."
+      },
+      {
+        "id": "valvula_niveladora",
+        "pos": [-2.2, 0.75, 1.33],
+        "tipo": "aire",
+        "tamano": [0.25, 0.2, 0.12],
+        "que": "En sistemas mecánicos ajusta la altura; en electrónicos lo hacen sensores y válvulas.",
+        "falla": "Sensor o válvula desajustados dan altura incorrecta.",
+        "revisa": "Altura real contra la de referencia."
+      }
+    ],
+    "pasos": [
+      "Medir alturas reales en los puntos de referencia.",
+      "Leer códigos y valores de los sensores de altura.",
+      "Revisar fugas en bolsas y válvulas.",
+      "Calibrar alturas con la herramienta.",
+      "Probar el arrodillamiento y el regreso a altura de manejo."
+    ],
+    "seguridad": "Nadie bajo la unidad mientras la suspensión sube o baja.",
+    "fuente": "Mapa temático Volvo (mentoría, foto_23); manuales públicos de dirección hidráulica y suspensión neumática"
+  },
+  {
+    "id": "L-A8-1-MAN",
+    "competencia": "A8-1-MAN",
+    "escenario": "puerta-servicio",
+    "minutos": 5,
+    "titulo": "Carrocería, puertas y salidas de emergencia",
+    "objetivo": "Inspeccionar puertas, sus protecciones y las salidas de emergencia antes de que la unidad salga a ruta.",
+    "conceptos": [
+      "Las puertas de servicio tienen protección contra atrapamiento: si encuentran un obstáculo, se detienen o regresan.",
+      "Las salidas de emergencia (ventanas, escotillas, llaves de puerta) deben abrir y estar señalizadas.",
+      "Daños de carrocería con filos o piezas sueltas son riesgo para pasajeros y se reportan."
+    ],
+    "piezas": [
+      {
+        "id": "mecanismo_puerta",
+        "pos": [5, 2.95, 1.33],
+        "tipo": "aire",
+        "tamano": [0.8, 0.2, 0.12],
+        "que": "Cilindro y mecanismo que abren y cierran la puerta.",
+        "falla": "Cierre brusco o sin protección contra atrapamiento.",
+        "revisa": "Prueba de cierre con un obstáculo blando."
+      },
+      {
+        "id": "llave_emergencia",
+        "pos": [4.1, 2.2, 1.33],
+        "tipo": "tablero",
+        "tamano": [0.2, 0.2, 0.1],
+        "que": "Permite abrir la puerta en una emergencia.",
+        "falla": "Si está trabada, los pasajeros no pueden salir.",
+        "revisa": "Que abra y esté señalizada."
+      }
+    ],
+    "pasos": [
+      "Abrir y cerrar cada puerta y observar la velocidad.",
+      "Probar la protección contra atrapamiento con un objeto blando.",
+      "Probar llaves y salidas de emergencia.",
+      "Revisar señalización y martillos rompevidrios.",
+      "Reportar daños y piezas sueltas."
+    ],
+    "seguridad": "Una salida de emergencia que no abre deja la unidad fuera de servicio.",
+    "fuente": "Mapa temático Volvo (mentoría, foto_23): carrocería, puertas, climatización y accesibilidad"
+  },
+  {
+    "id": "L-A8-3-DIA",
+    "competencia": "A8-3-DIA",
+    "escenario": null,
+    "minutos": 9,
+    "titulo": "Diagnóstico del aire acondicionado",
+    "objetivo": "Diagnosticar un aire acondicionado que no enfría usando presiones, temperaturas y códigos.",
+    "conceptos": [
+      "El refrigerante circula por compresor, condensador, válvula de expansión y evaporador; las presiones alta y baja dicen dónde está el problema.",
+      "Condensador sucio: presión alta muy alta y poco enfriamiento. Falta de refrigerante: presiones bajas.",
+      "El refrigerante no se libera a la atmósfera: se recupera con equipo y lo maneja personal certificado."
+    ],
+    "piezas": [
+      {
+        "id": "unidad_ac",
+        "pos": [3.9, 3.45, 0],
+        "tipo": "equipo",
+        "tamano": [1.6, 0.35, 1.6],
+        "que": "Equipo de techo con condensador, evaporador y ventiladores.",
+        "falla": "Condensador sucio, ventilador dañado o fuga de refrigerante.",
+        "revisa": "Limpieza del condensador, ventiladores y presiones con manómetros."
+      }
+    ],
+    "pasos": [
+      "Revisar filtros y que los ventiladores funcionen.",
+      "Leer códigos del módulo de clima.",
+      "Conectar manómetros y medir presiones alta y baja.",
+      "Comparar con la tabla según temperatura ambiente.",
+      "Reparar, recuperar o cargar refrigerante con equipo y verificar temperatura de salida."
+    ],
+    "seguridad": "El refrigerante causa quemaduras por frío: lentes y guantes; nunca lo liberes al ambiente.",
+    "fuente": "Mapa temático Volvo (mentoría, foto_23): carrocería, puertas, climatización y accesibilidad"
+  },
+  {
+    "id": "L-A9-2-COM",
+    "competencia": "A9-2-COM",
+    "escenario": "supresion-incendios",
+    "minutos": 6,
+    "titulo": "Cómo funciona el sistema de supresión",
+    "objetivo": "Explicar cómo detecta el sistema un incendio, cómo avisa y cómo descarga el agente en el compartimiento.",
+    "conceptos": [
+      "Detectores de temperatura o de flama vigilan el compartimiento del motor o del equipo de alto voltaje.",
+      "El panel en el tablero avisa al conductor y muestra el estado del sistema; puede descargar en automático o manual.",
+      "El agente sale de un cilindro presurizado por tubería y boquillas hacia las zonas de riesgo."
+    ],
+    "piezas": [
+      {
+        "id": "detector_incendio",
+        "pos": [-5, 1.55, 1.33],
+        "tipo": "equipo",
+        "tamano": [0.3, 0.2, 0.12],
+        "que": "Detecta temperatura alta o flama en el compartimiento.",
+        "falla": "Detector sucio o cable dañado da falsa alarma o no detecta.",
+        "revisa": "Estado y fijación del detector y su cable."
+      },
+      {
+        "id": "panel_supresion",
+        "pos": [5.3, 1.75, 1.32],
+        "tipo": "tablero",
+        "tamano": [0.35, 0.25, 0.1],
+        "que": "Avisa al conductor y muestra fallas del sistema.",
+        "falla": "Testigo de falla ignorado deja la unidad sin protección.",
+        "revisa": "Prueba de lámparas y estado sin fallas al encender."
+      }
+    ],
+    "pasos": [
+      "Ubicar cilindro, tubería, boquillas, detectores y panel.",
+      "Revisar presión del cilindro en su manómetro.",
+      "Verificar que las boquillas no estén tapadas.",
+      "Hacer la prueba de lámparas del panel.",
+      "Registrar el estado del sistema."
+    ],
+    "seguridad": "No se golpea ni se desmonta un cilindro presurizado sin el procedimiento del fabricante.",
+    "fuente": "Mapa temático Volvo (mentoría, foto_23); guías públicas de sistemas de supresión de incendios en autobuses"
+  },
+  {
+    "id": "L-A9-3-DIA",
+    "competencia": "A9-3-DIA",
+    "escenario": "supresion-incendios",
+    "minutos": 8,
+    "titulo": "Probar y poner en servicio la supresión",
+    "objetivo": "Diagnosticar fallas del panel y dejar el sistema en servicio después de una descarga o una reparación.",
+    "conceptos": [
+      "Después de una descarga, el cilindro se recarga o se cambia y se limpia el agente del compartimiento.",
+      "Los detectores y su cableado se prueban con el procedimiento del fabricante; un circuito abierto se marca en el panel.",
+      "La unidad no sale a ruta hasta que el panel no muestre fallas y el cilindro esté a presión."
+    ],
+    "piezas": [
+      {
+        "id": "panel_supresion",
+        "pos": [5.3, 1.75, 1.32],
+        "tipo": "tablero",
+        "tamano": [0.35, 0.25, 0.1],
+        "que": "Muestra fallas de detectores, cilindro o cableado.",
+        "falla": "Circuito abierto o detector desconectado.",
+        "revisa": "Código o luz de falla y prueba del circuito."
+      },
+      {
+        "id": "detector_incendio",
+        "pos": [-5, 1.55, 1.33],
+        "tipo": "equipo",
+        "tamano": [0.3, 0.2, 0.12],
+        "que": "Detector del compartimiento.",
+        "falla": "Dañado por calor o por la descarga anterior.",
+        "revisa": "Prueba según el fabricante."
+      }
+    ],
+    "pasos": [
+      "Investigar la causa de la descarga o la falla.",
+      "Recargar o cambiar el cilindro y limpiar el agente.",
+      "Probar detectores y cableado.",
+      "Verificar el panel sin fallas.",
+      "Registrar la puesta en servicio."
+    ],
+    "seguridad": "Antes de trabajar, el cilindro se asegura con su seguro para evitar una descarga accidental.",
+    "fuente": "Mapa temático Volvo (mentoría, foto_23); guías públicas de sistemas de supresión de incendios en autobuses"
   }
 ]

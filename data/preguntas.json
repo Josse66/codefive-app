@@ -882,5 +882,1253 @@
     "correcta": "b",
     "explicacion": "Una descarga indica que hubo fuego o una falla: se investiga la causa y el sistema se recarga antes de volver a ruta.",
     "fuente": "Mapa temático de capacitación Volvo, Detección y supresión de incendios (mentoría); datos de demostración"
+  },
+  {
+    "id": "P-A1-2-01",
+    "competencia_id": "A1-2-COM",
+    "enunciado": "Una unidad urbana llegó a las horas de motor del servicio pero aún no a los kilómetros. ¿Qué haces?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Esperar a que llegue a los kilómetros"
+      },
+      {
+        "id": "b",
+        "texto": "Hacer el servicio: manda el disparador que llegue primero"
+      },
+      {
+        "id": "c",
+        "texto": "Hacer solo el cambio de aceite"
+      },
+      {
+        "id": "d",
+        "texto": "Preguntarle al conductor"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Los intervalos se cumplen con el primer disparador que se alcance: kilómetros, horas o tiempo.",
+    "fuente": "Mapa temático de capacitación Volvo (mentoría, foto_23); prácticas generales de mantenimiento de flotas"
+  },
+  {
+    "id": "P-A1-2-02",
+    "competencia_id": "A1-2-COM",
+    "enunciado": "¿Por qué un autobús urbano suele tener intervalos más cortos que uno foráneo?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Porque es más chico"
+      },
+      {
+        "id": "b",
+        "texto": "Porque opera en condiciones severas: muchas paradas, baja velocidad y calor"
+      },
+      {
+        "id": "c",
+        "texto": "Porque usa otro aceite"
+      },
+      {
+        "id": "d",
+        "texto": "No es cierto, son iguales"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Paradas frecuentes, ralentí largo y calor son operación severa y desgastan más los aceites y frenos.",
+    "fuente": "Mapa temático de capacitación Volvo (mentoría, foto_23); prácticas generales de mantenimiento de flotas"
+  },
+  {
+    "id": "P-A1-3-01",
+    "competencia_id": "A1-3-DIA",
+    "enunciado": "La herramienta muestra un código de sensor de temperatura. ¿Qué haces primero?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Cambiar el sensor"
+      },
+      {
+        "id": "b",
+        "texto": "Revisar datos en vivo y el cableado para confirmar la causa"
+      },
+      {
+        "id": "c",
+        "texto": "Borrar el código"
+      },
+      {
+        "id": "d",
+        "texto": "Cambiar la computadora del motor"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "El código señala el circuito; hay que confirmar si es el sensor, el cableado o un problema real de temperatura.",
+    "fuente": "SAE J1939 (red CAN de vehículos pesados), documentación pública; mapa temático Volvo (mentoría)"
+  },
+  {
+    "id": "P-A1-3-02",
+    "competencia_id": "A1-3-DIA",
+    "enunciado": "¿Qué significa que un código esté inactivo (histórico)?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Que la falla está ocurriendo ahora"
+      },
+      {
+        "id": "b",
+        "texto": "Que ocurrió antes y ahorita no se detecta"
+      },
+      {
+        "id": "c",
+        "texto": "Que ya se reparó"
+      },
+      {
+        "id": "d",
+        "texto": "Que la herramienta falló"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Un código histórico indica que la condición ocurrió; puede ser intermitente y hay que investigarla.",
+    "fuente": "SAE J1939 (red CAN de vehículos pesados), documentación pública; mapa temático Volvo (mentoría)"
+  },
+  {
+    "id": "P-E2-1-01",
+    "competencia_id": "E2-1-COM",
+    "enunciado": "¿Qué hace el inversor en un autobús eléctrico?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Carga la batería de 24 V"
+      },
+      {
+        "id": "b",
+        "texto": "Convierte la corriente directa de la batería en alterna para el motor de tracción"
+      },
+      {
+        "id": "c",
+        "texto": "Enfría el motor"
+      },
+      {
+        "id": "d",
+        "texto": "Enciende las luces"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "El inversor alimenta y controla el motor de tracción a partir de la corriente directa de la batería.",
+    "fuente": "NFPA 70E y guías públicas de seguridad en vehículos eléctricos; mapa temático Volvo (mentoría)"
+  },
+  {
+    "id": "P-E2-1-02",
+    "competencia_id": "E2-1-COM",
+    "enunciado": "¿Qué es el frenado regenerativo?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Frenar con aire"
+      },
+      {
+        "id": "b",
+        "texto": "El motor funciona como generador al frenar y regresa energía a la batería"
+      },
+      {
+        "id": "c",
+        "texto": "Un freno de mano"
+      },
+      {
+        "id": "d",
+        "texto": "Recargar en la estación"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Al desacelerar, el motor genera energía que se guarda en la batería y reduce el desgaste de frenos.",
+    "fuente": "NFPA 70E y guías públicas de seguridad en vehículos eléctricos; mapa temático Volvo (mentoría)"
+  },
+  {
+    "id": "P-E2-2-01",
+    "competencia_id": "E2-2-COM",
+    "enunciado": "El autobús pierde potencia en subidas largas y la temperatura del inversor está alta. ¿Qué sospechas?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Batería de 24 V baja"
+      },
+      {
+        "id": "b",
+        "texto": "Falla en el enfriamiento del inversor"
+      },
+      {
+        "id": "c",
+        "texto": "Llantas bajas"
+      },
+      {
+        "id": "d",
+        "texto": "Frenos pegados"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Con temperatura alta el sistema reduce potencia para protegerse; se revisa el circuito de enfriamiento.",
+    "fuente": "NFPA 70E y guías públicas de seguridad en vehículos eléctricos; mapa temático Volvo (mentoría)"
+  },
+  {
+    "id": "P-E2-2-02",
+    "competencia_id": "E2-2-COM",
+    "enunciado": "¿Cómo controla el inversor la velocidad del motor de tracción?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Con una caja de velocidades"
+      },
+      {
+        "id": "b",
+        "texto": "Variando la frecuencia y la corriente que le entrega"
+      },
+      {
+        "id": "c",
+        "texto": "Con el acelerador mecánico"
+      },
+      {
+        "id": "d",
+        "texto": "Con el embrague"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "El inversor ajusta frecuencia y corriente para dar la velocidad y el par que se piden.",
+    "fuente": "NFPA 70E y guías públicas de seguridad en vehículos eléctricos; mapa temático Volvo (mentoría)"
+  },
+  {
+    "id": "P-E2-3-01",
+    "competencia_id": "E2-3-DIA",
+    "enunciado": "La unidad limita potencia y el estado de carga de la batería es 8 %. ¿Cuál es la causa más probable?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Falla del inversor"
+      },
+      {
+        "id": "b",
+        "texto": "Batería casi descargada: el sistema protege la batería"
+      },
+      {
+        "id": "c",
+        "texto": "Motor dañado"
+      },
+      {
+        "id": "d",
+        "texto": "Falta aceite"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Con la batería muy baja, el sistema limita potencia para no dañarla; primero se carga.",
+    "fuente": "NFPA 70E y guías públicas de seguridad en vehículos eléctricos; mapa temático Volvo (mentoría)"
+  },
+  {
+    "id": "P-E2-3-02",
+    "competencia_id": "E2-3-DIA",
+    "enunciado": "Todo indica temperatura alta del motor pero el refrigerante está frío. ¿Qué revisas?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Cambiar el motor"
+      },
+      {
+        "id": "b",
+        "texto": "El sensor de temperatura del motor y su circuito"
+      },
+      {
+        "id": "c",
+        "texto": "La batería de 24 V"
+      },
+      {
+        "id": "d",
+        "texto": "Los frenos"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Si el refrigerante está frío, una lectura alta apunta al sensor o su cableado.",
+    "fuente": "NFPA 70E y guías públicas de seguridad en vehículos eléctricos; mapa temático Volvo (mentoría)"
+  },
+  {
+    "id": "P-A3-1-01",
+    "competencia_id": "A3-1-MAN",
+    "enunciado": "¿Cómo se obtienen los 24 V del autobús con baterías de 12 V?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "En paralelo"
+      },
+      {
+        "id": "b",
+        "texto": "Dos baterías en serie"
+      },
+      {
+        "id": "c",
+        "texto": "Con un transformador"
+      },
+      {
+        "id": "d",
+        "texto": "Con una sola batería"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Dos baterías de 12 V en serie suman 24 V.",
+    "fuente": "Mapa temático de capacitación Volvo (mentoría, foto_23); prácticas generales de mantenimiento de flotas"
+  },
+  {
+    "id": "P-A3-1-02",
+    "competencia_id": "A3-1-MAN",
+    "enunciado": "Los módulos marcan fallas intermitentes y las terminales están sulfatadas. ¿Qué haces primero?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Cambiar los módulos"
+      },
+      {
+        "id": "b",
+        "texto": "Limpiar y apretar terminales y medir voltajes"
+      },
+      {
+        "id": "c",
+        "texto": "Borrar códigos"
+      },
+      {
+        "id": "d",
+        "texto": "Cambiar el alternador"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Una mala conexión de batería causa caídas de voltaje y códigos falsos en varios módulos.",
+    "fuente": "Mapa temático de capacitación Volvo (mentoría, foto_23); prácticas generales de mantenimiento de flotas"
+  },
+  {
+    "id": "P-A3-2-01",
+    "competencia_id": "A3-2-COM",
+    "enunciado": "Con la unidad apagada mides 120 Ω entre CAN alto y bajo. ¿Qué indica?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Red correcta"
+      },
+      {
+        "id": "b",
+        "texto": "Falta una de las dos resistencias de terminación o hay un corte en la red"
+      },
+      {
+        "id": "c",
+        "texto": "Corto entre los cables"
+      },
+      {
+        "id": "d",
+        "texto": "Batería baja"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Lo normal son unos 60 Ω (dos de 120 Ω en paralelo); 120 Ω indica que falta una.",
+    "fuente": "SAE J1939 (red CAN de vehículos pesados), documentación pública; mapa temático Volvo (mentoría)"
+  },
+  {
+    "id": "P-A3-2-02",
+    "competencia_id": "A3-2-COM",
+    "enunciado": "Varios módulos distintos marcan \"pérdida de comunicación\" al mismo tiempo. ¿Qué sospechas?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Que todos se dañaron"
+      },
+      {
+        "id": "b",
+        "texto": "Un problema en la red CAN o en una alimentación común"
+      },
+      {
+        "id": "c",
+        "texto": "Llantas bajas"
+      },
+      {
+        "id": "d",
+        "texto": "Falta de aceite"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Cuando muchos módulos pierden comunicación a la vez, la causa suele ser la red o su alimentación.",
+    "fuente": "SAE J1939 (red CAN de vehículos pesados), documentación pública; mapa temático Volvo (mentoría)"
+  },
+  {
+    "id": "P-A3-3-01",
+    "competencia_id": "A3-3-DIA",
+    "enunciado": "Un motor de limpiadores gira lento. En el motor hay 21 V y en la batería 25 V. ¿Qué haces?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Cambiar el motor"
+      },
+      {
+        "id": "b",
+        "texto": "Medir caída de tensión en el positivo y en la tierra para hallar la conexión mala"
+      },
+      {
+        "id": "c",
+        "texto": "Cambiar la batería"
+      },
+      {
+        "id": "d",
+        "texto": "Nada, es normal"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Se pierden 4 V en el camino: hay una conexión con resistencia alta; la caída de tensión la ubica.",
+    "fuente": "SAE J1939 (red CAN de vehículos pesados), documentación pública; mapa temático Volvo (mentoría)"
+  },
+  {
+    "id": "P-A3-3-02",
+    "competencia_id": "A3-3-DIA",
+    "enunciado": "¿Por qué la prueba de continuidad no basta para encontrar una conexión corroída?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Sí basta siempre"
+      },
+      {
+        "id": "b",
+        "texto": "Porque sin carga un solo hilo de cobre da continuidad, pero no soporta la corriente"
+      },
+      {
+        "id": "c",
+        "texto": "Porque el multímetro no mide eso"
+      },
+      {
+        "id": "d",
+        "texto": "Porque se necesita la herramienta de diagnóstico"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Con poca corriente la conexión parece buena; con carga se ve la caída de tensión.",
+    "fuente": "SAE J1939 (red CAN de vehículos pesados), documentación pública; mapa temático Volvo (mentoría)"
+  },
+  {
+    "id": "P-D4-1-01",
+    "competencia_id": "D4-1-MAN",
+    "enunciado": "El aceite de la transmisión está oscuro y huele a quemado. ¿Qué indica?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Que es nuevo"
+      },
+      {
+        "id": "b",
+        "texto": "Sobrecalentamiento; se reporta para diagnóstico"
+      },
+      {
+        "id": "c",
+        "texto": "Que falta combustible"
+      },
+      {
+        "id": "d",
+        "texto": "Nada"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Aceite quemado indica que la transmisión trabajó caliente; hay que buscar la causa.",
+    "fuente": "Retícula de cursos Volvo buses (mentoría, foto_18); manuales públicos de transmisiones automatizadas"
+  },
+  {
+    "id": "P-D4-1-02",
+    "competencia_id": "D4-1-MAN",
+    "enunciado": "¿Dónde se busca primero una fuga de aceite de la transmisión?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "En el techo"
+      },
+      {
+        "id": "b",
+        "texto": "Sellos de ejes, carter, enfriador y líneas"
+      },
+      {
+        "id": "c",
+        "texto": "En el tanque de combustible"
+      },
+      {
+        "id": "d",
+        "texto": "En las llantas delanteras"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Las fugas aparecen en sellos, juntas del carter y conexiones del enfriador.",
+    "fuente": "Retícula de cursos Volvo buses (mentoría, foto_18); manuales públicos de transmisiones automatizadas"
+  },
+  {
+    "id": "P-D4-2-01",
+    "competencia_id": "D4-2-COM",
+    "enunciado": "Con presión de aire baja, la caja automatizada no engrana. ¿Por qué?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Por falta de combustible"
+      },
+      {
+        "id": "b",
+        "texto": "Porque sus actuadores necesitan aire para mover embrague y selector"
+      },
+      {
+        "id": "c",
+        "texto": "Porque el motor está frío"
+      },
+      {
+        "id": "d",
+        "texto": "Por las luces"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Los actuadores neumáticos necesitan presión suficiente para trabajar.",
+    "fuente": "Retícula de cursos Volvo buses (mentoría, foto_18); manuales públicos de transmisiones automatizadas"
+  },
+  {
+    "id": "P-D4-2-02",
+    "competencia_id": "D4-2-COM",
+    "enunciado": "¿Quién decide cuándo cambiar de marcha en una caja automatizada?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "El conductor siempre"
+      },
+      {
+        "id": "b",
+        "texto": "La computadora de la transmisión con velocidad, carga y pendiente"
+      },
+      {
+        "id": "c",
+        "texto": "El embrague solo"
+      },
+      {
+        "id": "d",
+        "texto": "El freno"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "La computadora decide los cambios con la información del motor y la unidad.",
+    "fuente": "Retícula de cursos Volvo buses (mentoría, foto_18); manuales públicos de transmisiones automatizadas"
+  },
+  {
+    "id": "P-D4-3-01",
+    "competencia_id": "D4-3-DIA",
+    "enunciado": "Cambiaste el embrague. ¿Qué falta antes de entregar la unidad?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Nada"
+      },
+      {
+        "id": "b",
+        "texto": "Calibrar el embrague con la herramienta y hacer prueba de ruta"
+      },
+      {
+        "id": "c",
+        "texto": "Cambiar el aceite del motor"
+      },
+      {
+        "id": "d",
+        "texto": "Borrar todos los códigos"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "La computadora necesita aprender el nuevo punto de acoplamiento.",
+    "fuente": "Retícula de cursos Volvo buses (mentoría, foto_18); manuales públicos de transmisiones automatizadas"
+  },
+  {
+    "id": "P-D4-3-02",
+    "competencia_id": "D4-3-DIA",
+    "enunciado": "Hay cambios duros pero la presión de aire es correcta. ¿Qué revisas?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Las llantas"
+      },
+      {
+        "id": "b",
+        "texto": "Respuesta del actuador y sensor de posición con la prueba de la herramienta"
+      },
+      {
+        "id": "c",
+        "texto": "El tanque de combustible"
+      },
+      {
+        "id": "d",
+        "texto": "Las luces"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Con aire correcto, un actuador lento o un sensor fuera de rango explican los cambios duros.",
+    "fuente": "Retícula de cursos Volvo buses (mentoría, foto_18); manuales públicos de transmisiones automatizadas"
+  },
+  {
+    "id": "P-E4-1-01",
+    "competencia_id": "E4-1-MAN",
+    "enunciado": "¿Qué hace el reductor en un autobús eléctrico?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Carga la batería"
+      },
+      {
+        "id": "b",
+        "texto": "Baja la velocidad del motor y aumenta el par hacia las ruedas"
+      },
+      {
+        "id": "c",
+        "texto": "Enfría el inversor"
+      },
+      {
+        "id": "d",
+        "texto": "Controla las puertas"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "El motor gira rápido; el reductor baja la velocidad y multiplica el par.",
+    "fuente": "Guías públicas de mantenimiento de autobuses eléctricos; mapa temático Volvo (mentoría, foto_23)"
+  },
+  {
+    "id": "P-E4-1-02",
+    "competencia_id": "E4-1-MAN",
+    "enunciado": "El respiradero del reductor está tapado con lodo. ¿Qué puede pasar?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Nada"
+      },
+      {
+        "id": "b",
+        "texto": "Sube la presión interna y el aceite sale por los sellos"
+      },
+      {
+        "id": "c",
+        "texto": "Se descarga la batería"
+      },
+      {
+        "id": "d",
+        "texto": "Se apagan las luces"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Un respiradero tapado presuriza el reductor y provoca fugas por sellos.",
+    "fuente": "Guías públicas de mantenimiento de autobuses eléctricos; mapa temático Volvo (mentoría, foto_23)"
+  },
+  {
+    "id": "P-E4-2-01",
+    "competencia_id": "E4-2-COM",
+    "enunciado": "Un autobús eléctrico gasta balatas mucho más rápido que el resto. ¿Qué revisas?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "La batería de 24 V"
+      },
+      {
+        "id": "b",
+        "texto": "Que el frenado regenerativo esté funcionando"
+      },
+      {
+        "id": "c",
+        "texto": "Las luces"
+      },
+      {
+        "id": "d",
+        "texto": "Las puertas"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Si no regenera, los frenos de aire hacen todo el trabajo y se desgastan más.",
+    "fuente": "Guías públicas de mantenimiento de autobuses eléctricos; mapa temático Volvo (mentoría, foto_23)"
+  },
+  {
+    "id": "P-E4-2-02",
+    "competencia_id": "E4-2-COM",
+    "enunciado": "¿Para qué sirve el diferencial?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Para cargar la batería"
+      },
+      {
+        "id": "b",
+        "texto": "Para que las ruedas giren a distinta velocidad en las curvas"
+      },
+      {
+        "id": "c",
+        "texto": "Para enfriar el motor"
+      },
+      {
+        "id": "d",
+        "texto": "Para frenar"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "En una curva la rueda de afuera recorre más; el diferencial lo permite.",
+    "fuente": "Guías públicas de mantenimiento de autobuses eléctricos; mapa temático Volvo (mentoría, foto_23)"
+  },
+  {
+    "id": "P-E4-3-01",
+    "competencia_id": "E4-3-DIA",
+    "enunciado": "Un zumbido cambia al acelerar y al regenerar, pero no en neutral rodando. ¿Qué sospechas?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Llantas"
+      },
+      {
+        "id": "b",
+        "texto": "Engranes del reductor o soportes"
+      },
+      {
+        "id": "c",
+        "texto": "Puertas"
+      },
+      {
+        "id": "d",
+        "texto": "Batería de 24 V"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Lo que cambia con la carga apunta a engranes o soportes del tren motriz.",
+    "fuente": "Guías públicas de mantenimiento de autobuses eléctricos; mapa temático Volvo (mentoría, foto_23)"
+  },
+  {
+    "id": "P-E4-3-02",
+    "competencia_id": "E4-3-DIA",
+    "enunciado": "El tapón magnético del reductor tiene mucha limadura. ¿Qué indica?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Normal siempre"
+      },
+      {
+        "id": "b",
+        "texto": "Desgaste interno: hay que investigar antes de que falle"
+      },
+      {
+        "id": "c",
+        "texto": "Aceite nuevo"
+      },
+      {
+        "id": "d",
+        "texto": "Falta de aire"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Limadura abundante indica desgaste de engranes o baleros.",
+    "fuente": "Guías públicas de mantenimiento de autobuses eléctricos; mapa temático Volvo (mentoría, foto_23)"
+  },
+  {
+    "id": "P-A5-1-01",
+    "competencia_id": "A5-1-MAN",
+    "enunciado": "La carrera de la varilla de una cámara está fuera de límite. ¿Qué indica?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Que el freno está mejor"
+      },
+      {
+        "id": "b",
+        "texto": "Balatas gastadas o ajustador automático dañado"
+      },
+      {
+        "id": "c",
+        "texto": "Llanta baja"
+      },
+      {
+        "id": "d",
+        "texto": "Exceso de aire"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Una carrera excesiva reduce la fuerza de frenado y apunta a desgaste o al ajustador.",
+    "fuente": "Bendix BW1231, Air Brake System Troubleshooting; Bendix SD-13-4869 (ABS), documentación pública"
+  },
+  {
+    "id": "P-A5-1-02",
+    "competencia_id": "A5-1-MAN",
+    "enunciado": "Un compañero ajusta a mano el ajustador automático para que la carrera \"salga bien\". ¿Qué opinas?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Correcto"
+      },
+      {
+        "id": "b",
+        "texto": "Oculta el problema; hay que encontrar por qué el ajustador no compensa"
+      },
+      {
+        "id": "c",
+        "texto": "Es lo que indica el fabricante siempre"
+      },
+      {
+        "id": "d",
+        "texto": "No importa"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Ajustar a mano un ajustador automático esconde una falla que regresará.",
+    "fuente": "Bendix BW1231, Air Brake System Troubleshooting; Bendix SD-13-4869 (ABS), documentación pública"
+  },
+  {
+    "id": "P-A5-3-01",
+    "competencia_id": "A5-3-DIA",
+    "enunciado": "El ABS marca señal débil del sensor trasero derecho. ¿Qué revisas primero?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Cambiar el módulo"
+      },
+      {
+        "id": "b",
+        "texto": "Separación del sensor al anillo, suciedad y cable"
+      },
+      {
+        "id": "c",
+        "texto": "Las balatas"
+      },
+      {
+        "id": "d",
+        "texto": "La batería"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "La causa más común de señal débil es el sensor separado o el cable dañado.",
+    "fuente": "Bendix BW1231, Air Brake System Troubleshooting; Bendix SD-13-4869 (ABS), documentación pública"
+  },
+  {
+    "id": "P-A5-3-02",
+    "competencia_id": "A5-3-DIA",
+    "enunciado": "Con el testigo de ABS encendido, ¿la unidad frena?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "No frena"
+      },
+      {
+        "id": "b",
+        "texto": "Frena con los frenos normales, pero sin antibloqueo"
+      },
+      {
+        "id": "c",
+        "texto": "Solo frena adelante"
+      },
+      {
+        "id": "d",
+        "texto": "Solo con freno de mano"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Los frenos de servicio funcionan; se pierde la función antibloqueo.",
+    "fuente": "Bendix BW1231, Air Brake System Troubleshooting; Bendix SD-13-4869 (ABS), documentación pública"
+  },
+  {
+    "id": "P-A6-2-01",
+    "competencia_id": "A6-2-COM",
+    "enunciado": "Las llantas delanteras se gastan en forma de escamas. ¿Qué ángulo sospechas?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Avance"
+      },
+      {
+        "id": "b",
+        "texto": "Convergencia"
+      },
+      {
+        "id": "c",
+        "texto": "Presión de aire"
+      },
+      {
+        "id": "d",
+        "texto": "Caída de la carrocería"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "La convergencia desajustada arrastra la llanta y la gasta en escamas.",
+    "fuente": "Mapa temático Volvo (mentoría, foto_23); manuales públicos de dirección hidráulica y suspensión neumática"
+  },
+  {
+    "id": "P-A6-2-02",
+    "competencia_id": "A6-2-COM",
+    "enunciado": "¿Qué haces antes de alinear una unidad con juego en la terminal de dirección?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Alinear de todos modos"
+      },
+      {
+        "id": "b",
+        "texto": "Reparar la terminal y luego alinear"
+      },
+      {
+        "id": "c",
+        "texto": "Subir la presión de llantas"
+      },
+      {
+        "id": "d",
+        "texto": "Nada"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Con juego, la alineación no se sostiene.",
+    "fuente": "Mapa temático Volvo (mentoría, foto_23); manuales públicos de dirección hidráulica y suspensión neumática"
+  },
+  {
+    "id": "P-A6-3-01",
+    "competencia_id": "A6-3-DIA",
+    "enunciado": "La dirección está dura solo con el motor en ralentí. ¿Qué sospechas?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Llantas bajas"
+      },
+      {
+        "id": "b",
+        "texto": "Presión baja de la bomba de dirección"
+      },
+      {
+        "id": "c",
+        "texto": "Juego en terminales"
+      },
+      {
+        "id": "d",
+        "texto": "Batería baja"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "A bajas revoluciones una bomba débil no alcanza la presión necesaria.",
+    "fuente": "Mapa temático Volvo (mentoría, foto_23); manuales públicos de dirección hidráulica y suspensión neumática"
+  },
+  {
+    "id": "P-A6-3-02",
+    "competencia_id": "A6-3-DIA",
+    "enunciado": "Hay juego en el volante. ¿Cómo lo ubicas?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Cambiando la caja"
+      },
+      {
+        "id": "b",
+        "texto": "Con alguien moviendo el volante, revisar de la rueda hacia la caja dónde aparece el juego"
+      },
+      {
+        "id": "c",
+        "texto": "Mirando el tablero"
+      },
+      {
+        "id": "d",
+        "texto": "Subiendo la presión de llantas"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Se revisa cada unión del varillaje para ver dónde está el movimiento libre.",
+    "fuente": "Mapa temático Volvo (mentoría, foto_23); manuales públicos de dirección hidráulica y suspensión neumática"
+  },
+  {
+    "id": "P-A7-1-01",
+    "competencia_id": "A7-1-MAN",
+    "enunciado": "¿En qué orden se aprietan las tuercas de una rueda?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "En círculo, una tras otra"
+      },
+      {
+        "id": "b",
+        "texto": "En estrella, con torquímetro al par especificado"
+      },
+      {
+        "id": "c",
+        "texto": "Como salga"
+      },
+      {
+        "id": "d",
+        "texto": "Solo las de arriba"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "En estrella la rueda asienta parejo; el torquímetro asegura el par correcto.",
+    "fuente": "Prácticas públicas de servicio de ruedas de vehículos pesados (par de apriete y secuencia en estrella)"
+  },
+  {
+    "id": "P-A7-1-02",
+    "competencia_id": "A7-1-MAN",
+    "enunciado": "Ves marcas de óxido escurriendo desde un birlo. ¿Qué indica?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Lluvia"
+      },
+      {
+        "id": "b",
+        "texto": "Posible tuerca floja: revisar el apriete"
+      },
+      {
+        "id": "c",
+        "texto": "Rin nuevo"
+      },
+      {
+        "id": "d",
+        "texto": "Nada"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "El óxido que escurre suele indicar movimiento de una tuerca floja.",
+    "fuente": "Prácticas públicas de servicio de ruedas de vehículos pesados (par de apriete y secuencia en estrella)"
+  },
+  {
+    "id": "P-A7-3-01",
+    "competencia_id": "A7-3-DIA",
+    "enunciado": "Cambiaste un sensor de altura. ¿Qué falta?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Nada"
+      },
+      {
+        "id": "b",
+        "texto": "Calibrar las alturas de referencia con la herramienta"
+      },
+      {
+        "id": "c",
+        "texto": "Desinflar todas las bolsas"
+      },
+      {
+        "id": "d",
+        "texto": "Cambiar el módulo"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "El módulo necesita aprender la referencia del nuevo sensor.",
+    "fuente": "Mapa temático Volvo (mentoría, foto_23); manuales públicos de dirección hidráulica y suspensión neumática"
+  },
+  {
+    "id": "P-A7-3-02",
+    "competencia_id": "A7-3-DIA",
+    "enunciado": "La unidad no regresa de la posición de arrodillamiento. ¿Qué haces?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "La mueves así"
+      },
+      {
+        "id": "b",
+        "texto": "No la mueves; revisas aire, sensores y códigos"
+      },
+      {
+        "id": "c",
+        "texto": "Desconectas la batería"
+      },
+      {
+        "id": "d",
+        "texto": "Subes la presión de llantas"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Circular arrodillada puede dañar la unidad y es inseguro.",
+    "fuente": "Mapa temático Volvo (mentoría, foto_23); manuales públicos de dirección hidráulica y suspensión neumática"
+  },
+  {
+    "id": "P-A8-1-01",
+    "competencia_id": "A8-1-MAN",
+    "enunciado": "La puerta de servicio no regresa al encontrar un obstáculo. ¿Qué haces?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Nada"
+      },
+      {
+        "id": "b",
+        "texto": "Reportarla: la protección contra atrapamiento no funciona y la unidad no sale"
+      },
+      {
+        "id": "c",
+        "texto": "Cerrarla más despacio"
+      },
+      {
+        "id": "d",
+        "texto": "Engrasarla"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Sin protección contra atrapamiento un pasajero puede lesionarse.",
+    "fuente": "Mapa temático Volvo (mentoría, foto_23): carrocería, puertas, climatización y accesibilidad"
+  },
+  {
+    "id": "P-A8-1-02",
+    "competencia_id": "A8-1-MAN",
+    "enunciado": "Una ventana de emergencia no abre. ¿Puede salir la unidad?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Sí"
+      },
+      {
+        "id": "b",
+        "texto": "No, hasta repararla"
+      },
+      {
+        "id": "c",
+        "texto": "Solo de noche"
+      },
+      {
+        "id": "d",
+        "texto": "Solo sin pasajeros de pie"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Las salidas de emergencia son obligatorias y críticas.",
+    "fuente": "Mapa temático Volvo (mentoría, foto_23): carrocería, puertas, climatización y accesibilidad"
+  },
+  {
+    "id": "P-A8-3-01",
+    "competencia_id": "A8-3-DIA",
+    "enunciado": "Presión alta muy alta y poco enfriamiento, con el condensador lleno de polvo. ¿Qué haces primero?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Cargar refrigerante"
+      },
+      {
+        "id": "b",
+        "texto": "Limpiar el condensador y revisar sus ventiladores"
+      },
+      {
+        "id": "c",
+        "texto": "Cambiar el compresor"
+      },
+      {
+        "id": "d",
+        "texto": "Cambiar filtros de aceite"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Un condensador sucio no disipa el calor y sube la presión alta.",
+    "fuente": "Mapa temático Volvo (mentoría, foto_23): carrocería, puertas, climatización y accesibilidad"
+  },
+  {
+    "id": "P-A8-3-02",
+    "competencia_id": "A8-3-DIA",
+    "enunciado": "Las presiones alta y baja están bajas. ¿Qué sospechas?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Exceso de refrigerante"
+      },
+      {
+        "id": "b",
+        "texto": "Falta de refrigerante por fuga"
+      },
+      {
+        "id": "c",
+        "texto": "Condensador sucio"
+      },
+      {
+        "id": "d",
+        "texto": "Ventilador muy rápido"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Presiones bajas en ambos lados indican poco refrigerante; se busca la fuga.",
+    "fuente": "Mapa temático Volvo (mentoría, foto_23): carrocería, puertas, climatización y accesibilidad"
+  },
+  {
+    "id": "P-A9-2-01",
+    "competencia_id": "A9-2-COM",
+    "enunciado": "El manómetro del cilindro de supresión está en la zona roja. ¿Qué indica?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Normal"
+      },
+      {
+        "id": "b",
+        "texto": "Presión baja: el sistema puede no descargar y se reporta"
+      },
+      {
+        "id": "c",
+        "texto": "Que ya descargó y está bien"
+      },
+      {
+        "id": "d",
+        "texto": "Exceso de agente"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Sin presión suficiente el agente no llega a las boquillas.",
+    "fuente": "Mapa temático Volvo (mentoría, foto_23); guías públicas de sistemas de supresión de incendios en autobuses"
+  },
+  {
+    "id": "P-A9-2-02",
+    "competencia_id": "A9-2-COM",
+    "enunciado": "¿Qué hace el panel del sistema de supresión?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Enciende el motor"
+      },
+      {
+        "id": "b",
+        "texto": "Avisa al conductor y muestra el estado o las fallas del sistema"
+      },
+      {
+        "id": "c",
+        "texto": "Controla el aire acondicionado"
+      },
+      {
+        "id": "d",
+        "texto": "Mide combustible"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "El panel es la interfaz del conductor con el sistema.",
+    "fuente": "Mapa temático Volvo (mentoría, foto_23); guías públicas de sistemas de supresión de incendios en autobuses"
+  },
+  {
+    "id": "P-A9-3-01",
+    "competencia_id": "A9-3-DIA",
+    "enunciado": "El sistema descargó en ruta. Ya recargaste el cilindro. ¿Qué falta?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Nada"
+      },
+      {
+        "id": "b",
+        "texto": "Investigar la causa del incendio o la descarga, probar detectores y verificar el panel"
+      },
+      {
+        "id": "c",
+        "texto": "Liberar la unidad"
+      },
+      {
+        "id": "d",
+        "texto": "Pintar el compartimiento"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Sin entender la causa, el riesgo sigue; además se prueba todo el sistema.",
+    "fuente": "Mapa temático Volvo (mentoría, foto_23); guías públicas de sistemas de supresión de incendios en autobuses"
+  },
+  {
+    "id": "P-A9-3-02",
+    "competencia_id": "A9-3-DIA",
+    "enunciado": "El panel marca falla de circuito de un detector. ¿Qué revisas?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "El cilindro"
+      },
+      {
+        "id": "b",
+        "texto": "El cableado y la conexión de ese detector"
+      },
+      {
+        "id": "c",
+        "texto": "Las llantas"
+      },
+      {
+        "id": "d",
+        "texto": "El aire acondicionado"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Una falla de circuito suele ser un cable abierto o un conector suelto.",
+    "fuente": "Mapa temático Volvo (mentoría, foto_23); guías públicas de sistemas de supresión de incendios en autobuses"
   }
 ]

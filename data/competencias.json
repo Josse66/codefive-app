@@ -10,6 +10,246 @@
     "critica": false
   },
   {
+    "id": "A1-2-COM",
+    "nombre": "Intervalos de servicio y lectura del plan de mantenimiento",
+    "tecnologia": "ambas",
+    "grupo": 1,
+    "nivel": 2,
+    "habilidad": "comprension",
+    "prerequisito": "A1-1-MAN",
+    "critica": false
+  },
+  {
+    "id": "A1-3-DIA",
+    "nombre": "Diagnóstico con herramienta de diagnóstico: códigos de falla y datos en vivo",
+    "tecnologia": "ambas",
+    "grupo": 1,
+    "nivel": 3,
+    "habilidad": "diagnostico",
+    "prerequisito": "A1-2-COM",
+    "critica": false
+  },
+  {
+    "id": "D2-1-MAN",
+    "nombre": "Mantenimiento preventivo del motor diésel",
+    "tecnologia": "diesel",
+    "grupo": 2,
+    "nivel": 1,
+    "habilidad": "mantenimiento",
+    "prerequisito": null,
+    "critica": false
+  },
+  {
+    "id": "E2-1-COM",
+    "nombre": "Tren motriz eléctrico: componentes y operación segura",
+    "tecnologia": "electrica",
+    "grupo": 2,
+    "nivel": 1,
+    "habilidad": "comprension",
+    "prerequisito": "E3-1-SEG",
+    "critica": false
+  },
+  {
+    "id": "D2-2-COM",
+    "nombre": "Función del postratamiento DPF y SCR",
+    "tecnologia": "diesel",
+    "grupo": 2,
+    "nivel": 2,
+    "habilidad": "comprension",
+    "prerequisito": "D2-1-MAN",
+    "critica": false
+  },
+  {
+    "id": "E2-2-COM",
+    "nombre": "Inversor y motor de tracción: función y enfriamiento",
+    "tecnologia": "electrica",
+    "grupo": 2,
+    "nivel": 2,
+    "habilidad": "comprension",
+    "prerequisito": "E2-1-COM",
+    "critica": false
+  },
+  {
+    "id": "D2-3-CR",
+    "nombre": "Diagnóstico de inyección common rail",
+    "tecnologia": "diesel",
+    "grupo": 2,
+    "nivel": 3,
+    "habilidad": "diagnostico",
+    "prerequisito": "D2-1-MAN",
+    "critica": false
+  },
+  {
+    "id": "D2-3-DIA",
+    "nombre": "Diagnóstico de DPF y regeneración",
+    "tecnologia": "diesel",
+    "grupo": 2,
+    "nivel": 3,
+    "habilidad": "diagnostico",
+    "prerequisito": "D2-2-COM",
+    "critica": false
+  },
+  {
+    "id": "E2-3-DIA",
+    "nombre": "Diagnóstico de pérdida de potencia de tracción",
+    "tecnologia": "electrica",
+    "grupo": 2,
+    "nivel": 3,
+    "habilidad": "diagnostico",
+    "prerequisito": "E2-2-COM",
+    "critica": false
+  },
+  {
+    "id": "A3-1-MAN",
+    "nombre": "Baterías de 24 V: inspección, carga y arranque",
+    "tecnologia": "ambas",
+    "grupo": 3,
+    "nivel": 1,
+    "habilidad": "mantenimiento",
+    "prerequisito": null,
+    "critica": false
+  },
+  {
+    "id": "E3-1-SEG",
+    "nombre": "Reconocer el riesgo de alto voltaje y escalar",
+    "tecnologia": "electrica",
+    "grupo": 3,
+    "nivel": 1,
+    "habilidad": "seguridad",
+    "prerequisito": null,
+    "critica": true
+  },
+  {
+    "id": "A3-2-COM",
+    "nombre": "Red multiplexada CAN y lectura de diagramas eléctricos",
+    "tecnologia": "ambas",
+    "grupo": 3,
+    "nivel": 2,
+    "habilidad": "comprension",
+    "prerequisito": "A3-1-MAN",
+    "critica": false
+  },
+  {
+    "id": "E3-2-COM",
+    "nombre": "Arquitectura de alto voltaje: batería, HVIL y monitoreo de aislamiento",
+    "tecnologia": "electrica",
+    "grupo": 3,
+    "nivel": 2,
+    "habilidad": "comprension",
+    "prerequisito": "E3-1-SEG",
+    "critica": false
+  },
+  {
+    "id": "E3-2-SEG",
+    "nombre": "Bloqueo, etiquetado y verificación de ausencia de tensión",
+    "tecnologia": "electrica",
+    "grupo": 3,
+    "nivel": 2,
+    "habilidad": "seguridad",
+    "prerequisito": "E3-1-SEG",
+    "critica": true
+  },
+  {
+    "id": "A3-3-DIA",
+    "nombre": "Diagnóstico de circuitos de 24 V con multímetro: caída de tensión y continuidad",
+    "tecnologia": "ambas",
+    "grupo": 3,
+    "nivel": 3,
+    "habilidad": "diagnostico",
+    "prerequisito": "A3-2-COM",
+    "critica": false
+  },
+  {
+    "id": "E3-3-DIA",
+    "nombre": "Diagnóstico de pérdida de aislamiento y HVIL",
+    "tecnologia": "electrica",
+    "grupo": 3,
+    "nivel": 3,
+    "habilidad": "diagnostico",
+    "prerequisito": "E3-2-SEG",
+    "critica": false
+  },
+  {
+    "id": "D4-1-MAN",
+    "nombre": "Revisión de fugas y nivel de aceite de la transmisión",
+    "tecnologia": "diesel",
+    "grupo": 4,
+    "nivel": 1,
+    "habilidad": "mantenimiento",
+    "prerequisito": null,
+    "critica": false
+  },
+  {
+    "id": "E4-1-MAN",
+    "nombre": "Inspección del eje motriz y aceite del reductor",
+    "tecnologia": "electrica",
+    "grupo": 4,
+    "nivel": 1,
+    "habilidad": "mantenimiento",
+    "prerequisito": null,
+    "critica": false
+  },
+  {
+    "id": "D4-2-COM",
+    "nombre": "Funcionamiento de la caja automatizada: embrague y selección de marchas",
+    "tecnologia": "diesel",
+    "grupo": 4,
+    "nivel": 2,
+    "habilidad": "comprension",
+    "prerequisito": "D4-1-MAN",
+    "critica": false
+  },
+  {
+    "id": "D4-2-DIA",
+    "nombre": "Diagnóstico básico de la transmisión automatizada",
+    "tecnologia": "diesel",
+    "grupo": 4,
+    "nivel": 2,
+    "habilidad": "diagnostico",
+    "prerequisito": null,
+    "critica": false
+  },
+  {
+    "id": "E4-2-COM",
+    "nombre": "Funcionamiento del reductor, diferencial y frenado regenerativo",
+    "tecnologia": "electrica",
+    "grupo": 4,
+    "nivel": 2,
+    "habilidad": "comprension",
+    "prerequisito": "E4-1-MAN",
+    "critica": false
+  },
+  {
+    "id": "D4-3-DIA",
+    "nombre": "Diagnóstico avanzado de la caja automatizada: embrague y actuadores",
+    "tecnologia": "diesel",
+    "grupo": 4,
+    "nivel": 3,
+    "habilidad": "diagnostico",
+    "prerequisito": "D4-2-DIA",
+    "critica": false
+  },
+  {
+    "id": "E4-3-DIA",
+    "nombre": "Diagnóstico de ruidos y vibraciones del tren motriz eléctrico",
+    "tecnologia": "electrica",
+    "grupo": 4,
+    "nivel": 3,
+    "habilidad": "diagnostico",
+    "prerequisito": "E4-2-COM",
+    "critica": false
+  },
+  {
+    "id": "A5-1-MAN",
+    "nombre": "Medición de balatas, tambores y carrera de la varilla",
+    "tecnologia": "ambas",
+    "grupo": 5,
+    "nivel": 1,
+    "habilidad": "mantenimiento",
+    "prerequisito": "A5-1-SEG",
+    "critica": false
+  },
+  {
     "id": "A5-1-SEG",
     "nombre": "Asegurar la unidad antes de intervenir frenos",
     "tecnologia": "ambas",
@@ -40,93 +280,13 @@
     "critica": false
   },
   {
-    "id": "D2-1-MAN",
-    "nombre": "Mantenimiento preventivo del motor diésel",
-    "tecnologia": "diesel",
-    "grupo": 2,
-    "nivel": 1,
-    "habilidad": "mantenimiento",
-    "prerequisito": null,
-    "critica": false
-  },
-  {
-    "id": "D2-2-COM",
-    "nombre": "Función del postratamiento DPF y SCR",
-    "tecnologia": "diesel",
-    "grupo": 2,
-    "nivel": 2,
-    "habilidad": "comprension",
-    "prerequisito": "D2-1-MAN",
-    "critica": false
-  },
-  {
-    "id": "D2-3-DIA",
-    "nombre": "Diagnóstico de DPF y regeneración",
-    "tecnologia": "diesel",
-    "grupo": 2,
+    "id": "A5-3-DIA",
+    "nombre": "Diagnóstico del ABS y del control de estabilidad",
+    "tecnologia": "ambas",
+    "grupo": 5,
     "nivel": 3,
     "habilidad": "diagnostico",
-    "prerequisito": "D2-2-COM",
-    "critica": false
-  },
-  {
-    "id": "D2-3-CR",
-    "nombre": "Diagnóstico de inyección common rail",
-    "tecnologia": "diesel",
-    "grupo": 2,
-    "nivel": 3,
-    "habilidad": "diagnostico",
-    "prerequisito": "D2-1-MAN",
-    "critica": false
-  },
-  {
-    "id": "E3-1-SEG",
-    "nombre": "Reconocer el riesgo de alto voltaje y escalar",
-    "tecnologia": "electrica",
-    "grupo": 3,
-    "nivel": 1,
-    "habilidad": "seguridad",
-    "prerequisito": null,
-    "critica": true
-  },
-  {
-    "id": "E3-2-COM",
-    "nombre": "Arquitectura de alto voltaje: batería, HVIL y monitoreo de aislamiento",
-    "tecnologia": "electrica",
-    "grupo": 3,
-    "nivel": 2,
-    "habilidad": "comprension",
-    "prerequisito": "E3-1-SEG",
-    "critica": false
-  },
-  {
-    "id": "E3-2-SEG",
-    "nombre": "Bloqueo, etiquetado y verificación de ausencia de tensión",
-    "tecnologia": "electrica",
-    "grupo": 3,
-    "nivel": 2,
-    "habilidad": "seguridad",
-    "prerequisito": "E3-1-SEG",
-    "critica": true
-  },
-  {
-    "id": "E3-3-DIA",
-    "nombre": "Diagnóstico de pérdida de aislamiento y HVIL",
-    "tecnologia": "electrica",
-    "grupo": 3,
-    "nivel": 3,
-    "habilidad": "diagnostico",
-    "prerequisito": "E3-2-SEG",
-    "critica": false
-  },
-  {
-    "id": "D4-2-DIA",
-    "nombre": "Diagnóstico básico de la transmisión automatizada",
-    "tecnologia": "diesel",
-    "grupo": 4,
-    "nivel": 2,
-    "habilidad": "diagnostico",
-    "prerequisito": null,
+    "prerequisito": "A5-2-DIA",
     "critica": false
   },
   {
@@ -140,6 +300,36 @@
     "critica": false
   },
   {
+    "id": "A6-2-COM",
+    "nombre": "Geometría de dirección y alineación",
+    "tecnologia": "ambas",
+    "grupo": 6,
+    "nivel": 2,
+    "habilidad": "comprension",
+    "prerequisito": "A6-1-MAN",
+    "critica": false
+  },
+  {
+    "id": "A6-3-DIA",
+    "nombre": "Diagnóstico de la dirección hidráulica: juego, esfuerzo y fugas",
+    "tecnologia": "ambas",
+    "grupo": 6,
+    "nivel": 3,
+    "habilidad": "diagnostico",
+    "prerequisito": "A6-2-COM",
+    "critica": false
+  },
+  {
+    "id": "A7-1-MAN",
+    "nombre": "Ruedas y llantas: presión, desgaste y par de apriete",
+    "tecnologia": "ambas",
+    "grupo": 7,
+    "nivel": 1,
+    "habilidad": "mantenimiento",
+    "prerequisito": null,
+    "critica": true
+  },
+  {
     "id": "A7-2-DIA",
     "nombre": "Diagnóstico del control de altura de la suspensión neumática",
     "tecnologia": "ambas",
@@ -148,6 +338,26 @@
     "habilidad": "diagnostico",
     "prerequisito": null,
     "critica": false
+  },
+  {
+    "id": "A7-3-DIA",
+    "nombre": "Calibración del control electrónico de altura",
+    "tecnologia": "ambas",
+    "grupo": 7,
+    "nivel": 3,
+    "habilidad": "diagnostico",
+    "prerequisito": "A7-2-DIA",
+    "critica": false
+  },
+  {
+    "id": "A8-1-MAN",
+    "nombre": "Inspección de carrocería, puertas y salidas de emergencia",
+    "tecnologia": "ambas",
+    "grupo": 8,
+    "nivel": 1,
+    "habilidad": "mantenimiento",
+    "prerequisito": null,
+    "critica": true
   },
   {
     "id": "A8-2-DIA",
@@ -160,6 +370,16 @@
     "critica": false
   },
   {
+    "id": "A8-3-DIA",
+    "nombre": "Diagnóstico del aire acondicionado del autobús",
+    "tecnologia": "ambas",
+    "grupo": 8,
+    "nivel": 3,
+    "habilidad": "diagnostico",
+    "prerequisito": "A8-2-DIA",
+    "critica": false
+  },
+  {
     "id": "A9-1-SEG",
     "nombre": "Sistema de detección y supresión de incendios",
     "tecnologia": "ambas",
@@ -168,5 +388,25 @@
     "habilidad": "seguridad",
     "prerequisito": null,
     "critica": true
+  },
+  {
+    "id": "A9-2-COM",
+    "nombre": "Componentes del sistema de supresión: agente, detectores y panel",
+    "tecnologia": "ambas",
+    "grupo": 9,
+    "nivel": 2,
+    "habilidad": "comprension",
+    "prerequisito": "A9-1-SEG",
+    "critica": false
+  },
+  {
+    "id": "A9-3-DIA",
+    "nombre": "Prueba y puesta en servicio del sistema de supresión",
+    "tecnologia": "ambas",
+    "grupo": 9,
+    "nivel": 3,
+    "habilidad": "diagnostico",
+    "prerequisito": "A9-2-COM",
+    "critica": false
   }
 ]
