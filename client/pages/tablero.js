@@ -141,6 +141,15 @@ function pintarTecnicos(tecnicos) {
       dominadas.append(el('span', 'codigo', `${t.dominadas}/${t.total}`), barra);
 
       const retencion = el('td', 'codigo', t.retencion == null ? '—' : `${t.retencion} %`);
+      const progreso = el('td', 'whitespace-nowrap');
+      progreso.append(
+        el('span', 'block font-semibold', t.progreso.nivel),
+        el(
+          'span',
+          'text-xs text-tinta-3',
+          `${t.progreso.entregadas} órdenes${t.progreso.reputacion == null ? '' : ` · ${t.progreso.reputacion} ★`}`,
+        ),
+      );
       const errores = el(
         'td',
         `codigo ${t.erroresCriticos ? 'text-mal' : 'text-tinta-3'}`,
@@ -154,6 +163,7 @@ function pintarTecnicos(tecnicos) {
         dominadas,
         el('td', 'codigo', t.dominioPromedio == null ? '—' : `${t.dominioPromedio} %`),
         retencion,
+        progreso,
         errores,
         celdaPreparacion(t),
       );
@@ -310,6 +320,145 @@ function pintarRetencion(retencion) {
   });
 }
 
+// ---------- Mapa de calor ----------
+
+const CLASE_CELDA = (p) => {
+  if (p == null) return 'bg-placa text-tinta-3';
+  if (p >= 80) return 'bg-ok text-white';
+  if (p >= 40) return 'bg-med text-tinta';
+  return 'bg-mal text-white';
+};
+const GRUPOS = {
+  1: 'Servicio',
+  2: 'Motor',
+  3: 'Eléctrico',
+  4: 'Transmisión',
+  5: 'Frenos',
+  6: 'Dirección',
+  7: 'Bastidor',
+  8: 'Carrocería',
+  9: 'Diversos',
+};
+
+function pintarMapa(mapa) {
+  const encabezado = el('tr');
+  encabezado.append(el('th', '', 'Técnico'));
+  mapa.grupos.forEach((g) => {
+    const th = el('th', 'text-center');
+    th.append(el('span', 'recuadro h-6 w-6 text-sm', `${g}`), el('span', 'mt-1 block', GRUPOS[g]));
+    encabezado.append(th);
+  });
+  $('mapa-encabezado').replaceChildren(encabezado);
+  if (!mapa.filas.length) {
+    const fila = el('tr');
+    const celda = el('td', 'text-tinta-3', 'Sin técnicos con actividad todavía.');
+    celda.colSpan = 10;
+    fila.append(celda);
+    $('mapa').replaceChildren(fila);
+    return;
+  }
+  $('mapa').replaceChildren(
+    ...mapa.filas.map((f) => {
+      const fila = el('tr');
+      const nombre = el('td', 'whitespace-nowrap');
+      nombre.append(
+        el('span', 'block font-semibold', f.nombre),
+        el('span', 'text-xs text-tinta-3', f.taller),
+      );
+      fila.append(nombre);
+      f.celdas.forEach((c) => {
+        const td = el(
+          'td',
+          `codigo border border-white text-center transition-colors duration-700 ${CLASE_CELDA(c.p)}`,
+          c.p == null ? '—' : `${c.p}`,
+        );
+        td.title = `${f.nombre} · grupo ${c.grupo}: ${c.p == null ? 'sin datos' : `${c.p} %`}`;
+        fila.append(td);
+      });
+      return fila;
+    }),
+  );
+}
+
+// ---------- Errores del taller ----------
+
+function pintarCodigos(errores) {
+  if (!errores.length) {
+    const fila = el('tr');
+    const celda = el('td', 'text-tinta-3', 'Sin errores en las órdenes del taller.');
+    celda.colSpan = 5;
+    fila.append(celda);
+    $('tabla-codigos').replaceChildren(fila);
+    return;
+  }
+  $('tabla-codigos').replaceChildren(
+    ...errores.map((e) => {
+      const fila = el('tr');
+      const codigo = el('td', 'whitespace-nowrap');
+      codigo.append(
+        el('span', `codigo block text-lg ${e.critico ? 'text-mal' : ''}`, e.codigo),
+        el(
+          'span',
+          `chip ${e.critico ? 'border-mal bg-mal text-white' : 'border-tinta-3 text-tinta-2'}`,
+          e.critico ? 'Crítico' : 'Error',
+        ),
+      );
+      const que = el('td', 'max-w-[44ch]');
+      que.append(
+        el('span', 'block', e.mensaje),
+        el('span', 'text-xs text-tinta-3', `Grupo ${e.grupo} · ${e.escenario}`),
+      );
+      fila.append(
+        codigo,
+        que,
+        el('td', 'codigo', `${e.veces}`),
+        el('td', 'codigo', `${e.tecnicos}`),
+        el('td', 'text-sm', e.talleres.join(', ')),
+      );
+      return fila;
+    }),
+  );
+}
+
+function pintarTalleres(talleres) {
+  $('tabla-talleres').replaceChildren(
+    ...talleres.map((t) => {
+      const fila = el('tr');
+      fila.append(
+        el('td', 'font-semibold', t.taller),
+        el('td', 'codigo', `${t.tecnicos}`),
+        el('td', 'codigo', t.tasaError == null ? '—' : `${t.tasaError} %`),
+        el('td', `codigo ${t.criticos ? 'text-mal' : 'text-tinta-3'}`, `${t.criticos}`),
+      );
+      return fila;
+    }),
+  );
+}
+
+// ---------- Alerta de error crítico en vivo ----------
+
+let ultimoDato = null;
+let cierreAlerta = null;
+function mostrarAlerta(aviso) {
+  const tecnico = ultimoDato?.tecnicos.find((t) => t.id === aviso.tecnicoId);
+  const error = ultimoDato?.erroresEscenarios.find((e) => e.codigo === aviso.codigoError);
+  $('alerta-codigo').textContent = aviso.codigoError ?? aviso.competenciaId ?? 'Seguridad';
+  $('alerta-quien').textContent = tecnico ? `${tecnico.nombre} · ${tecnico.taller}` : aviso.tecnicoId;
+  $('alerta-mensaje').textContent =
+    error?.mensaje ??
+    (aviso.escenarioId
+      ? 'Error crítico en una orden del taller.'
+      : `Respondió mal una pregunta de seguridad crítica (${aviso.competenciaId}).`);
+  $('alerta').hidden = false;
+  clearTimeout(cierreAlerta);
+  cierreAlerta = setTimeout(() => {
+    $('alerta').hidden = true;
+  }, 12000);
+}
+$('alerta-cerrar').addEventListener('click', () => {
+  $('alerta').hidden = true;
+});
+
 // ---------- Errores recurrentes ----------
 
 function pintarErrores(errores) {
@@ -368,6 +517,10 @@ async function cargar() {
     pintarDominio(datos.competencias);
     pintarRetencion(datos.retencion);
     pintarErrores(datos.errores);
+    pintarMapa(datos.mapa);
+    pintarCodigos(datos.erroresEscenarios);
+    pintarTalleres(datos.talleres);
+    ultimoDato = datos;
     ultimaActualizacion = new Date();
     marcarConexion(socket.connected);
     $('mensaje-error').hidden = true;
@@ -389,7 +542,12 @@ socket.on('connect', () => {
   programarCarga();
 });
 socket.on('disconnect', () => marcarConexion(false));
-socket.on('evento', programarCarga);
+socket.on('evento', (aviso) => {
+  programarCarga();
+  // La alerta espera a que lleguen los datos nuevos para poder decir qué pasó.
+  if (aviso.critico) setTimeout(() => mostrarAlerta(aviso), 450);
+});
+socket.on('orden', programarCarga);
 socket.on('reloj', programarCarga);
 
 cargar();

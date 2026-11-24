@@ -1,4 +1,17 @@
 <section id="tablero" class="grid gap-6">
+  {{! Alerta en vivo: un técnico cometió un error crítico de seguridad en este momento. }}
+  <div id="alerta" class="fixed inset-x-0 top-0 z-50 border-b-4 border-white bg-mal text-white shadow-[0_8px_0_rgba(20,28,36,0.25)]" role="alert" hidden>
+    <div class="contenedor flex flex-wrap items-center gap-x-8 gap-y-2 py-5">
+      <p class="font-narrow text-sm font-bold uppercase tracking-wider">Error crítico de seguridad · en vivo</p>
+      <p id="alerta-codigo" class="codigo text-5xl"></p>
+      <div class="grid flex-1 gap-1">
+        <p id="alerta-quien" class="text-xl font-semibold"></p>
+        <p id="alerta-mensaje" class="text-[17px] text-white/90"></p>
+      </div>
+      <button id="alerta-cerrar" type="button" class="border-2 border-white px-5 py-2 font-semibold hover:bg-white hover:text-mal">Enterado</button>
+    </div>
+  </div>
+
   <div class="flex flex-wrap items-end justify-between gap-4">
     <div class="grid gap-2">
       <p class="font-narrow text-sm font-bold uppercase tracking-wider text-tinta-3">Capacitación y postventa</p>
@@ -29,7 +42,7 @@
           <thead>
             <tr>
               <th>Clave</th><th>Técnico</th><th>Taller</th><th>Dominadas</th><th>Dominio</th>
-              <th>Retención</th><th>Errores críticos</th><th>Autobús real</th>
+              <th>Retención</th><th>Taller (nivel)</th><th>Errores críticos</th><th>Autobús real</th>
             </tr>
           </thead>
           <tbody id="tabla-tecnicos"></tbody>
@@ -62,6 +75,40 @@
         <p id="retencion-vacia" class="absolute inset-0 flex items-center justify-center border border-dashed border-placa-linea p-6 text-center text-sm text-tinta-3" hidden>Todavía no hay evaluaciones. Aparecen cuando un técnico hace la evaluación de antes.</p>
       </div>
     </figure>
+  </div>
+
+  <div class="grid gap-3">
+    <div class="flex flex-wrap items-baseline justify-between gap-2">
+      <h2 class="text-2xl">Mapa de dominio por grupo de función</h2>
+      <p class="text-sm text-tinta-3">Promedio de cada técnico en los 9 grupos. Verde 80 % o más, ámbar 40 % o más, rojo brecha.</p>
+    </div>
+    <div class="overflow-x-auto border border-placa-linea bg-white">
+      <table class="tabla-partes min-w-[860px]">
+        <thead id="mapa-encabezado"></thead>
+        <tbody id="mapa"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_420px] lg:items-start">
+    <div class="grid gap-3">
+      <h2 class="text-2xl">Errores en el taller</h2>
+      <div class="overflow-x-auto border border-placa-linea bg-white">
+        <table class="tabla-partes min-w-[640px]">
+          <thead><tr><th>Código</th><th>Qué pasó</th><th>Veces</th><th>Técnicos</th><th>Talleres</th></tr></thead>
+          <tbody id="tabla-codigos"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="grid gap-3">
+      <h2 class="text-2xl">Por taller</h2>
+      <div class="overflow-x-auto border border-placa-linea bg-white">
+        <table class="tabla-partes">
+          <thead><tr><th>Taller</th><th>Técnicos</th><th>Tasa de error</th><th>Críticos</th></tr></thead>
+          <tbody id="tabla-talleres"></tbody>
+        </table>
+      </div>
+    </div>
   </div>
 
   <div class="grid gap-3">
