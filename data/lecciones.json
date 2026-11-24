@@ -130,5 +130,60 @@
     ],
     "pista": "Primero confirmas que no hay voltaje; luego mides el estado del aislamiento por partes.",
     "fuente": "ASE xEV Safety Standards v2.1; Ficha C, investigación Persona 2"
+  },
+  {
+    "competencia_id": "D4-2-DIA",
+    "titulo": "La caja automatizada se diagnostica con datos",
+    "puntos": [
+      "Primero se conecta la herramienta de diagnóstico y se registran códigos y condiciones.",
+      "Los actuadores de la caja se mueven con aire: sin presión suficiente los cambios fallan.",
+      "Antes de cambiar componentes se revisan suministro de aire, fugas y cableado."
+    ],
+    "pista": "¿Qué te dice la unidad antes de tocar cualquier pieza?",
+    "fuente": "Mapa temático de capacitación Volvo, Transmisión (mentoría); datos de demostración"
+  },
+  {
+    "competencia_id": "A6-1-MAN",
+    "titulo": "La dirección no tiene holgura permitida",
+    "puntos": [
+      "Con la unidad asegurada, un ayudante mueve el volante y se observan terminales y articulaciones.",
+      "La holgura se reporta y se corrige según el manual antes de liberar la unidad.",
+      "Al cambiar una terminal se aprieta al torque indicado y se verifica la alineación."
+    ],
+    "pista": "Piensa en lo que pasa con la geometría cuando cambias una pieza de la dirección.",
+    "fuente": "Mapa temático de capacitación Volvo, Suspensión y dirección (mentoría); datos de demostración"
+  },
+  {
+    "competencia_id": "A7-2-DIA",
+    "titulo": "La altura de la suspensión depende del aire",
+    "puntos": [
+      "Las bolsas de aire sostienen la carrocería; la válvula niveladora o el sensor de altura las ajusta.",
+      "Si un lado baja, se buscan fugas en bolsas, conexiones y válvula con solución jabonosa.",
+      "La altura correcta cuida la geometría, las llantas y el acceso de pasajeros."
+    ],
+    "pista": "¿Qué componente sostiene la carrocería en una suspensión neumática?",
+    "fuente": "Mapa temático de capacitación Volvo, Bastidor y control de altura (mentoría); datos de demostración"
+  },
+  {
+    "competencia_id": "A8-2-DIA",
+    "titulo": "Puertas y rampa: primero se descarga el aire",
+    "puntos": [
+      "El cilindro de la puerta tiene fuerza suficiente para lesionar: se descarga el aire antes de intervenir.",
+      "La rampa solo funciona con sus condiciones de habilitación: puerta, freno y seguros.",
+      "La velocidad de cierre se regula según el manual del fabricante."
+    ],
+    "pista": "¿Qué energía guarda un sistema neumático aunque el motor esté apagado?",
+    "fuente": "Mapa temático de capacitación Volvo, Carrocería e interior (mentoría); reglas de seguridad del taller"
+  },
+  {
+    "competencia_id": "A9-1-SEG",
+    "titulo": "El sistema contra incendios nunca se desactiva",
+    "puntos": [
+      "Los detectores van en el compartimiento del motor, cerca de las zonas calientes.",
+      "Ante una advertencia se revisa el panel y el detector según el manual; no se desactiva.",
+      "Si el sistema se descarga, se investiga la causa y se recarga antes de liberar la unidad."
+    ],
+    "pista": "¿A quién protege este sistema mientras la unidad está en ruta?",
+    "fuente": "Mapa temático de capacitación Volvo, Detección y supresión de incendios (mentoría); datos de demostración"
   }
 ]

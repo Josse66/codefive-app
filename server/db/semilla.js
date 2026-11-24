@@ -42,7 +42,8 @@ export function baseVacia(db) {
   return db.prepare('SELECT COUNT(*) AS total FROM competencias').get().total === 0;
 }
 
-// Carga competencias, preguntas y técnicos ficticios desde data/.
+// Carga competencias, preguntas y técnicos ficticios desde data/. No duplica: se puede correr en cada arranque
+// para que las bases existentes reciban el contenido nuevo.
 export function sembrar(db) {
   const competencias = leerJson('competencias.json');
   const preguntas = leerJson('preguntas.json');
@@ -51,7 +52,7 @@ export function sembrar(db) {
 
   transaccion(() => {
     const insertarCompetencia = db.prepare(`
-      INSERT INTO competencias (id, nombre, tecnologia, grupo, nivel, habilidad, prerequisito, critica)
+      INSERT OR IGNORE INTO competencias (id, nombre, tecnologia, grupo, nivel, habilidad, prerequisito, critica)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`);
     // Primero sin prerequisito para no romper la llave foránea; luego se enlazan.
     competencias.forEach((c) =>
@@ -70,7 +71,7 @@ export function sembrar(db) {
     competencias.filter((c) => c.prerequisito).forEach((c) => enlazar.run(c.prerequisito, c.id));
 
     const insertarPregunta = db.prepare(`
-      INSERT INTO preguntas (id, competencia_id, enunciado, opciones, correcta, explicacion, fuente, dificultad)
+      INSERT OR IGNORE INTO preguntas (id, competencia_id, enunciado, opciones, correcta, explicacion, fuente, dificultad)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`);
     preguntas.forEach((p) =>
       insertarPregunta.run(
@@ -86,7 +87,7 @@ export function sembrar(db) {
     );
 
     const insertarTecnico = db.prepare(`
-      INSERT INTO tecnicos (id, nombre, taller, anios_experiencia, tecnologia, perfil)
+      INSERT OR IGNORE INTO tecnicos (id, nombre, taller, anios_experiencia, tecnologia, perfil)
       VALUES (?, ?, ?, ?, ?, ?)`);
     tecnicos.forEach((t) =>
       insertarTecnico.run(t.id, t.nombre, t.taller, t.anios_experiencia, t.tecnologia, t.perfil),

@@ -118,5 +118,55 @@
     "habilidad": "diagnostico",
     "prerequisito": "E3-2-SEG",
     "critica": false
+  },
+  {
+    "id": "D4-2-DIA",
+    "nombre": "Diagnóstico básico de la transmisión automatizada",
+    "tecnologia": "diesel",
+    "grupo": 4,
+    "nivel": 2,
+    "habilidad": "diagnostico",
+    "prerequisito": null,
+    "critica": false
+  },
+  {
+    "id": "A6-1-MAN",
+    "nombre": "Inspección de dirección y suspensión delantera",
+    "tecnologia": "ambas",
+    "grupo": 6,
+    "nivel": 1,
+    "habilidad": "mantenimiento",
+    "prerequisito": null,
+    "critica": false
+  },
+  {
+    "id": "A7-2-DIA",
+    "nombre": "Diagnóstico del control de altura de la suspensión neumática",
+    "tecnologia": "ambas",
+    "grupo": 7,
+    "nivel": 2,
+    "habilidad": "diagnostico",
+    "prerequisito": null,
+    "critica": false
+  },
+  {
+    "id": "A8-2-DIA",
+    "nombre": "Diagnóstico de puertas de servicio y rampa de accesibilidad",
+    "tecnologia": "ambas",
+    "grupo": 8,
+    "nivel": 2,
+    "habilidad": "diagnostico",
+    "prerequisito": null,
+    "critica": false
+  },
+  {
+    "id": "A9-1-SEG",
+    "nombre": "Sistema de detección y supresión de incendios",
+    "tecnologia": "ambas",
+    "grupo": 9,
+    "nivel": 1,
+    "habilidad": "seguridad",
+    "prerequisito": null,
+    "critica": true
   }
 ]

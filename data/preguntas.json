@@ -4,10 +4,22 @@
     "competencia_id": "A1-1-MAN",
     "enunciado": "Durante la inspección diaria, ¿qué se revisa antes de que la unidad salga a ruta?",
     "opciones": [
-      { "id": "a", "texto": "Solo el nivel de combustible" },
-      { "id": "b", "texto": "Niveles de fluidos, llantas, luces y purga de los tanques de aire" },
-      { "id": "c", "texto": "Solo que encienda sin testigos en el tablero" },
-      { "id": "d", "texto": "Nada, si ayer funcionó bien" }
+      {
+        "id": "a",
+        "texto": "Solo el nivel de combustible"
+      },
+      {
+        "id": "b",
+        "texto": "Niveles de fluidos, llantas, luces y purga de los tanques de aire"
+      },
+      {
+        "id": "c",
+        "texto": "Solo que encienda sin testigos en el tablero"
+      },
+      {
+        "id": "d",
+        "texto": "Nada, si ayer funcionó bien"
+      }
     ],
     "correcta": "b",
     "explicacion": "La inspección previa al viaje cubre niveles, llantas, luces y la purga de humedad de los tanques de aire.",
@@ -18,10 +30,22 @@
     "competencia_id": "A1-1-MAN",
     "enunciado": "¿Por qué se respetan los intervalos de servicio del fabricante?",
     "opciones": [
-      { "id": "a", "texto": "Solo para conservar la garantía" },
-      { "id": "b", "texto": "Para atender el desgaste antes de que falle y conservar la garantía" },
-      { "id": "c", "texto": "Porque lo pide el operador" },
-      { "id": "d", "texto": "No importan si la unidad funciona" }
+      {
+        "id": "a",
+        "texto": "Solo para conservar la garantía"
+      },
+      {
+        "id": "b",
+        "texto": "Para atender el desgaste antes de que falle y conservar la garantía"
+      },
+      {
+        "id": "c",
+        "texto": "Porque lo pide el operador"
+      },
+      {
+        "id": "d",
+        "texto": "No importan si la unidad funciona"
+      }
     ],
     "correcta": "b",
     "explicacion": "El preventivo se programa para corregir desgaste antes de una falla; además protege la garantía.",
@@ -32,10 +56,22 @@
     "competencia_id": "A5-1-SEG",
     "enunciado": "Antes de una prueba de fugas en frenos neumáticos, ¿qué se hace primero?",
     "opciones": [
-      { "id": "a", "texto": "Desconectar líneas para escuchar mejor" },
-      { "id": "b", "texto": "Estacionar, asegurar la unidad y colocar calzas en las ruedas" },
-      { "id": "c", "texto": "Quitar el freno de estacionamiento" },
-      { "id": "d", "texto": "Acelerar el motor para subir la presión" }
+      {
+        "id": "a",
+        "texto": "Desconectar líneas para escuchar mejor"
+      },
+      {
+        "id": "b",
+        "texto": "Estacionar, asegurar la unidad y colocar calzas en las ruedas"
+      },
+      {
+        "id": "c",
+        "texto": "Quitar el freno de estacionamiento"
+      },
+      {
+        "id": "d",
+        "texto": "Acelerar el motor para subir la presión"
+      }
     ],
     "correcta": "b",
     "explicacion": "La prueba publicada por el fabricante de frenos exige asegurar la unidad y bloquear las ruedas con calzas.",
@@ -46,10 +82,22 @@
     "competencia_id": "A5-1-SEG",
     "enunciado": "Un compañero quiere meterse debajo de la unidad con el motor encendido para escuchar una fuga. ¿Qué haces?",
     "opciones": [
-      { "id": "a", "texto": "Lo ayudo acelerando el motor" },
-      { "id": "b", "texto": "Detengo la tarea hasta asegurar la unidad según el procedimiento" },
-      { "id": "c", "texto": "Nada, es rápido" },
-      { "id": "d", "texto": "Le presto una lámpara" }
+      {
+        "id": "a",
+        "texto": "Lo ayudo acelerando el motor"
+      },
+      {
+        "id": "b",
+        "texto": "Detengo la tarea hasta asegurar la unidad según el procedimiento"
+      },
+      {
+        "id": "c",
+        "texto": "Nada, es rápido"
+      },
+      {
+        "id": "d",
+        "texto": "Le presto una lámpara"
+      }
     ],
     "correcta": "b",
     "explicacion": "Ninguna prueba justifica trabajar bajo una unidad que no está asegurada.",
@@ -60,10 +108,22 @@
     "competencia_id": "A5-2-COM",
     "enunciado": "¿Para qué sirve el secador de aire en el sistema neumático?",
     "opciones": [
-      { "id": "a", "texto": "Para enfriar el motor" },
-      { "id": "b", "texto": "Para quitar humedad y contaminantes del aire comprimido" },
-      { "id": "c", "texto": "Para aumentar la presión de trabajo" },
-      { "id": "d", "texto": "Para frenar el eje trasero" }
+      {
+        "id": "a",
+        "texto": "Para enfriar el motor"
+      },
+      {
+        "id": "b",
+        "texto": "Para quitar humedad y contaminantes del aire comprimido"
+      },
+      {
+        "id": "c",
+        "texto": "Para aumentar la presión de trabajo"
+      },
+      {
+        "id": "d",
+        "texto": "Para frenar el eje trasero"
+      }
     ],
     "correcta": "b",
     "explicacion": "El secador protege válvulas y depósitos de la humedad del aire comprimido.",
@@ -74,10 +134,22 @@
     "competencia_id": "A5-2-COM",
     "enunciado": "Si el compresor trabaja ciclos cada vez más frecuentes, ¿qué puede indicar?",
     "opciones": [
-      { "id": "a", "texto": "Funcionamiento normal" },
-      { "id": "b", "texto": "Una posible fuga en el sistema" },
-      { "id": "c", "texto": "Exceso de aceite en el motor" },
-      { "id": "d", "texto": "Batería baja" }
+      {
+        "id": "a",
+        "texto": "Funcionamiento normal"
+      },
+      {
+        "id": "b",
+        "texto": "Una posible fuga en el sistema"
+      },
+      {
+        "id": "c",
+        "texto": "Exceso de aceite en el motor"
+      },
+      {
+        "id": "d",
+        "texto": "Batería baja"
+      }
     ],
     "correcta": "b",
     "explicacion": "Ciclos anormales del compresor son un síntoma típico de pérdida de presión por fuga.",
@@ -88,10 +160,22 @@
     "competencia_id": "A5-2-DIA",
     "enunciado": "¿Cómo se localiza una fuga en las conexiones neumáticas?",
     "opciones": [
-      { "id": "a", "texto": "Cambiando el compresor" },
-      { "id": "b", "texto": "Con solución jabonosa o detector en conexiones y componentes sospechosos" },
-      { "id": "c", "texto": "Subiendo la presión del regulador" },
-      { "id": "d", "texto": "Ajustando a mano el ajustador automático" }
+      {
+        "id": "a",
+        "texto": "Cambiando el compresor"
+      },
+      {
+        "id": "b",
+        "texto": "Con solución jabonosa o detector en conexiones y componentes sospechosos"
+      },
+      {
+        "id": "c",
+        "texto": "Subiendo la presión del regulador"
+      },
+      {
+        "id": "d",
+        "texto": "Ajustando a mano el ajustador automático"
+      }
     ],
     "correcta": "b",
     "explicacion": "La solución jabonosa o un detector muestran el punto exacto de la fuga. Ajustar a mano no corrige la causa.",
@@ -102,10 +186,22 @@
     "competencia_id": "A5-2-DIA",
     "enunciado": "Ya reparaste la fuga. ¿Qué sigue antes de liberar la unidad?",
     "opciones": [
-      { "id": "a", "texto": "Liberarla de inmediato" },
-      { "id": "b", "texto": "Repetir la prueba de fugas y confirmar el funcionamiento" },
-      { "id": "c", "texto": "Borrar los códigos de falla" },
-      { "id": "d", "texto": "Esperar a que el operador reporte algo" }
+      {
+        "id": "a",
+        "texto": "Liberarla de inmediato"
+      },
+      {
+        "id": "b",
+        "texto": "Repetir la prueba de fugas y confirmar el funcionamiento"
+      },
+      {
+        "id": "c",
+        "texto": "Borrar los códigos de falla"
+      },
+      {
+        "id": "d",
+        "texto": "Esperar a que el operador reporte algo"
+      }
     ],
     "correcta": "b",
     "explicacion": "El procedimiento exige volver a probar después de reparar.",
@@ -116,10 +212,22 @@
     "competencia_id": "D2-1-MAN",
     "enunciado": "¿Por qué se drena el agua del filtro separador de combustible?",
     "opciones": [
-      { "id": "a", "texto": "Para bajar el consumo" },
-      { "id": "b", "texto": "Porque el agua daña el sistema de inyección" },
-      { "id": "c", "texto": "Para enfriar el diésel" },
-      { "id": "d", "texto": "Solo por limpieza visual" }
+      {
+        "id": "a",
+        "texto": "Para bajar el consumo"
+      },
+      {
+        "id": "b",
+        "texto": "Porque el agua daña el sistema de inyección"
+      },
+      {
+        "id": "c",
+        "texto": "Para enfriar el diésel"
+      },
+      {
+        "id": "d",
+        "texto": "Solo por limpieza visual"
+      }
     ],
     "correcta": "b",
     "explicacion": "El agua en el combustible daña bomba e inyectores de alta presión.",
@@ -130,10 +238,22 @@
     "competencia_id": "D2-1-MAN",
     "enunciado": "Además de aceite y refrigerante, ¿qué fluido se revisa en un motor diésel con SCR?",
     "opciones": [
-      { "id": "a", "texto": "Solo el líquido de frenos" },
-      { "id": "b", "texto": "La urea (DEF / AdBlue)" },
-      { "id": "c", "texto": "Gasolina" },
-      { "id": "d", "texto": "Ninguno" }
+      {
+        "id": "a",
+        "texto": "Solo el líquido de frenos"
+      },
+      {
+        "id": "b",
+        "texto": "La urea (DEF / AdBlue)"
+      },
+      {
+        "id": "c",
+        "texto": "Gasolina"
+      },
+      {
+        "id": "d",
+        "texto": "Ninguno"
+      }
     ],
     "correcta": "b",
     "explicacion": "El SCR usa urea para reducir NOx; su nivel y calidad se revisan en la inspección.",
@@ -144,10 +264,22 @@
     "competencia_id": "D2-2-COM",
     "enunciado": "¿Qué hace el filtro de partículas (DPF)?",
     "opciones": [
-      { "id": "a", "texto": "Reduce NOx con urea" },
-      { "id": "b", "texto": "Atrapa el hollín del escape y lo quema durante la regeneración" },
-      { "id": "c", "texto": "Filtra el aire de admisión" },
-      { "id": "d", "texto": "Enfría los gases de escape" }
+      {
+        "id": "a",
+        "texto": "Reduce NOx con urea"
+      },
+      {
+        "id": "b",
+        "texto": "Atrapa el hollín del escape y lo quema durante la regeneración"
+      },
+      {
+        "id": "c",
+        "texto": "Filtra el aire de admisión"
+      },
+      {
+        "id": "d",
+        "texto": "Enfría los gases de escape"
+      }
     ],
     "correcta": "b",
     "explicacion": "El DPF retiene hollín; la regeneración lo oxida a alta temperatura.",
@@ -158,10 +290,22 @@
     "competencia_id": "D2-2-COM",
     "enunciado": "¿Qué hace el sistema SCR?",
     "opciones": [
-      { "id": "a", "texto": "Atrapa el hollín" },
-      { "id": "b", "texto": "Reduce los óxidos de nitrógeno (NOx) usando urea" },
-      { "id": "c", "texto": "Aumenta la potencia" },
-      { "id": "d", "texto": "Filtra el combustible" }
+      {
+        "id": "a",
+        "texto": "Atrapa el hollín"
+      },
+      {
+        "id": "b",
+        "texto": "Reduce los óxidos de nitrógeno (NOx) usando urea"
+      },
+      {
+        "id": "c",
+        "texto": "Aumenta la potencia"
+      },
+      {
+        "id": "d",
+        "texto": "Filtra el combustible"
+      }
     ],
     "correcta": "b",
     "explicacion": "El SCR inyecta urea para convertir NOx en nitrógeno y agua.",
@@ -172,10 +316,22 @@
     "competencia_id": "D2-3-DIA",
     "enunciado": "Se enciende el testigo del DPF. ¿Cuál es el primer paso correcto?",
     "opciones": [
-      { "id": "a", "texto": "Forzar una regeneración de inmediato" },
-      { "id": "b", "texto": "Registrar testigos, códigos y datos antes de borrar nada" },
-      { "id": "c", "texto": "Cambiar el DPF" },
-      { "id": "d", "texto": "Borrar los códigos y ver si regresa" }
+      {
+        "id": "a",
+        "texto": "Forzar una regeneración de inmediato"
+      },
+      {
+        "id": "b",
+        "texto": "Registrar testigos, códigos y datos antes de borrar nada"
+      },
+      {
+        "id": "c",
+        "texto": "Cambiar el DPF"
+      },
+      {
+        "id": "d",
+        "texto": "Borrar los códigos y ver si regresa"
+      }
     ],
     "correcta": "b",
     "explicacion": "Primero se confirma con códigos y datos; regenerar sin conocer la causa es un error típico.",
@@ -186,10 +342,22 @@
     "competencia_id": "D2-3-DIA",
     "enunciado": "Un código apunta al sensor de presión diferencial del DPF. ¿Qué haces antes de condenar el filtro?",
     "opciones": [
-      { "id": "a", "texto": "Cambio el DPF" },
-      { "id": "b", "texto": "Reviso sensor, mangueras de presión y cableado según el árbol de diagnóstico" },
-      { "id": "c", "texto": "Regenero dos veces seguidas" },
-      { "id": "d", "texto": "Desconecto el sensor" }
+      {
+        "id": "a",
+        "texto": "Cambio el DPF"
+      },
+      {
+        "id": "b",
+        "texto": "Reviso sensor, mangueras de presión y cableado según el árbol de diagnóstico"
+      },
+      {
+        "id": "c",
+        "texto": "Regenero dos veces seguidas"
+      },
+      {
+        "id": "d",
+        "texto": "Desconecto el sensor"
+      }
     ],
     "correcta": "b",
     "explicacion": "Un código de sensor no prueba que el filtro esté obstruido; se valida la medición primero.",
@@ -200,10 +368,22 @@
     "competencia_id": "D2-3-CR",
     "enunciado": "Arranque difícil y potencia reducida en un motor common rail. ¿Qué es lo correcto?",
     "opciones": [
-      { "id": "a", "texto": "Cambiar todos los inyectores" },
-      { "id": "b", "texto": "Probar por partes: baja presión, alta presión y retorno de inyectores" },
-      { "id": "c", "texto": "Ajustar la bomba a ojo" },
-      { "id": "d", "texto": "Agregar aditivo y esperar" }
+      {
+        "id": "a",
+        "texto": "Cambiar todos los inyectores"
+      },
+      {
+        "id": "b",
+        "texto": "Probar por partes: baja presión, alta presión y retorno de inyectores"
+      },
+      {
+        "id": "c",
+        "texto": "Ajustar la bomba a ojo"
+      },
+      {
+        "id": "d",
+        "texto": "Agregar aditivo y esperar"
+      }
     ],
     "correcta": "b",
     "explicacion": "Los síntomas no son exclusivos de los inyectores; se aísla la causa por subsistema.",
@@ -214,10 +394,22 @@
     "competencia_id": "D2-3-CR",
     "enunciado": "¿Qué prueba ayuda a saber si un inyector tiene fuga interna?",
     "opciones": [
-      { "id": "a", "texto": "La prueba de retorno de inyectores" },
-      { "id": "b", "texto": "Medir el voltaje de la batería" },
-      { "id": "c", "texto": "Revisar la presión de las llantas" },
-      { "id": "d", "texto": "Cambiar el filtro de aire" }
+      {
+        "id": "a",
+        "texto": "La prueba de retorno de inyectores"
+      },
+      {
+        "id": "b",
+        "texto": "Medir el voltaje de la batería"
+      },
+      {
+        "id": "c",
+        "texto": "Revisar la presión de las llantas"
+      },
+      {
+        "id": "d",
+        "texto": "Cambiar el filtro de aire"
+      }
     ],
     "correcta": "a",
     "explicacion": "Un retorno excesivo indica fuga interna del inyector.",
@@ -228,13 +420,22 @@
     "competencia_id": "E3-1-SEG",
     "enunciado": "Antes de intervenir un sistema de alto voltaje, ¿cuál es el criterio correcto?",
     "opciones": [
-      { "id": "a", "texto": "Apagar el tablero y asumir que está desenergizado" },
+      {
+        "id": "a",
+        "texto": "Apagar el tablero y asumir que está desenergizado"
+      },
       {
         "id": "b",
         "texto": "Identificar el riesgo y seguir el procedimiento autorizado de aislamiento y verificación de ausencia de tensión"
       },
-      { "id": "c", "texto": "Desconectar cualquier cable naranja visible" },
-      { "id": "d", "texto": "Usar guantes comunes y continuar" }
+      {
+        "id": "c",
+        "texto": "Desconectar cualquier cable naranja visible"
+      },
+      {
+        "id": "d",
+        "texto": "Usar guantes comunes y continuar"
+      }
     ],
     "correcta": "b",
     "explicacion": "Apagado no significa desenergizado. Se sigue el procedimiento del fabricante y se verifica.",
@@ -245,10 +446,22 @@
     "competencia_id": "E3-1-SEG",
     "enunciado": "Aparece una advertencia de aislamiento y no estás autorizado para alto voltaje. ¿Qué haces?",
     "opciones": [
-      { "id": "a", "texto": "Reviso los conectores naranjas" },
-      { "id": "b", "texto": "Aseguro la unidad, delimito el área y aviso al responsable de alto voltaje" },
-      { "id": "c", "texto": "Borro el código y pruebo" },
-      { "id": "d", "texto": "Sigo con otra tarea sin avisar" }
+      {
+        "id": "a",
+        "texto": "Reviso los conectores naranjas"
+      },
+      {
+        "id": "b",
+        "texto": "Aseguro la unidad, delimito el área y aviso al responsable de alto voltaje"
+      },
+      {
+        "id": "c",
+        "texto": "Borro el código y pruebo"
+      },
+      {
+        "id": "d",
+        "texto": "Sigo con otra tarea sin avisar"
+      }
     ],
     "correcta": "b",
     "explicacion": "El trabajo en alto voltaje lo hace solo personal autorizado; tu tarea es asegurar y escalar.",
@@ -259,13 +472,22 @@
     "competencia_id": "E3-2-COM",
     "enunciado": "¿Qué hace el HVIL (interbloqueo de alto voltaje)?",
     "opciones": [
-      { "id": "a", "texto": "Carga la batería" },
+      {
+        "id": "a",
+        "texto": "Carga la batería"
+      },
       {
         "id": "b",
         "texto": "Detecta conectores abiertos en el circuito de alto voltaje para poder desconectarlo"
       },
-      { "id": "c", "texto": "Enfría los motores de tracción" },
-      { "id": "d", "texto": "Mide la velocidad del autobús" }
+      {
+        "id": "c",
+        "texto": "Enfría los motores de tracción"
+      },
+      {
+        "id": "d",
+        "texto": "Mide la velocidad del autobús"
+      }
     ],
     "correcta": "b",
     "explicacion": "El HVIL recorre los conectores de alto voltaje; si uno se abre, el sistema puede desconectarse.",
@@ -276,10 +498,22 @@
     "competencia_id": "E3-2-COM",
     "enunciado": "¿Qué hace el sistema cuando detecta pérdida de aislamiento?",
     "opciones": [
-      { "id": "a", "texto": "Nada" },
-      { "id": "b", "texto": "Advierte y puede desconectar o inhibir la tracción" },
-      { "id": "c", "texto": "Aumenta el voltaje" },
-      { "id": "d", "texto": "Enciende el aire acondicionado" }
+      {
+        "id": "a",
+        "texto": "Nada"
+      },
+      {
+        "id": "b",
+        "texto": "Advierte y puede desconectar o inhibir la tracción"
+      },
+      {
+        "id": "c",
+        "texto": "Aumenta el voltaje"
+      },
+      {
+        "id": "d",
+        "texto": "Enciende el aire acondicionado"
+      }
     ],
     "correcta": "b",
     "explicacion": "El aislamiento se monitorea en tiempo real; ante una anomalía el sistema advierte y protege.",
@@ -290,13 +524,22 @@
     "competencia_id": "E3-2-SEG",
     "enunciado": "¿Qué significa verificar con el método \"probar, medir, volver a probar\"?",
     "opciones": [
-      { "id": "a", "texto": "Medir tres veces el mismo punto" },
+      {
+        "id": "a",
+        "texto": "Medir tres veces el mismo punto"
+      },
       {
         "id": "b",
         "texto": "Comprobar el medidor en una fuente conocida, medir los puntos indicados y volver a comprobar el medidor"
       },
-      { "id": "c", "texto": "Medir con dos multímetros distintos" },
-      { "id": "d", "texto": "Medir antes y después de apagar" }
+      {
+        "id": "c",
+        "texto": "Medir con dos multímetros distintos"
+      },
+      {
+        "id": "d",
+        "texto": "Medir antes y después de apagar"
+      }
     ],
     "correcta": "b",
     "explicacion": "Así se descarta que un medidor dañado marque cero por error.",
@@ -307,10 +550,22 @@
     "competencia_id": "E3-2-SEG",
     "enunciado": "¿Para qué sirve el bloqueo y etiquetado (LOTO)?",
     "opciones": [
-      { "id": "a", "texto": "Para identificar al técnico" },
-      { "id": "b", "texto": "Para impedir que alguien reenergice el sistema mientras se trabaja" },
-      { "id": "c", "texto": "Para registrar horas de trabajo" },
-      { "id": "d", "texto": "Es solo un requisito de papelería" }
+      {
+        "id": "a",
+        "texto": "Para identificar al técnico"
+      },
+      {
+        "id": "b",
+        "texto": "Para impedir que alguien reenergice el sistema mientras se trabaja"
+      },
+      {
+        "id": "c",
+        "texto": "Para registrar horas de trabajo"
+      },
+      {
+        "id": "d",
+        "texto": "Es solo un requisito de papelería"
+      }
     ],
     "correcta": "b",
     "explicacion": "El candado y la etiqueta evitan una reconexión accidental.",
@@ -321,13 +576,22 @@
     "competencia_id": "E3-3-DIA",
     "enunciado": "La verificación de ausencia de tensión y la prueba de resistencia de aislamiento son…",
     "opciones": [
-      { "id": "a", "texto": "La misma prueba" },
+      {
+        "id": "a",
+        "texto": "La misma prueba"
+      },
       {
         "id": "b",
         "texto": "Pruebas distintas: una confirma que no hay voltaje y la otra mide el estado del aislamiento"
       },
-      { "id": "c", "texto": "Opcionales; basta con una" },
-      { "id": "d", "texto": "Pruebas que se hacen con la unidad encendida" }
+      {
+        "id": "c",
+        "texto": "Opcionales; basta con una"
+      },
+      {
+        "id": "d",
+        "texto": "Pruebas que se hacen con la unidad encendida"
+      }
     ],
     "correcta": "b",
     "explicacion": "Una medición no sustituye a la otra.",
@@ -338,16 +602,285 @@
     "competencia_id": "E3-3-DIA",
     "enunciado": "¿Cómo se localiza el componente con pérdida de aislamiento?",
     "opciones": [
-      { "id": "a", "texto": "Cambiando la batería" },
+      {
+        "id": "a",
+        "texto": "Cambiando la batería"
+      },
       {
         "id": "b",
         "texto": "Aislando y probando por componente con el instrumento y el procedimiento del fabricante"
       },
-      { "id": "c", "texto": "Borrando el código" },
-      { "id": "d", "texto": "Probando sobre la electrónica conectada sin autorización" }
+      {
+        "id": "c",
+        "texto": "Borrando el código"
+      },
+      {
+        "id": "d",
+        "texto": "Probando sobre la electrónica conectada sin autorización"
+      }
     ],
     "correcta": "b",
     "explicacion": "Se prueba por componente siguiendo al fabricante; probar sobre electrónica conectada puede dañarla.",
     "fuente": "ASE xEV Safety Standards v2.1; Ficha C, investigación Persona 2"
+  },
+  {
+    "id": "P-D4-2-01",
+    "competencia_id": "D4-2-DIA",
+    "enunciado": "Aparece el testigo de la transmisión y la caja no entra en marcha. ¿Cuál es el primer paso?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Cambiar el embrague"
+      },
+      {
+        "id": "b",
+        "texto": "Conectar la herramienta de diagnóstico y registrar los códigos"
+      },
+      {
+        "id": "c",
+        "texto": "Apagar y encender hasta que entre"
+      },
+      {
+        "id": "d",
+        "texto": "Desarmar la caja"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Primero se leen y registran los códigos: dicen qué sistema revisar antes de cambiar nada.",
+    "fuente": "Mapa temático de capacitación Volvo, Transmisión (mentoría); datos de demostración"
+  },
+  {
+    "id": "P-D4-2-02",
+    "competencia_id": "D4-2-DIA",
+    "enunciado": "La caja automatizada usa aire para mover sus actuadores. Si hay un código de baja presión en el actuador, ¿qué revisas primero?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "La presión de suministro y las fugas hacia el actuador"
+      },
+      {
+        "id": "b",
+        "texto": "El nivel de urea"
+      },
+      {
+        "id": "c",
+        "texto": "El alternador"
+      },
+      {
+        "id": "d",
+        "texto": "La presión de las llantas"
+      }
+    ],
+    "correcta": "a",
+    "explicacion": "Si al actuador no le llega aire suficiente no puede cambiar de marcha: se revisa suministro y fugas.",
+    "fuente": "Mapa temático de capacitación Volvo, Transmisión (mentoría); datos de demostración"
+  },
+  {
+    "id": "P-A6-1-01",
+    "competencia_id": "A6-1-MAN",
+    "enunciado": "¿Cómo se revisa el juego en las terminales de dirección?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Manejando rápido para sentir el volante"
+      },
+      {
+        "id": "b",
+        "texto": "Con un ayudante moviendo el volante mientras se observan terminales y articulaciones"
+      },
+      {
+        "id": "c",
+        "texto": "Solo midiendo la presión de las llantas"
+      },
+      {
+        "id": "d",
+        "texto": "Golpeando el eje con un martillo"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Con la unidad asegurada, un ayudante mueve el volante y el técnico observa si hay holgura en terminales y articulaciones.",
+    "fuente": "Mapa temático de capacitación Volvo, Suspensión y dirección (mentoría); datos de demostración"
+  },
+  {
+    "id": "P-A6-1-02",
+    "competencia_id": "A6-1-MAN",
+    "enunciado": "Después de reemplazar una terminal de dirección, ¿qué sigue?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Nada, ya quedó"
+      },
+      {
+        "id": "b",
+        "texto": "Lavar la unidad"
+      },
+      {
+        "id": "c",
+        "texto": "Apretar al torque del manual y verificar la alineación"
+      },
+      {
+        "id": "d",
+        "texto": "Cambiar las cuatro llantas"
+      }
+    ],
+    "correcta": "c",
+    "explicacion": "Una terminal nueva cambia la geometría: se aprieta al torque indicado y se verifica la alineación.",
+    "fuente": "Mapa temático de capacitación Volvo, Suspensión y dirección (mentoría); datos de demostración"
+  },
+  {
+    "id": "P-A7-2-01",
+    "competencia_id": "A7-2-DIA",
+    "enunciado": "La unidad queda inclinada de un lado estando estacionada. ¿Qué revisas primero?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Fugas en las bolsas de aire y en la válvula niveladora de ese lado"
+      },
+      {
+        "id": "b",
+        "texto": "El nivel de aceite del motor"
+      },
+      {
+        "id": "c",
+        "texto": "La batería de 24 V"
+      },
+      {
+        "id": "d",
+        "texto": "El aire acondicionado"
+      }
+    ],
+    "correcta": "a",
+    "explicacion": "Una bolsa o válvula niveladora con fuga deja ese lado más bajo: se buscan fugas con solución jabonosa.",
+    "fuente": "Mapa temático de capacitación Volvo, Bastidor y control de altura (mentoría); datos de demostración"
+  },
+  {
+    "id": "P-A7-2-02",
+    "competencia_id": "A7-2-DIA",
+    "enunciado": "¿Para qué sirve la válvula niveladora (o el sensor de altura en la suspensión electrónica)?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Para medir la velocidad"
+      },
+      {
+        "id": "b",
+        "texto": "Para mantener la altura de la carrocería llenando o vaciando las bolsas de aire"
+      },
+      {
+        "id": "c",
+        "texto": "Para frenar la unidad"
+      },
+      {
+        "id": "d",
+        "texto": "Para enfriar el motor"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "La válvula o el sensor de altura mantienen la carrocería a la altura correcta ajustando el aire de las bolsas.",
+    "fuente": "Mapa temático de capacitación Volvo, Bastidor y control de altura (mentoría); datos de demostración"
+  },
+  {
+    "id": "P-A8-2-01",
+    "competencia_id": "A8-2-DIA",
+    "enunciado": "Vas a revisar el mecanismo de una puerta neumática que no cierra. ¿Qué haces antes de meter la mano?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Nada, la puerta es ligera"
+      },
+      {
+        "id": "b",
+        "texto": "Pedir al conductor que la abra y cierre mientras revisas"
+      },
+      {
+        "id": "c",
+        "texto": "Descargar el aire del sistema de la puerta con la llave de emergencia"
+      },
+      {
+        "id": "d",
+        "texto": "Desconectar la batería de alto voltaje"
+      }
+    ],
+    "correcta": "c",
+    "explicacion": "El cilindro de la puerta tiene fuerza suficiente para lesionar: se descarga el aire antes de intervenir.",
+    "fuente": "Mapa temático de capacitación Volvo, Carrocería e interior (mentoría); reglas de seguridad del taller"
+  },
+  {
+    "id": "P-A8-2-02",
+    "competencia_id": "A8-2-DIA",
+    "enunciado": "La rampa de accesibilidad no despliega. ¿Qué revisas primero?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "El seguro de puerta abierta, los interruptores de habilitación y los códigos del sistema de carrocería"
+      },
+      {
+        "id": "b",
+        "texto": "El motor"
+      },
+      {
+        "id": "c",
+        "texto": "El DPF"
+      },
+      {
+        "id": "d",
+        "texto": "La presión de las llantas traseras"
+      }
+    ],
+    "correcta": "a",
+    "explicacion": "La rampa solo funciona con sus condiciones de habilitación: puerta, freno de estacionamiento e interruptores.",
+    "fuente": "Mapa temático de capacitación Volvo, Carrocería e interior (mentoría); reglas de seguridad del taller"
+  },
+  {
+    "id": "P-A9-1-01",
+    "competencia_id": "A9-1-SEG",
+    "enunciado": "Aparece la advertencia del sistema de supresión de incendios después de lavar el motor. ¿Qué haces?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Desconecto el sistema para que no se dispare"
+      },
+      {
+        "id": "b",
+        "texto": "Reviso el panel del sistema y el detector según el manual, sin desactivarlo"
+      },
+      {
+        "id": "c",
+        "texto": "Lo ignoro, es por el agua"
+      },
+      {
+        "id": "d",
+        "texto": "Lavo otra vez el motor"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "El sistema protege a los pasajeros: nunca se desactiva; se revisa el detector y el panel según el manual.",
+    "fuente": "Mapa temático de capacitación Volvo, Detección y supresión de incendios (mentoría); datos de demostración"
+  },
+  {
+    "id": "P-A9-1-02",
+    "competencia_id": "A9-1-SEG",
+    "enunciado": "Si el sistema de supresión se descarga en el compartimiento del motor, ¿qué sigue?",
+    "opciones": [
+      {
+        "id": "a",
+        "texto": "Arrancar para ver si el motor sigue bien"
+      },
+      {
+        "id": "b",
+        "texto": "Asegurar la unidad, revisar la causa y recargar el sistema antes de liberarla"
+      },
+      {
+        "id": "c",
+        "texto": "Limpiar el polvo y liberar la unidad"
+      },
+      {
+        "id": "d",
+        "texto": "Nada"
+      }
+    ],
+    "correcta": "b",
+    "explicacion": "Una descarga indica que hubo fuego o una falla: se investiga la causa y el sistema se recarga antes de volver a ruta.",
+    "fuente": "Mapa temático de capacitación Volvo, Detección y supresión de incendios (mentoría); datos de demostración"
   }
 ]
