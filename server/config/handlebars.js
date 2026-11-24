@@ -1,6 +1,7 @@
 import path from 'node:path';
 import { engine } from 'express-handlebars';
 import { viteAssets } from '#helpers/viteAssets.js';
+import * as formato from '#helpers/formato.js';
 
 const carpetaVistas = path.resolve('server', 'views');
 
@@ -17,6 +18,7 @@ export function configurarHandlebars(app) {
         igual: (a, b) => a === b,
         inc: (n) => Number(n) + 1,
         viteAssets,
+        ...formato,
       },
     }),
   );

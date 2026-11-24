@@ -1,0 +1,73 @@
+<section class="grid gap-6">
+  <div class="flex flex-wrap items-end justify-between gap-4">
+    <div>
+      <p class="etiqueta">Mapa de competencias</p>
+      <h1 class="mt-1 text-4xl">{{tecnico.nombre}}</h1>
+      <p class="text-acero-600">{{tecnico.taller}} · {{tecnico.anios_experiencia}} años · {{nombreTecnologia tecnico.tecnologia}}</p>
+    </div>
+    <a href="/tecnicos/{{tecnico.id}}/diagnostico" class="boton bg-acero-900">Repetir diagnóstico</a>
+  </div>
+
+  {{#unless evaluado}}
+    <p class="tarjeta">Este técnico todavía no hace el diagnóstico. Lo que se ve es el punto de partida estimado por su perfil.</p>
+  {{/unless}}
+
+  <div class="grid gap-3 sm:grid-cols-3">
+    <div class="tarjeta border-l-4 border-l-green-600"><p class="text-3xl font-display">{{resumen.dominadas}}</p><p>Dominadas</p></div>
+    <div class="tarjeta border-l-4 border-l-amber-500"><p class="text-3xl font-display">{{resumen.enDesarrollo}}</p><p>En desarrollo</p></div>
+    <div class="tarjeta border-l-4 border-l-red-600"><p class="text-3xl font-display">{{resumen.brechas}}</p><p>Brechas</p></div>
+  </div>
+
+  {{#if alertas.length}}
+    <div class="rounded border-l-4 border-red-600 bg-red-50 p-4">
+      <p class="font-semibold text-red-900">Seguro pero equivocado</p>
+      <p class="text-sm text-red-900">Respondió con total seguridad y se equivocó. Es el caso más riesgoso: refuerzo obligatorio antes de avanzar.</p>
+      <ul class="mt-2 list-disc pl-5 text-sm text-red-900">
+        {{#each alertas}}
+          <li>{{nombre}}{{#if critica}} · <strong>seguridad crítica</strong>{{/if}}</li>
+        {{/each}}
+      </ul>
+    </div>
+  {{/if}}
+
+  <div class="overflow-x-auto">
+    <table class="w-full min-w-[720px] border-separate border-spacing-2">
+      <thead>
+        <tr class="text-left font-mono text-xs uppercase tracking-wider text-acero-600">
+          <th class="w-48">Área</th>
+          <th>Nivel 1 · Básico</th>
+          <th>Nivel 2 · Diseño y función</th>
+          <th>Nivel 3 · Diagnóstico y reparación</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each filas}}
+          <tr>
+            <th class="align-top text-left">
+              <p class="font-display text-xl">Grupo {{grupo}}</p>
+              <p class="text-sm font-normal text-acero-600">{{nombreTecnologia tecnologia}}</p>
+              <p class="mt-1 font-mono text-xs font-normal">Nivel alcanzado: {{nivelAlcanzado}}</p>
+            </th>
+            {{#each niveles}}
+              <td class="align-top">
+                <div class="grid gap-2">
+                  {{#each competencias}}
+                    <div class="rounded border-l-4 p-3 {{claseEstado estado}}">
+                      <p class="text-sm font-semibold">{{nombre}}</p>
+                      <p class="mt-1 font-mono text-xs">
+                        {{porcentaje pSaber}}% · {{nombreEstado estado}} · {{nombreHabilidad habilidad}}{{#if critica}} · crítica{{/if}}{{#unless evaluada}} · inferida{{/unless}}
+                      </p>
+                    </div>
+                  {{else}}
+                    <p class="text-sm text-acero-600">—</p>
+                  {{/each}}
+                </div>
+              </td>
+            {{/each}}
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+  <p class="text-sm text-acero-600">Porcentaje = probabilidad estimada de dominio. "Inferida" significa que no se preguntó directo: se dedujo de otras respuestas del mismo grupo. Umbrales del prototipo: dominada desde 80%, en desarrollo desde 40%.</p>
+</section>
