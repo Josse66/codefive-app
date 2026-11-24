@@ -3,21 +3,12 @@ import { errorHttp } from '#helpers/errores.js';
 import { avisar } from '#config/envivo.js';
 import { obtenerTecnico } from '#services/tecnicos.service.js';
 import { aplicaAlModelo, modeloDelTecnico } from '#services/modelos.service.js';
-import { asegurarDominio, obtenerPerfil } from '#services/dominio.service.js';
+import { asegurarDominio } from '#services/dominio.service.js';
+import { NIVELES as NIVELES_VOLVO, obtenerCarrera } from '#services/carrera.service.js';
 import { obtenerRuta } from '#services/ruta.service.js';
 import { listarEscenarios, obtenerEscenario } from '#services/escenarios.js';
 import { iniciarEscenario, registrarIntento } from '#services/escenarios.service.js';
-import {
-  MINUTOS_LIMITE,
-  NIVELES,
-  XP_BASE,
-  calificarOrden,
-  desbloqueado,
-  nivelPorDominio,
-  nivelPorXp,
-  progresoNivel,
-  reputacion,
-} from '#services/taller.js';
+import { MINUTOS_LIMITE, XP_BASE, calificarOrden, desbloqueado, reputacion } from '#services/taller.js';
 
 // Modo Taller: la bahía del técnico recibe órdenes de trabajo elegidas por el motor adaptativo
 // (primero seguridad, luego brechas, después escenarios nuevos y repasos), las atiende en el
@@ -44,17 +35,26 @@ function validarTecnico(tecnicoId) {
 // El autobús del escenario; si sirve para ambos, el del modelo que atiende el técnico.
 const autobusDe = (escenario, tecnico) => escenario.autobus ?? modeloDelTecnico(tecnico).autobus;
 
+// Un solo sistema de niveles: el de Volvo (Principiante → Básico → Medio → Avanzado → Experto),
+// el mismo de Mi plan. La experiencia de las órdenes solo suma puntos de taller.
 function nivelDelTecnico(tecnicoId) {
-  const { xp: ganada } = db
+  const { xp } = db
     .prepare("SELECT COALESCE(SUM(xp), 0) AS xp FROM ordenes WHERE tecnico_id = ? AND estado = 'entregada'")
     .get(tecnicoId);
-  const { competencias } = obtenerPerfil(tecnicoId);
-  const proporcion = competencias.length
-    ? competencias.filter((c) => c.estado === 'dominada').length / competencias.length
-    : 0;
-  // El diagnóstico ubica al técnico al inicio de su nivel; cada orden entregada suma desde ahí.
-  const xp = NIVELES[nivelPorDominio(proporcion)].xp + ganada;
-  return { xp, indice: nivelPorXp(xp) };
+  const carrera = obtenerCarrera(tecnicoId);
+  const siguiente = carrera.escalones.find((e) => e.actual && !e.logrado);
+  return {
+    xp,
+    indice: carrera.nivelGlobal,
+    nivel: {
+      nombre: carrera.nombreNivelGlobal,
+      xp,
+      avance: carrera.avanceExperto / 100,
+      siguiente: siguiente
+        ? { nombre: siguiente.nombre, faltan: siguiente.total - siguiente.dominadas }
+        : null,
+    },
+  };
 }
 
 function paraCliente(orden, tecnico) {
@@ -158,13 +158,13 @@ function llenarBahia(tecnico, indiceNivel) {
 
 /** Nivel, experiencia, órdenes entregadas y reputación del técnico (para el panel de Volvo). */
 export function resumenTaller(tecnicoId) {
-  const { xp, indice } = nivelDelTecnico(tecnicoId);
+  const { xp, nivel } = nivelDelTecnico(tecnicoId);
   const estrellas = db
     .prepare("SELECT estrellas FROM ordenes WHERE tecnico_id = ? AND estado = 'entregada' ORDER BY id DESC")
     .all(tecnicoId)
     .map((o) => o.estrellas);
   return {
-    nivel: NIVELES[indice].nombre,
+    nivel: nivel.nombre,
     xp,
     entregadas: estrellas.length,
     reputacion: reputacion(estrellas),
@@ -173,7 +173,7 @@ export function resumenTaller(tecnicoId) {
 
 export function obtenerTaller(tecnicoId) {
   const tecnico = validarTecnico(tecnicoId);
-  const { xp, indice } = nivelDelTecnico(tecnico.id);
+  const { indice, nivel } = nivelDelTecnico(tecnico.id);
   llenarBahia(tecnico, indice);
 
   const ordenes = db.prepare('SELECT * FROM ordenes WHERE tecnico_id = ? ORDER BY id DESC').all(tecnico.id);
@@ -187,12 +187,13 @@ export function obtenerTaller(tecnicoId) {
     .map((e) => ({
       grupo: e.grupo,
       titulo: e.titulo,
-      nivelRequerido: NIVELES[e.nivel - 1].nombre,
+      // Un escenario de nivel n se abre al tener el nivel n − 1 de Volvo en todos los grupos.
+      nivelRequerido: NIVELES_VOLVO[e.nivel - 2]?.nombre ?? 'Básico',
     }));
 
   return {
     tecnico: { id: tecnico.id, nombre: tecnico.nombre, taller: tecnico.taller },
-    nivel: progresoNivel(xp, indice),
+    nivel,
     reputacion: reputacion(entregadas.map((o) => o.estrellas)),
     entregadas: entregadas.length,
     bahia,
@@ -254,8 +255,8 @@ function entregar(ordenId, tecnicoId) {
     gastoNecesario: orden.gasto_necesario,
     errores: orden.errores,
     criticos: orden.criticos,
-    nivelAntes: progresoNivel(antes.xp, antes.indice),
-    nivelDespues: progresoNivel(despues.xp, despues.indice),
+    nivelAntes: antes.nivel,
+    nivelDespues: despues.nivel,
     subioNivel: despues.indice > antes.indice,
   };
 }

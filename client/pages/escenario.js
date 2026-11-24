@@ -125,7 +125,7 @@ function mostrarEntrega(entrega) {
   $('paso').hidden = true;
   elegirHerramienta(null);
   $('entrega-estrellas').textContent = '★'.repeat(entrega.estrellas) + '☆'.repeat(3 - entrega.estrellas);
-  $('entrega-xp').textContent = `+${entrega.xp} XP`;
+  $('entrega-xp').textContent = `+${entrega.xp} puntos de taller`;
   $('entrega-desglose').replaceChildren(
     ...entrega.desglose.map((d) => {
       const fila = el('li', 'flex justify-between gap-4 border-b border-placa-linea py-1.5 last:border-b-0');
@@ -142,8 +142,8 @@ function mostrarEntrega(entrega) {
     }`;
   const { nivelDespues: nivel } = entrega;
   $('entrega-nivel').textContent = entrega.subioNivel
-    ? `¡Subiste a ${nivel.nombre}!`
-    : `${nivel.nombre} · ${nivel.xp} XP`;
+    ? `¡Subiste al nivel ${nivel.nombre}!`
+    : `Nivel ${nivel.nombre} · ${nivel.xp} puntos de taller`;
   $('entrega-nivel').classList.toggle('text-ok', entrega.subioNivel);
   $('entrega-barra').style.width = `${Math.round(nivel.avance * 100)}%`;
   $('entrega-evaluacion').href = `/tecnicos/${tecnicoId}/evaluacion/${estado.datos.escenario.competencia}`;

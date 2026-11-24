@@ -52,7 +52,7 @@ function tarjeta(orden) {
     'mt-1 flex flex-wrap items-center justify-between gap-3 border-t border-placa-linea pt-3',
   );
   const datos = el('p', 'text-sm text-tinta-2');
-  datos.append(el('span', 'codigo text-tinta', `+${orden.xpBase} XP`), ` · ${orden.minutosLimite} min`);
+  datos.append(el('span', 'codigo text-tinta', `+${orden.xpBase} puntos`), ` · ${orden.minutosLimite} min`);
   const boton = el('a', 'boton', orden.estado === 'en_proceso' ? 'Continuar orden' : 'Atender orden');
   boton.href = `/tecnicos/${tecnicoId}/taller/orden/${orden.id}`;
   pie.append(datos, boton);
@@ -63,12 +63,13 @@ function tarjeta(orden) {
 
 function pintar(datos) {
   const { nivel } = datos;
-  $('nivel-nombre').textContent = nivel.nombre;
-  $('nivel-xp').textContent = `${nivel.xp} XP`;
+  // El nivel es el mismo de Mi plan (niveles de Volvo); las órdenes suman puntos de taller.
+  $('nivel-nombre').textContent = `Nivel ${nivel.nombre}`;
+  $('nivel-xp').textContent = `${nivel.xp} puntos de taller`;
   $('nivel-barra').style.width = `${Math.round(nivel.avance * 100)}%`;
   $('nivel-siguiente').textContent = nivel.siguiente
-    ? `Faltan ${nivel.siguiente.xp - nivel.xp} XP para ${nivel.siguiente.nombre}`
-    : 'Nivel máximo';
+    ? `${Math.round(nivel.avance * 100)} % del camino a experto · para ${nivel.siguiente.nombre} te faltan ${nivel.siguiente.faltan} competencias`
+    : `${Math.round(nivel.avance * 100)} % del camino a experto`;
   $('reputacion').textContent = datos.reputacion == null ? '—' : `${datos.reputacion} ★`;
   $('entregadas').textContent = datos.entregadas;
 
@@ -120,7 +121,7 @@ function pintar(datos) {
           const texto = el('span', 'grid text-[15px]');
           texto.append(
             el('span', '', b.titulo),
-            el('span', 'text-xs text-tinta-3', `Se abre en nivel ${b.nivelRequerido}`),
+            el('span', 'text-xs text-tinta-3', `Como orden de taller se abre en nivel ${b.nivelRequerido}; si está en tu plan, la practicas en su misión`),
           );
           li.append(numero, texto);
           return li;

@@ -3,7 +3,7 @@
     <div class="grid content-start gap-3">
       <p class="font-narrow text-sm font-bold uppercase tracking-wider text-tinta-3">Mi plan de formación</p>
       <h1 class="text-4xl leading-tight lg:text-5xl">Hola, {{plan.tecnico.nombre}}</h1>
-      <p class="max-w-2xl text-tinta-2">{{plan.tecnico.taller}} · {{plan.tecnico.anios}} años de experiencia · {{plan.progreso.nivel}} en el taller · {{plan.avance.lecciones}} de {{plan.avance.total}} lecciones leídas</p>
+      <p class="max-w-2xl text-tinta-2">{{plan.tecnico.taller}} · {{plan.tecnico.anios}} años de experiencia · Nivel {{carrera.nombreNivelGlobal}} · {{plan.avance.lecciones}} de {{plan.avance.total}} lecciones leídas</p>
 
       <article class="mt-2 grid gap-3 border-2 {{#if plan.siguiente.obligatoria}}border-mal{{else}}border-tinta{{/if}} bg-white p-5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center lg:p-6">
         <div class="grid gap-1">
