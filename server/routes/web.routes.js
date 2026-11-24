@@ -4,6 +4,7 @@ import * as cuentas from '#controllers/cuentas.controller.js';
 import {
   empezarPrincipiante,
   mostrarAutobus,
+  mostrarDesempeno,
   mostrarDiagnostico,
   mostrarEmpezar,
   mostrarResultados,
@@ -45,6 +46,7 @@ router.get('/tecnicos/:id/resultados', mostrarResultados);
 router.get('/tecnicos/:id/plan', mostrarPlan);
 router.get('/tecnicos/:id/diagnostico', mostrarDiagnostico);
 router.get('/tecnicos/:id/perfil', mostrarPerfil);
+router.get('/tecnicos/:id/desempeno', mostrarDesempeno);
 router.get('/tecnicos/:id/ruta', mostrarRuta);
 router.get('/tecnicos/:id/practica/:competenciaId', mostrarPractica);
 router.get('/tecnicos/:id/evaluacion/:competenciaId', mostrarEvaluacion);

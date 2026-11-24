@@ -8,6 +8,7 @@ import { empezarComoPrincipiante, obtenerCarrera, yaEmpezo } from '#services/car
 import { modeloDelTecnico } from '#services/modelos.service.js';
 import { competenciaDeLeccion, obtenerMision, pasoDespues } from '#services/mision.service.js';
 import { obtenerEscenario } from '#services/escenarios.js';
+import { obtenerDesempeno } from '#services/desempeno.service.js';
 
 // La misión de la página: la que viene en ?mision= o, si no, la de la competencia que se está trabajando.
 const misionDe = (req, tecnico, competenciaId) =>
@@ -267,4 +268,16 @@ export function mostrarPlan(req, res) {
       carrera: obtenerCarrera(tecnico.id),
     });
   });
+}
+
+// Mi desempeño: métricas en primera persona, cada una con su explicación.
+export function mostrarDesempeno(req, res) {
+  conTecnico(req, res, (tecnico) =>
+    res.render('desempeno', {
+      titulo: `Mi desempeño · ${tecnico.nombre}`,
+      tecnico,
+      seccion: 'competencias',
+      d: obtenerDesempeno(tecnico.id),
+    }),
+  );
 }
