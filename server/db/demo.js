@@ -2,6 +2,8 @@
 // hacen el diagnóstico, atienden órdenes del Taller y presentan evaluaciones. Todo pasa por los
 // mismos servicios que usa la app, así que el panel de Volvo se llena con datos coherentes.
 // Datos sintéticos, declarados así en la memoria técnica. Uso: npm run db:demo
+import fs from 'node:fs';
+import path from 'node:path';
 import db from '#db/conexion.js';
 import logger from '#config/logger.js';
 import { iniciarDiagnostico, responderDiagnostico } from '#services/diagnostico.service.js';
@@ -9,6 +11,8 @@ import { responderPractica } from '#services/practica.service.js';
 import { obtenerEvaluacion, responderEvaluacion, simularDias } from '#services/evaluacion.service.js';
 import { iniciarOrden, intentoEnOrden, obtenerTaller } from '#services/taller.service.js';
 import { obtenerEscenario } from '#services/escenarios.js';
+import { crearCuenta } from '#services/cuentas.service.js';
+import { elegirModelo } from '#services/modelos.service.js';
 
 // Generador con semilla: la flota sale igual cada vez que se corre.
 // Generador de Park y Miller: suficiente para datos de demostración.
@@ -25,6 +29,7 @@ const azar = generador(2026);
 const FLOTA = [
   {
     id: 'T-05',
+    modelo: '9800',
     nombre: 'Diego Hernández',
     taller: 'PSV Culiacán',
     anios: 5,
@@ -34,6 +39,7 @@ const FLOTA = [
   },
   {
     id: 'T-06',
+    modelo: 'luminus',
     nombre: 'Mariana López',
     taller: 'PSV Guadalajara',
     anios: 2,
@@ -43,6 +49,7 @@ const FLOTA = [
   },
   {
     id: 'T-07',
+    modelo: '9700',
     nombre: 'Jorge Ramírez',
     taller: 'PSV Puebla',
     anios: 15,
@@ -52,6 +59,7 @@ const FLOTA = [
   },
   {
     id: 'T-08',
+    modelo: '7800-electric',
     nombre: 'Fernanda Castillo',
     taller: 'PSV Mérida',
     anios: 1,
@@ -61,6 +69,7 @@ const FLOTA = [
   },
   {
     id: 'T-09',
+    modelo: '7300-brt',
     nombre: 'Ricardo Navarro',
     taller: 'PSV Veracruz',
     anios: 9,
@@ -70,6 +79,7 @@ const FLOTA = [
   },
   {
     id: 'T-10',
+    modelo: '7800-electric',
     nombre: 'Paola Jiménez',
     taller: 'WSI Texcoco',
     anios: 4,
@@ -79,6 +89,7 @@ const FLOTA = [
   },
   {
     id: 'T-11',
+    modelo: 'b13r',
     nombre: 'Héctor Salinas',
     taller: 'PSV San Luis',
     anios: 20,
@@ -88,6 +99,7 @@ const FLOTA = [
   },
   {
     id: 'T-12',
+    modelo: '9800-dd',
     nombre: 'Daniela Ortiz',
     taller: 'PSV Durango',
     anios: 0,
@@ -97,6 +109,7 @@ const FLOTA = [
   },
   {
     id: 'T-13',
+    modelo: '7700-hibrido',
     nombre: 'Luis Ángel Vega',
     taller: 'PSV Tuxtla',
     anios: 6,
@@ -106,6 +119,7 @@ const FLOTA = [
   },
   {
     id: 'T-14',
+    modelo: 'luminus',
     nombre: 'Valeria Cruz',
     taller: 'PSV Querétaro',
     anios: 3,
@@ -223,6 +237,16 @@ function evaluar(tecnico, competenciaId) {
   }
 }
 
+const { contrasenaDemo } = JSON.parse(fs.readFileSync(path.resolve('data', 'cuentas.json'), 'utf8'));
+// "Luis Ángel Vega" → luis.angel.vega@codefive.demo
+const correoDe = (nombre) =>
+  `${nombre
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .split(' ')
+    .join('.')}@codefive.demo`;
+
 const insertar = db.prepare(
   `INSERT OR IGNORE INTO tecnicos (id, nombre, taller, anios_experiencia, tecnologia, perfil)
    VALUES (?, ?, ?, ?, ?, 'sintetico')`,
@@ -234,6 +258,15 @@ if (yaHay) {
 } else {
   FLOTA.forEach((tecnico) => {
     insertar.run(tecnico.id, tecnico.nombre, tecnico.taller, tecnico.anios, tecnico.tecnologia);
+    elegirModelo(tecnico.id, tecnico.modelo);
+    // Cuenta de demostración: nombre.apellido@codefive.demo con la contraseña de data/cuentas.json.
+    crearCuenta({
+      correo: correoDe(tecnico.nombre),
+      nombre: tecnico.nombre,
+      rol: 'tecnico',
+      tecnicoId: tecnico.id,
+      contrasena: contrasenaDemo,
+    });
     diagnosticar(tecnico);
     const ordenes = 2 + Math.floor(azar() * 3);
     for (let i = 0; i < ordenes; i += 1) {
