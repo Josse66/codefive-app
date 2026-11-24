@@ -163,3 +163,28 @@ export function mostrarOrden(req, res) {
     }),
   );
 }
+
+// Modo Aprender: temario por grupo de función y nivel.
+export function mostrarTemario(req, res) {
+  conTecnico(req, res, (tecnico) =>
+    res.render('aprender', {
+      titulo: `Aprender · ${tecnico.nombre}`,
+      tecnico,
+      seccion: 'aprender',
+      scriptPagina: 'pages/aprender.js',
+    }),
+  );
+}
+
+// Lección con el autobús 3D al lado.
+export function mostrarLeccion(req, res) {
+  conTecnico(req, res, (tecnico) =>
+    res.render('leccion', {
+      titulo: `Lección · ${tecnico.nombre}`,
+      tecnico,
+      seccion: 'aprender',
+      leccionId: req.params.leccionId,
+      scriptPagina: 'pages/leccion.js',
+    }),
+  );
+}

@@ -253,8 +253,8 @@ const ACCIONES = {
   practica: {
     titulo: 'Ahora practica',
     texto: () =>
-      'Ya sabemos de dónde partes. Haz la práctica de esta competencia: microlección, pistas y retroalimentación con su fuente. Al terminar regresas aquí para la evaluación de después.',
-    enlace: 'Ir a la práctica',
+      'Ya sabemos de dónde partes. Estudia la lección y practícala: preguntas con explicación o el escenario en el autobús. Al terminar regresas aquí para la evaluación de después.',
+    enlace: 'Ir a la lección',
   },
   post: {
     titulo: 'Evaluación de después',
@@ -294,7 +294,11 @@ function pintarAccion(datos) {
   $('enlace-accion').hidden = !accion.enlace;
   if (accion.enlace) {
     $('enlace-accion').textContent = accion.enlace;
-    $('enlace-accion').href = `/tecnicos/${tecnicoId}/practica/${competenciaId}`;
+    // Antes de la evaluación de después se estudia; al terminar la evaluación se vuelve a practicar.
+    $('enlace-accion').href =
+      estado.datos.siguiente === 'practica'
+        ? `/tecnicos/${tecnicoId}/aprender/L-${competenciaId}`
+        : `/tecnicos/${tecnicoId}/practica/${competenciaId}`;
   }
   $('enlace-secundario').hidden = datos.siguiente !== 'completa';
   $('accion').classList.toggle('border-hv', esAltoVoltaje(datos.competencia));

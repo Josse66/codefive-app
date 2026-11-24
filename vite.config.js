@@ -23,6 +23,8 @@ export default defineConfig(({ command }) => ({
         autobus: ruta('./client/pages/autobus.js'),
         escenario: ruta('./client/pages/escenario.js'),
         taller: ruta('./client/pages/taller.js'),
+        aprender: ruta('./client/pages/aprender.js'),
+        leccion: ruta('./client/pages/leccion.js'),
       },
     },
   },
