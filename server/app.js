@@ -1,7 +1,11 @@
 import express from 'express';
+import morgan from 'morgan';
+import { streamHttp } from '#config/logger.js';
 
 const app = express();
 
+// Formato sin colores para que los archivos de log queden limpios.
+app.use(morgan(':method :url :status :response-time ms', { stream: streamHttp }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
