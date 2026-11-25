@@ -186,9 +186,16 @@ export async function modoGuante(activar) {
   );
 }
 
+// Versiones de la imagen para el detector. Un solo filtro no sirve para todo: más brillo ayuda
+// con guante oscuro o poca luz, pero a un guante BLANCO lo vuelve una mancha sin dedos; para ese
+// sirve menos brillo y más contraste. Cada cámara prueba la siguiente si no ve la mano en 0.8 s
+// y se queda con la que funciona.
+const FILTROS = [null, 'brightness(1.25) contrast(1.4)', 'brightness(0.8) contrast(1.6)'];
+const PROBAR_MS = 800;
+
 function fuente(cam) {
-  if (!AJUSTES.mejorar && !conGuante) return cam.video;
-  // Poca luz: más brillo y contraste antes de detectar (como el "enhance" de hand-lab).
+  const filtro = FILTROS[cam.filtro ?? 0];
+  if (!filtro) return cam.video;
   const v = cam.video;
   if (!lienzosMejora.has(cam.id)) lienzosMejora.set(cam.id, document.createElement('canvas'));
   const lienzo = lienzosMejora.get(cam.id);
@@ -197,7 +204,7 @@ function fuente(cam) {
     lienzo.height = v.videoHeight;
   }
   const c = lienzo.getContext('2d');
-  c.filter = 'brightness(1.25) contrast(1.4)';
+  c.filter = filtro;
   c.drawImage(v, 0, 0);
   return lienzo;
 }
@@ -216,7 +223,15 @@ export function detectar(ahora) {
       r,
       score: r.handedness?.[0]?.[0]?.score ?? 0,
     });
-    if (!r.landmarks?.length) cam.suaves.flat().forEach((f) => f.reset());
+    if (r.landmarks?.length) Object.assign(cam, { vioEn: ahora });
+    else {
+      cam.suaves.flat().forEach((f) => f.reset());
+      // Sin mano un rato: se prueba la siguiente versión de la imagen (solo si hay guante o la
+      // persona pidió mejorar la imagen; sin eso, la imagen original como siempre).
+      const probar = conGuante || AJUSTES.mejorar;
+      if (probar && ahora - (cam.vioEn ?? 0) > PROBAR_MS && ahora - (cam.probadoEn ?? 0) > PROBAR_MS)
+        Object.assign(cam, { filtro: ((cam.filtro ?? 0) + 1) % FILTROS.length, probadoEn: ahora });
+    }
     if (cam === pos) nuevo = true;
     else otra = true;
   });
