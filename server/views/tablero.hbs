@@ -24,6 +24,40 @@
     </p>
   </div>
 
+  {{! Índices de capacitación del simulador (definidos por el equipo): IEF, ICO e IEFI. }}
+  <section id="indices" class="grid gap-4 border-2 border-tinta bg-white p-5" aria-labelledby="indices-titulo">
+    <div class="flex flex-wrap items-baseline justify-between gap-3">
+      <h2 id="indices-titulo" class="text-3xl">Índices de capacitación</h2>
+      <p class="text-sm text-tinta-3">Simulador del autobús · se actualiza en vivo · datos de demostración</p>
+    </div>
+    <div id="indices-tarjetas" class="grid gap-3 lg:grid-cols-3"></div>
+    <div class="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+      <div class="grid content-start gap-2">
+        <h3 class="text-xl">Dos caminos, un mismo estándar</h3>
+        <p class="text-sm text-tinta-3">Experiencia General y Experiencia Adulto Mayor: mismo contenido y aprobación con 91.</p>
+        <div class="overflow-x-auto border border-placa-linea"><table class="w-full text-sm"><thead class="bg-placa text-left"><tr><th class="p-2">Experiencia</th><th class="p-2">Técnicos</th><th class="p-2">IEF</th><th class="p-2">ICO</th><th class="p-2">IEFI</th><th class="p-2">Dominio</th><th class="p-2">Retención</th><th class="p-2">Autonomía</th></tr></thead><tbody id="indices-experiencia"></tbody></table></div>
+      </div>
+      <div class="grid content-start gap-2">
+        <h3 class="text-xl">Errores más frecuentes (Pareto)</h3>
+        <div class="relative h-[260px]"><canvas id="grafica-pareto" role="img" aria-label="Errores más frecuentes en la práctica"></canvas></div>
+      </div>
+    </div>
+    <div class="grid gap-2">
+      <h3 class="text-xl">Por técnico</h3>
+      <div class="overflow-x-auto border border-placa-linea"><table class="w-full text-sm"><thead class="bg-placa text-left"><tr><th class="p-2">Técnico</th><th class="p-2">Taller</th><th class="p-2">Experiencia</th><th class="p-2">IEF</th><th class="p-2">ICO</th><th class="p-2">IEFI</th><th class="p-2">Sistemas con 91</th><th class="p-2">Horas</th><th class="p-2">Críticos finales</th><th class="p-2"></th></tr></thead><tbody id="indices-tecnicos"></tbody></table></div>
+    </div>
+    <div class="grid gap-4 xl:grid-cols-2">
+      <div class="grid content-start gap-2">
+        <h3 class="text-xl">Por taller</h3>
+        <div class="overflow-x-auto border border-placa-linea"><table class="w-full text-sm"><thead class="bg-placa text-left"><tr><th class="p-2">Taller</th><th class="p-2">Técnicos</th><th class="p-2">IEF</th><th class="p-2">ICO</th><th class="p-2">IEFI</th><th class="p-2">Horas</th></tr></thead><tbody id="indices-talleres"></tbody></table></div>
+      </div>
+      <div class="grid content-start gap-2">
+        <h3 class="text-xl">Errores críticos recientes</h3>
+        <ul id="indices-criticos" class="grid gap-1 text-sm"></ul>
+      </div>
+    </div>
+  </section>
+
   <dl id="indicadores" class="grid border border-tinta bg-white sm:grid-cols-3 xl:grid-cols-6">
     {{#each (lista 'diagnosticados' 'listos' 'dominioPromedio' 'gananciaPromedio' 'retencionPromedio' 'alertasSeguridad')}}
       <div data-indicador="{{this}}" class="grid content-start gap-1 border-placa-linea p-4 max-xl:border-b sm:border-r">

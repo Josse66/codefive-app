@@ -9,6 +9,7 @@ import * as aprender from '#controllers/aprender.controller.js';
 import * as simulador from '#controllers/simulador.controller.js';
 import * as gafetes from '#controllers/gafetes.controller.js';
 import { obtenerTablero } from '#services/tablero.service.js';
+import { indicesRed } from '#services/simulador.service.js';
 import { exigirSesion, exigirTecnico, exigirVolvo } from '#helpers/sesion.js';
 
 const router = Router();
@@ -60,5 +61,6 @@ router.get('/tecnicos/:id/aprender/:leccionId', aprender.leccion);
 router.post('/tecnicos/:id/aprender/:leccionId/vista', aprender.vista);
 
 router.get('/tablero', exigirVolvo, (_req, res) => res.json(obtenerTablero()));
+router.get('/tablero/indices', exigirVolvo, (_req, res) => res.json(indicesRed()));
 
 export default router;

@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { mostrarInicio } from '#controllers/inicio.controller.js';
 import * as cuentas from '#controllers/cuentas.controller.js';
+import { mostrarReporte } from '#controllers/reporte.controller.js';
 import {
   empezarPrincipiante,
   mostrarAutobus,
@@ -36,6 +37,7 @@ router.post('/bienvenida', exigirSesion, cuentas.guardarBienvenida);
 
 // Capacitación Volvo: panel y red de técnicos
 router.get('/volvo', exigirVolvo, mostrarTablero);
+router.get('/volvo/reporte/:id', exigirVolvo, mostrarReporte);
 router.get('/volvo/gafetes', exigirVolvo, (_req, res) =>
   res.render('gafetes', { titulo: 'Gafetes', seccion: 'gafetes', scriptPagina: 'pages/gafetes.js' }),
 );

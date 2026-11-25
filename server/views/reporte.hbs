@@ -1,0 +1,50 @@
+{{!-- Reporte imprimible de un técnico: evidencias de los índices IEF, ICO e IEFI. --}}
+<article class="mx-auto grid max-w-4xl gap-6 bg-white p-8 print:p-0">
+  <header class="flex flex-wrap items-start justify-between gap-4 border-b-2 border-tinta pb-4">
+    <div class="grid gap-1">
+      <p class="font-narrow text-sm font-bold uppercase tracking-wider text-tinta-3">Reporte de capacitación · datos de demostración</p>
+      <h1 class="text-4xl leading-tight">{{tecnico.nombre}}</h1>
+      <p class="text-tinta-2">{{tecnico.taller}} · Experiencia {{tecnico.experienciaTexto}} · {{fecha}}</p>
+    </div>
+    <button type="button" onclick="window.print()" class="boton px-5 print:hidden">Imprimir / PDF</button>
+  </header>
+
+  <section class="grid gap-3 sm:grid-cols-3">
+    <div class="grid gap-1 border border-tinta p-4"><p class="text-sm font-semibold">IEF · Efectividad formativa</p><p class="codigo text-4xl">{{ief.valor}}</p><p class="text-sm text-tinta-2">Dominio {{ief.dominio}} · Retención {{ief.retencion}}</p><p class="text-xs text-tinta-3">Meta: dominio ≥ 91, retención ≥ 90, IEF ≥ 90</p></div>
+    <div class="grid gap-1 border border-tinta p-4"><p class="text-sm font-semibold">ICO · Competencia operativa</p><p class="codigo text-4xl">{{ico.valor}}</p><p class="text-sm text-tinta-2">Precisión {{ico.precision}} · Autonomía {{ico.autonomia}}</p><p class="text-xs text-tinta-3">Reducción de errores {{ico.reduccionErrores}} % · críticos finales {{ico.criticosFinales}} (meta 0)</p></div>
+    <div class="grid gap-1 border border-tinta p-4"><p class="text-sm font-semibold">IEFI · Eficiencia formativa</p><p class="codigo text-4xl">{{iefi.valor}}</p><p class="text-sm text-tinta-2">{{iefi.acreditados}} de {{iefi.programados}} sistemas · {{iefi.horas}} h en {{iefi.sesiones}} sesiones</p><p class="text-xs text-tinta-3">Reducción de tiempo {{iefi.reduccionTiempo}} % contra {{iefi.horasBase}} h de línea base · ahorro {{iefi.horasAhorradas}} h</p></div>
+  </section>
+
+  <section class="grid gap-2">
+    <h2 class="text-2xl">Evaluaciones y matriz de sistemas</h2>
+    <table class="w-full border border-placa-linea text-sm">
+      <thead class="bg-placa text-left"><tr><th class="p-2">Sistema</th><th class="p-2">Inicial</th><th class="p-2">Final</th><th class="p-2">Diferida (30 días)</th><th class="p-2">Orden de taller</th><th class="p-2">Estado</th></tr></thead>
+      <tbody>
+        {{#each sistemas}}
+          <tr class="border-t border-placa-linea"><td class="p-2">FG {{grupo}} · {{nombre}}</td><td class="p-2">{{inicial}}</td><td class="p-2">{{final}}</td><td class="p-2">{{diferida}}</td><td class="p-2">{{orden}}</td><td class="p-2 font-semibold {{#if acreditado}}text-ok{{else}}text-tinta-3{{/if}}">{{estado}}</td></tr>
+        {{/each}}
+      </tbody>
+    </table>
+    {{#if brechas.length}}<p class="text-sm"><strong>Brechas por reforzar:</strong> {{#each brechas}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}.</p>{{/if}}
+  </section>
+
+  <section class="grid gap-2">
+    <h2 class="text-2xl">Errores más frecuentes (Pareto)</h2>
+    {{#if pareto.length}}
+      <ol class="grid gap-1 text-sm">{{#each pareto}}<li class="flex justify-between gap-3 border-b border-placa-linea py-1"><span>{{error}}</span><strong>{{veces}}</strong></li>{{/each}}</ol>
+    {{else}}<p class="text-sm text-tinta-3">Sin errores en la práctica.</p>{{/if}}
+  </section>
+
+  <section class="grid gap-2">
+    <h2 class="text-2xl">Bitácora (últimas acciones)</h2>
+    <table class="w-full border border-placa-linea text-xs">
+      <thead class="bg-placa text-left"><tr><th class="p-1.5">Cuándo</th><th class="p-1.5">Sistema</th><th class="p-1.5">Actividad</th><th class="p-1.5">Pieza / paso</th><th class="p-1.5">Herramienta</th><th class="p-1.5">Resultado</th><th class="p-1.5">Detalle</th></tr></thead>
+      <tbody>
+        {{#each bitacora}}
+          <tr class="border-t border-placa-linea {{#if critico}}bg-mal-suave{{/if}}"><td class="p-1.5">{{cuando}}</td><td class="p-1.5">{{sistema}}</td><td class="p-1.5">{{actividad}}</td><td class="p-1.5">{{pieza}} {{paso}}</td><td class="p-1.5">{{herramienta}}</td><td class="p-1.5">{{resultado}} {{ayuda}}</td><td class="p-1.5">{{detalle}}</td></tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </section>
+  <p class="text-xs text-tinta-3">Índices definidos por el equipo CodeFive: IEF = Dominio × 0.6 + Retención × 0.4; ICO = Precisión × 0.6 + Autonomía × 0.4; IEFI = Avance × 0.6 + Cumplimiento de reducción de tiempo × 0.4. Línea base y metas de demostración.</p>
+</article>

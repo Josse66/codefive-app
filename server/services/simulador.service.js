@@ -296,3 +296,88 @@ export function obtenerSimulador(tecnicoId) {
     .get(tecnicoId);
   return { progreso, sesiones, segundos, indices: calcularIndices(tecnicoId) };
 }
+
+// ---------- Panel de Volvo: la red completa ----------
+
+const promedioDe = (filas, clave) => {
+  const xs = filas.map((f) => f[clave]).filter((x) => x != null);
+  return xs.length ? Math.round(xs.reduce((a, b) => a + b, 0) / xs.length) : null;
+};
+
+function resumenGrupo(filas) {
+  return {
+    tecnicos: filas.length,
+    ief: promedioDe(filas, 'ief'),
+    ico: promedioDe(filas, 'ico'),
+    iefi: promedioDe(filas, 'iefi'),
+    dominio: promedioDe(filas, 'dominio'),
+    retencion: promedioDe(filas, 'retencion'),
+    autonomia: promedioDe(filas, 'autonomia'),
+    acreditados: filas.reduce((a, f) => a + f.acreditados, 0),
+    horas: Math.round(filas.reduce((a, f) => a + f.horas, 0) * 10) / 10,
+    criticosFinales: filas.reduce((a, f) => a + (f.criticosFinales ?? 0), 0),
+  };
+}
+
+/** IEF, ICO e IEFI de cada técnico con práctica, por taller y por experiencia; Pareto de la red. */
+export function indicesRed() {
+  const tecnicos = db.prepare('SELECT id, nombre, taller, experiencia FROM tecnicos ORDER BY nombre').all();
+  const conPractica = new Set(
+    db
+      .prepare(
+        'SELECT DISTINCT tecnico_id AS id FROM sim_acciones UNION SELECT DISTINCT tecnico_id FROM sim_evaluaciones',
+      )
+      .all()
+      .map((f) => f.id),
+  );
+  const filas = tecnicos
+    .filter((t) => conPractica.has(t.id))
+    .map((t) => {
+      const i = calcularIndices(t.id);
+      return {
+        ...t,
+        ief: i.ief.valor,
+        ico: i.ico.valor,
+        iefi: i.iefi.valor,
+        dominio: i.ief.dominio,
+        retencion: i.ief.retencion,
+        precision: i.ico.precision,
+        autonomia: i.ico.autonomia,
+        criticosFinales: i.ico.criticosFinales,
+        acreditados: i.iefi.acreditados,
+        horas: i.iefi.horas,
+        satisfactorio: { ief: i.ief.satisfactorio, ico: i.ico.satisfactorio, iefi: i.iefi.satisfactorio },
+      };
+    });
+  const agrupar = (clave) => {
+    const grupos = new Map();
+    filas.forEach((f) => grupos.set(f[clave], [...(grupos.get(f[clave]) ?? []), f]));
+    return [...grupos.entries()].map(([nombre, grupo]) => ({ nombre, ...resumenGrupo(grupo) }));
+  };
+  const pareto = db
+    .prepare(
+      `SELECT COALESCE(detalle, pieza, 'acción') AS error, COUNT(*) AS veces,
+              SUM(resultado = 'critico') AS criticos, COUNT(DISTINCT tecnico_id) AS tecnicos
+       FROM sim_acciones
+       WHERE resultado IN ('error', 'critico') AND actividad IN ('encuentra', 'orden', 'libre')
+       GROUP BY 1 ORDER BY veces DESC LIMIT 8`,
+    )
+    .all();
+  const criticos = db
+    .prepare(
+      `SELECT a.detalle, a.sistema, a.creado_en AS cuando, t.nombre, t.taller
+       FROM sim_acciones a JOIN tecnicos t ON t.id = a.tecnico_id
+       WHERE a.resultado = 'critico' ORDER BY a.id DESC LIMIT 6`,
+    )
+    .all();
+  return {
+    red: resumenGrupo(filas),
+    porExperiencia: agrupar('experiencia'),
+    porTaller: agrupar('taller').sort((a, b) => (b.ief ?? 0) - (a.ief ?? 0)),
+    tecnicos: filas,
+    pareto,
+    criticos,
+    metas: { ief: 90, ico: 90, iefi: 100, aprobacion: APROBACION },
+    lineaBaseHoras: LINEA_BASE_HORAS,
+  };
+}

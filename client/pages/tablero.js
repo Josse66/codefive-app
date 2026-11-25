@@ -437,6 +437,7 @@ function mostrarAlerta(aviso) {
   $('alerta-quien').textContent = tecnico ? `${tecnico.nombre} · ${tecnico.taller}` : aviso.tecnicoId;
   $('alerta-mensaje').textContent =
     error?.mensaje ??
+    aviso.mensaje ??
     (aviso.escenarioId
       ? 'Error crítico en una orden del taller.'
       : `Respondió mal una pregunta de seguridad crítica (${aviso.competenciaId}).`);
@@ -521,6 +522,180 @@ async function cargar() {
   }
 }
 
+// ---------- Índices de capacitación del simulador (IEF, ICO, IEFI) ----------
+
+const EXPERIENCIA = { general: 'General', mayor: 'Adulto Mayor' };
+const valor = (x, sufijo = '') => (x == null ? '—' : `${x}${sufijo}`);
+const celda = (texto, clase = '') => {
+  const td = document.createElement('td');
+  td.className = `p-2 ${clase}`;
+  td.textContent = texto;
+  return td;
+};
+const colorMeta = (x, meta) => {
+  if (x == null) return 'text-tinta-3';
+  return x >= meta ? 'text-ok font-semibold' : 'text-med-texto font-semibold';
+};
+
+function tarjetaIndice(sigla, nombre, valorIndice, meta, componentes, formula) {
+  const caja = document.createElement('article');
+  caja.className = 'grid gap-1 border border-placa-linea p-4';
+  const fila = document.createElement('div');
+  fila.className = 'flex items-baseline justify-between gap-2';
+  const titulo = document.createElement('p');
+  titulo.className = 'font-narrow text-sm font-bold uppercase tracking-wider text-tinta-3';
+  titulo.textContent = `${sigla} · ${nombre}`;
+  const metaTexto = document.createElement('p');
+  metaTexto.className = 'text-xs text-tinta-3';
+  metaTexto.textContent = `Meta ${meta}`;
+  fila.append(titulo, metaTexto);
+  const numero = document.createElement('p');
+  numero.className = `codigo text-5xl ${colorMeta(valorIndice, meta)}`;
+  numero.textContent = valor(valorIndice);
+  const detalle = document.createElement('p');
+  detalle.className = 'text-sm text-tinta-2';
+  detalle.textContent = componentes;
+  const nota = document.createElement('p');
+  nota.className = 'text-xs text-tinta-3';
+  nota.textContent = formula;
+  caja.append(fila, numero, detalle, nota);
+  return caja;
+}
+
+let graficaPareto = null;
+function pintarIndices(d) {
+  const { red, metas } = d;
+  $('indices-tarjetas').replaceChildren(
+    tarjetaIndice(
+      'IEF',
+      'Efectividad formativa',
+      red.ief,
+      metas.ief,
+      `Dominio ${valor(red.dominio)} · Retención a 30 días ${valor(red.retencion)}`,
+      'Dominio × 0.6 + Retención × 0.4',
+    ),
+    tarjetaIndice(
+      'ICO',
+      'Competencia operativa',
+      red.ico,
+      metas.ico,
+      `Autonomía ${valor(red.autonomia)} · Críticos finales ${red.criticosFinales}`,
+      'Precisión × 0.6 + Autonomía × 0.4',
+    ),
+    tarjetaIndice(
+      'IEFI',
+      'Eficiencia formativa',
+      red.iefi,
+      metas.iefi,
+      `${red.acreditados} sistemas con 91 · ${red.horas} h de práctica efectiva`,
+      `Avance × 0.6 + Reducción de tiempo × 0.4 (línea base ${d.lineaBaseHoras} h por sistema)`,
+    ),
+  );
+  $('indices-experiencia').replaceChildren(
+    ...d.porExperiencia.map((g) => {
+      const tr = document.createElement('tr');
+      tr.className = 'border-t border-placa-linea';
+      tr.append(
+        celda(EXPERIENCIA[g.nombre] ?? g.nombre, 'font-semibold'),
+        celda(String(g.tecnicos)),
+        celda(valor(g.ief), colorMeta(g.ief, metas.ief)),
+        celda(valor(g.ico), colorMeta(g.ico, metas.ico)),
+        celda(valor(g.iefi), colorMeta(g.iefi, metas.iefi)),
+        celda(valor(g.dominio), colorMeta(g.dominio, metas.aprobacion)),
+        celda(valor(g.retencion)),
+        celda(valor(g.autonomia)),
+      );
+      return tr;
+    }),
+  );
+  $('indices-tecnicos').replaceChildren(
+    ...d.tecnicos.map((t) => {
+      const tr = document.createElement('tr');
+      tr.className = 'border-t border-placa-linea';
+      const enlace = document.createElement('a');
+      enlace.href = `/volvo/reporte/${t.id}`;
+      enlace.className = 'underline';
+      enlace.textContent = 'Reporte';
+      const tdEnlace = celda('');
+      tdEnlace.append(enlace);
+      tr.append(
+        celda(t.nombre, 'font-semibold'),
+        celda(t.taller),
+        celda(EXPERIENCIA[t.experiencia] ?? t.experiencia),
+        celda(valor(t.ief), colorMeta(t.ief, metas.ief)),
+        celda(valor(t.ico), colorMeta(t.ico, metas.ico)),
+        celda(valor(t.iefi), colorMeta(t.iefi, metas.iefi)),
+        celda(`${t.acreditados} de 9`),
+        celda(String(t.horas)),
+        celda(valor(t.criticosFinales), t.criticosFinales ? 'text-mal font-semibold' : ''),
+        tdEnlace,
+      );
+      return tr;
+    }),
+  );
+  $('indices-talleres').replaceChildren(
+    ...d.porTaller.map((g) => {
+      const tr = document.createElement('tr');
+      tr.className = 'border-t border-placa-linea';
+      tr.append(
+        celda(g.nombre, 'font-semibold'),
+        celda(String(g.tecnicos)),
+        celda(valor(g.ief), colorMeta(g.ief, metas.ief)),
+        celda(valor(g.ico), colorMeta(g.ico, metas.ico)),
+        celda(valor(g.iefi), colorMeta(g.iefi, metas.iefi)),
+        celda(String(g.horas)),
+      );
+      return tr;
+    }),
+  );
+  $('indices-criticos').replaceChildren(
+    ...(d.criticos.length
+      ? d.criticos.map((c) => {
+          const li = document.createElement('li');
+          li.className = 'border-l-4 border-mal bg-mal-suave px-3 py-2';
+          li.textContent = `${c.nombre} (${c.taller}): ${c.detalle}`;
+          return li;
+        })
+      : [Object.assign(document.createElement('li'), { textContent: 'Sin errores críticos.' })]),
+  );
+  const corto = (texto) => (texto.length > 48 ? `${texto.slice(0, 46)}…` : texto);
+  graficaPareto?.destroy();
+  graficaPareto = new Chart($('grafica-pareto'), {
+    type: 'bar',
+    data: {
+      labels: d.pareto.map((e) => corto(e.error)),
+      datasets: [
+        {
+          label: 'Veces',
+          data: d.pareto.map((e) => e.veces),
+          backgroundColor: d.pareto.map((e) => (e.criticos ? '#b3121f' : '#1f2933')),
+        },
+      ],
+    },
+    options: {
+      indexAxis: 'y',
+      maintainAspectRatio: false,
+      animation: false,
+      plugins: { legend: { display: false } },
+      scales: { x: { beginAtZero: true, ticks: { precision: 0 } } },
+    },
+  });
+}
+
+async function cargarIndices() {
+  try {
+    const respuesta = await fetch('/api/tablero/indices');
+    if (respuesta.ok) pintarIndices(await respuesta.json());
+  } catch {
+    // El resto del tablero sigue funcionando.
+  }
+}
+let pendienteIndices = null;
+function programarIndices() {
+  clearTimeout(pendienteIndices);
+  pendienteIndices = setTimeout(cargarIndices, 400);
+}
+
 // Una evaluación manda varios avisos seguidos: se espera un momento y se recarga una sola vez.
 let pendiente = null;
 function programarCarga() {
@@ -540,5 +715,8 @@ socket.on('evento', (aviso) => {
 });
 socket.on('orden', programarCarga);
 socket.on('reloj', programarCarga);
+socket.on('simulador', programarIndices);
+socket.on('evento', programarIndices);
 
 cargar();
+cargarIndices();
