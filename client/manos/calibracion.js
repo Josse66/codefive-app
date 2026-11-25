@@ -12,11 +12,11 @@ import {
   guardarAjustes,
   llaveCalibracion,
 } from './camaras.js';
-import { palma } from './reglas.js';
+import { escala, palma } from './reglas.js';
 
 const PASOS = ['rol', 'derecha', 'haciaTi', 'abierta', 'puno', 'pinza', 'area'];
 export const TEXTOS = {
-  rol: 'Toca la imagen de la cámara que está ARRIBA (la que ve el dorso de tu mano)',
+  rol: 'Pon la mano abajo, cerca de la cámara de ABAJO, y súbela despacio hacia la de ARRIBA',
   derecha: 'Mueve la mano despacio hacia tu DERECHA y regrésala',
   haciaTi: 'Ahora muévela HACIA TI y regrésala',
   abierta: 'Deja la mano ABIERTA y quieta entre las dos cámaras',
@@ -40,7 +40,7 @@ export class Calibracion {
   empezar() {
     const cam = camPosicion();
     // El área anterior se olvida: se vuelve a medir con la imagen completa.
-    if (AJUSTES.area && cam) delete AJUSTES.area[cam.id];
+    if (AJUSTES.area && cam) AJUSTES.area = {};
     Object.assign(this, {
       activa: true,
       i: camaras.length > 1 ? 0 : 1,
@@ -59,12 +59,53 @@ export class Calibracion {
       AJUSTES.rol[c.id] = k === indice ? 'arriba' : 'abajo';
     });
     this.i += 1;
+    this.muestras = [];
+    this.t = 0;
+  }
+
+  /**
+   * ¿Cuál está arriba? Mientras la mano sube, en la cámara de arriba se ve cada vez más grande y en
+   * la de abajo cada vez más chica. Se miran los últimos 3 s: si una creció y la otra no, esa es la
+   * de arriba. (También se puede elegir con los botones.)
+   */
+  detectarArriba(ahora) {
+    const tamanos = camaras.slice(0, 2).map((c) => {
+      const m = c.r?.landmarks?.[0];
+      return m ? escala(m) : null;
+    });
+    if (tamanos.every((x) => x != null)) this.muestras.push([ahora, ...tamanos]);
+    this.muestras = this.muestras.filter(([t]) => ahora - t < 3000);
+    const n = this.muestras.length;
+    const progreso = Math.min(1, n / 45);
+    if (n >= 30) {
+      const tercio = Math.floor(n / 3);
+      const cambio = [1, 2].map((k) => {
+        const antes = promedio(this.muestras.slice(0, tercio).map((m) => m[k]));
+        const despues = promedio(this.muestras.slice(-tercio).map((m) => m[k]));
+        return (despues - antes) / Math.max(antes, 1e-3);
+      });
+      // Una creció al menos 25 % más que la otra: esa es la de arriba.
+      if (Math.abs(cambio[0] - cambio[1]) > 0.25) {
+        this.elegirArriba(cambio[0] > cambio[1] ? 0 : 1);
+        return {
+          texto:
+            cambio[0] > cambio[1]
+              ? 'Listo: la de arriba es la cámara 1'
+              : 'Listo: la de arriba es la cámara 2',
+          progreso: 1,
+        };
+      }
+    }
+    const texto = tamanos.every((x) => x != null)
+      ? TEXTOS.rol
+      : 'Pon la mano entre las dos cámaras: las dos deben verla';
+    return { texto, progreso };
   }
 
   /** Se llama cada cuadro. Devuelve { texto, progreso } o { listo, aviso } al terminar. */
   actualizar(ahora) {
     const { paso } = this;
-    if (paso === 'rol') return { texto: TEXTOS.rol, progreso: 0 };
+    if (paso === 'rol') return this.detectarArriba(ahora);
     const cam = camPosicion();
     const mano = cam?.r?.landmarks?.[0];
     const ag = agarre();

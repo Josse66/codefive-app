@@ -297,9 +297,11 @@ function pasoCalibracion(ahora) {
     Object.assign(lapices, { bajo: umbral('pinza', [0.35, 0.5])[0], alto: umbral('pinza', [0.35, 0.5])[1] });
     avisoCamaras(r.aviso);
     sonar('bien');
+    pintarElegirArriba(false);
     reiniciar();
     return;
   }
+  pintarElegirArriba(calibracion.paso === 'rol');
   if (calibracion.paso === 'rol') dibujarDosVistas();
   else {
     dibujarPrincipal(ctx, lienzo.width, lienzo.height);
@@ -331,7 +333,9 @@ function dibujarDosVistas() {
     ctx.strokeRect(k * w + 2, y, w - 4, h);
     ctx.fillStyle = COLOR.blanco;
     ctx.font = '700 22px Archivo, sans-serif';
-    ctx.fillText(`${k + 1} · ${cam.etiqueta.slice(0, 22)}`, k * w + 14, y + 32);
+    ctx.fillText(`Cámara ${k + 1} · ${cam.etiqueta.slice(0, 18)}`, k * w + 14, y + 32);
+    ctx.font = '600 17px Archivo, sans-serif';
+    ctx.fillText('Toca aquí si esta es la de ARRIBA', k * w + 14, y + h - 14);
   });
 }
 
@@ -833,4 +837,26 @@ function terminar() {
   caja.hidden = false;
   $('otra-vez').hidden = false;
   guardar(nota);
+}
+
+// Botones para elegir a mano cuál cámara está arriba (además de la detección automática).
+function pintarElegirArriba(mostrar) {
+  const caja = $('elegir-arriba');
+  caja.hidden = !mostrar;
+  if (!mostrar || caja.childElementCount) return;
+  caja.append(
+    Object.assign(document.createElement('p'), {
+      className: 'text-sm font-semibold',
+      textContent: '¿Cuál cámara está ARRIBA, apuntando hacia abajo?',
+    }),
+  );
+  camaras.slice(0, 2).forEach((cam, k) => {
+    const b = Object.assign(document.createElement('button'), {
+      type: 'button',
+      className: 'boton w-full px-4 py-3 text-left',
+      textContent: `Arriba: cámara ${k + 1} (${cam.etiqueta.split('(')[0].trim()})`,
+    });
+    b.addEventListener('click', () => calibracion.elegirArriba(k));
+    caja.append(b);
+  });
 }
