@@ -187,21 +187,55 @@ async function elegirCamaras() {
   return { elegidas: (ordenadas.length ? ordenadas : dispositivos).slice(0, 2), dispositivos };
 }
 
-async function abrir(dispositivo, vision) {
-  let stream;
-  try {
-    stream = await navigator.mediaDevices.getUserMedia({
-      video: { deviceId: { exact: dispositivo.deviceId }, width: 640, height: 480, frameRate: 30 },
-    });
-  } catch {
-    // Si el USB no da para 640×480 en las dos, se pide menos.
-    stream = await navigator.mediaDevices.getUserMedia({
-      video: { deviceId: { exact: dispositivo.deviceId }, width: 320, height: 240 },
-    });
+// Como en hand-lab: cada paso con límite de tiempo (una cámara que no responde no congela todo),
+// se abren una por una (dos USB a la vez se pelean el ancho de banda) y si una resolución no
+// entra se pide otra más chica.
+function conLimite(promesa, ms, que) {
+  let reloj;
+  const limite = new Promise((_, no) => {
+    reloj = setTimeout(() => no(new Error(`${que} no respondió en ${ms / 1000} s`)), ms);
+  });
+  return Promise.race([promesa, limite]).finally(() => clearTimeout(reloj));
+}
+const INTENTOS = [{ width: 640, height: 480, frameRate: 30 }, { width: 320, height: 240, frameRate: 30 }, {}];
+const POR_QUE = {
+  NotReadableError:
+    'la está usando otro programa o pestaña (cierra hand-lab, la app Cámara, Teams o la pestaña de entrar con gafete)',
+  AbortError: 'la está usando otro programa o pestaña',
+  OverconstrainedError: 'no acepta la resolución pedida',
+  NotFoundError: 'no está conectada',
+  NotAllowedError: 'no hay permiso',
+};
+const motivo = (e) => POR_QUE[e.name] ?? e.message;
+
+async function abrirVideo(dispositivo) {
+  let ultimoError = null;
+  /* eslint-disable no-await-in-loop -- cada intento depende de que el anterior falle */
+  for (let k = 0; k < INTENTOS.length; k += 1) {
+    const intento = INTENTOS[k];
+    let stream = null;
+    try {
+      stream = await conLimite(
+        navigator.mediaDevices.getUserMedia({
+          video: { deviceId: { exact: dispositivo.deviceId }, ...intento },
+        }),
+        8000,
+        dispositivo.label,
+      );
+      const v = document.createElement('video');
+      Object.assign(v, { srcObject: stream, muted: true, playsInline: true });
+      await conLimite(v.play(), 5000, `El video de ${dispositivo.label}`);
+      return v;
+    } catch (error) {
+      stream?.getTracks().forEach((t) => t.stop());
+      ultimoError = error;
+    }
   }
-  const v = document.createElement('video');
-  Object.assign(v, { srcObject: stream, muted: true, playsInline: true });
-  await v.play();
+  /* eslint-enable no-await-in-loop */
+  throw ultimoError;
+}
+
+function crearDetector(vision) {
   const crear = (delegate) =>
     HandLandmarker.createFromOptions(vision, {
       baseOptions: { modelAssetPath: '/mediapipe/hand_landmarker.task', delegate },
@@ -211,42 +245,57 @@ async function abrir(dispositivo, vision) {
       minHandPresenceConfidence: 0.4,
       minTrackingConfidence: 0.4,
     });
-  const detector = await crear('GPU').catch(() => crear('CPU'));
-  return {
-    id: dispositivo.deviceId,
-    etiqueta: dispositivo.label || 'Cámara',
-    video: v,
-    detector,
-    ultimo: -1,
-    r: null,
-    score: 0,
-    suaves: nuevosSuaves(),
-  };
+  return crear('GPU').catch(() => crear('CPU'));
 }
 
 const volteo = (cam) => AJUSTES.voltear?.[cam.id] ?? { x: false, y: false };
 
 async function encender() {
   $('encender').disabled = true;
-  $('encender').textContent = 'Encendiendo cámaras…';
+  $('error-camara').hidden = true;
+  const boton = $('encender');
   try {
-    const { elegidas, dispositivos } = await elegirCamaras();
+    boton.textContent = 'Pidiendo permiso de cámara…';
+    const { elegidas, dispositivos } = await conLimite(elegirCamaras(), 15000, 'El permiso de cámara');
+    boton.textContent = 'Cargando el detector de manos…';
     const vision = await FilesetResolver.forVisionTasks('/mediapipe/wasm');
-    const abiertas = await Promise.allSettled(elegidas.map((d) => abrir(d, vision)));
-    abiertas.forEach((a) => a.status === 'fulfilled' && camaras.push(a.value));
-    if (!camaras.length) throw new Error('ninguna cámara respondió');
+    const fallas = [];
+    /* eslint-disable no-await-in-loop -- una por una, como hand-lab */
+    for (let k = 0; k < elegidas.length; k += 1) {
+      const d = elegidas[k];
+      boton.textContent = `Abriendo ${d.label}…`;
+      try {
+        const video = await abrirVideo(d);
+        camaras.push({
+          id: d.deviceId,
+          etiqueta: d.label || 'Cámara',
+          video,
+          detector: await crearDetector(vision),
+          ultimo: -1,
+          r: null,
+          score: 0,
+          suaves: nuevosSuaves(),
+        });
+      } catch (error) {
+        fallas.push(`${d.label}: ${motivo(error)}`);
+      }
+    }
+    /* eslint-enable no-await-in-loop */
     pintarAjustes(dispositivos);
+    if (!camaras.length) throw new Error(fallas.join(' · ') || 'no hay cámaras conectadas');
+    $('aviso-camaras').hidden = !fallas.length;
+    $('aviso-camaras').textContent = fallas.length
+      ? `Se abrió ${camaras.length} de ${elegidas.length} cámaras. ${fallas.join(' · ')}`
+      : '';
     $('arranque').hidden = true;
     reiniciar();
     requestAnimationFrame(ciclo);
   } catch (error) {
-    $('encender').disabled = false;
-    $('encender').textContent = 'Intentar otra vez';
+    boton.disabled = false;
+    boton.textContent = 'Intentar otra vez';
     $('error-camara').hidden = false;
     $('error-camara').textContent =
-      error.name === 'NotAllowedError'
-        ? 'No hay permiso para la cámara: permítelo en el candado de la barra de direcciones.'
-        : `No se pudo encender la cámara (${error.message}).`;
+      `No se pudo encender: ${motivo(error)}. Revisa "Ajustar cámaras" a la derecha.`;
   }
 }
 $('encender').addEventListener('click', encender);

@@ -20,6 +20,7 @@
     </div>
 
     <aside class="grid content-start gap-4 border border-tinta bg-white p-5">
+      <p id="aviso-camaras" class="border border-med bg-med-suave p-3 text-sm" hidden></p>
       <ol class="grid gap-2" aria-label="Pasos">
         {{#each ejercicio.pasos}}
           <li class="flex gap-3" data-paso="{{@index}}"><span class="recuadro h-7 w-7 shrink-0 text-sm">{{inc @index}}</span><span>{{this}}</span></li>
