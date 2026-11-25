@@ -346,7 +346,8 @@ function ciclo() {
   const ag = agarre();
   const conGuante = guanteActivo() && guante.grip;
   const cerrada = (ag ? puno.actualizar(ag.apertura) : false) || conGuante;
-  const lapiz = lapices.actualizar(Math.min(9, ...pinzas())) || conGuante;
+  // El botón va en la palma: lo aprieta el mango (puño), no una pinza. La pinza es solo de la cámara.
+  const lapiz = lapices.actualizar(Math.min(9, ...pinzas()));
   // LED del guante: prendido mientras el agarre es bueno.
   led(estado.agarrado || (EJ.tipo !== 'giro' && (EJ.tipo === 'punta' ? lapiz : cerrada)));
   dibujarPrincipal(ctx, lienzo.width, lienzo.height);
