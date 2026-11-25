@@ -203,6 +203,7 @@ async function encender() {
       fallas.length ? `Se abrió ${camaras.length} de ${pedidas} cámaras. ${fallas.join(' · ')}` : '',
     );
     $('arranque').hidden = true;
+    ajustarGeometria();
     if (calibrada()) reiniciar();
     else empezarCalibracion();
     requestAnimationFrame(ciclo);
@@ -269,6 +270,8 @@ function pintarAjustes(dispositivos) {
   caja.append(usar, mejorar, recalibrar);
 }
 
+let verificando = false;
+
 function ciclo() {
   requestAnimationFrame(ciclo);
   const ahora = performance.now();
@@ -283,11 +286,73 @@ function ciclo() {
   const cerrada = (ag ? puno.actualizar(ag.apertura) : false) || (guante.conectado && guante.grip);
   const lapiz = lapices.actualizar(Math.min(9, ...pinzas())) || (guante.conectado && guante.grip);
   dibujarPrincipal(ctx, lienzo.width, lienzo.height);
-  if (EJ.tipo === 'giro') pasoGiro(manos, cerrada, ahora);
+  if (verificando) pasoVerificar(manos, ag, cerrada, lapiz);
+  else if (EJ.tipo === 'giro') pasoGiro(manos, cerrada, ahora);
   else if (EJ.tipo === 'secuencia') pasoSecuencia(manos, cerrada, ahora);
   else pasoPunta(manos, lapiz, ahora);
   manos.forEach(dibujarMano);
   dibujarRecuadro(ctx, lienzo.width, lienzo.height, EJ.tipo === 'punta' ? lapiz : cerrada);
+}
+
+// Al terminar de calibrar: la persona comprueba que se lee bien antes de empezar.
+function pasoVerificar(manos, ag, cerrada, lapiz) {
+  let texto = 'NO VEO TU MANO';
+  let color = COLOR.mal;
+  if (ag && lapiz) {
+    texto = 'PINZA';
+    color = COLOR.marca;
+  } else if (ag && cerrada) {
+    texto = 'CERRADA';
+    color = COLOR.ok;
+  } else if (ag) {
+    texto = 'ABIERTA';
+    color = COLOR.blanco;
+  }
+  ctx.fillStyle = 'rgba(20,28,36,.7)';
+  ctx.fillRect(lienzo.width / 2 - 190, 24, 380, 84);
+  ctx.fillStyle = color;
+  ctx.font = '800 56px Archivo, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(texto, lienzo.width / 2, 88);
+  ctx.textAlign = 'start';
+  decir('Comprueba: abre, cierra y haz pinza. ¿Se lee bien? Elige a la derecha.');
+}
+
+function pintarVerificar(mostrar, aviso = '') {
+  const caja = $('verificar');
+  caja.hidden = !mostrar;
+  if (!mostrar) return;
+  caja.replaceChildren(
+    Object.assign(document.createElement('p'), {
+      className: 'font-semibold',
+      textContent: 'Comprueba la calibración',
+    }),
+    Object.assign(document.createElement('p'), {
+      className: 'text-sm text-tinta-2',
+      textContent: `${aviso} Abre la mano, ciérrala y haz pinza: arriba debe decir ABIERTA, CERRADA y PINZA.`,
+    }),
+  );
+  const bien = Object.assign(document.createElement('button'), {
+    type: 'button',
+    className: 'boton w-full px-4 py-3',
+    textContent: 'Se ve bien, empezar',
+  });
+  bien.addEventListener('click', () => {
+    verificando = false;
+    pintarVerificar(false);
+    reiniciar();
+  });
+  const otra = Object.assign(document.createElement('button'), {
+    type: 'button',
+    className: 'boton-linea w-full px-4 py-3',
+    textContent: 'Calibrar otra vez',
+  });
+  otra.addEventListener('click', () => {
+    verificando = false;
+    pintarVerificar(false);
+    empezarCalibracion();
+  });
+  caja.append(bien, otra);
 }
 
 function pasoCalibracion(ahora) {
@@ -295,24 +360,49 @@ function pasoCalibracion(ahora) {
   if (r.listo) {
     Object.assign(puno, { bajo: umbral('puno', [1.35, 1.6])[0], alto: umbral('puno', [1.35, 1.6])[1] });
     Object.assign(lapices, { bajo: umbral('pinza', [0.35, 0.5])[0], alto: umbral('pinza', [0.35, 0.5])[1] });
-    avisoCamaras(r.aviso);
+    ajustarGeometria();
+    // La cámara de arriba muy cerca: la mano se ve enorme y la herramienta no cabe.
+    const m = AJUSTES.mano?.[camPosicion()?.id];
+    const cerca =
+      m && m.palma > 0.28 ? ' La cámara de arriba está muy cerca de la mano: súbela un poco.' : '';
+    avisoCamaras(`${r.aviso}${cerca}`);
     sonar('bien');
     pintarElegirArriba(false);
-    reiniciar();
+    verificando = true;
+    pintarVerificar(true, r.ok ? '' : 'Ojo: el puño casi no se distingue.');
     return;
   }
-  pintarElegirArriba(calibracion.paso === 'rol');
-  if (calibracion.paso === 'rol') dibujarDosVistas();
+  pintarElegirArriba(calibracion.paso === 'rol' && r.fase !== 'ok');
+  if (calibracion.paso === 'rol' && r.fase !== 'ok') dibujarDosVistas();
   else {
     dibujarPrincipal(ctx, lienzo.width, lienzo.height);
     manosEnPantalla(camPosicion(), ahora).forEach(dibujarMano);
   }
-  // Barra de avance del paso.
+  // Número de paso, barra de avance, cuenta regresiva o palomita.
+  ctx.fillStyle = 'rgba(20,28,36,.75)';
+  ctx.fillRect(0, 0, lienzo.width, 46);
+  ctx.fillStyle = COLOR.blanco;
+  ctx.font = '700 20px Archivo, sans-serif';
+  ctx.fillText(`Calibración · ${r.numero}`, 16, 30);
   ctx.fillStyle = 'rgba(255,255,255,.25)';
-  ctx.fillRect(0, 0, lienzo.width, 10);
+  ctx.fillRect(0, 46, lienzo.width, 8);
   ctx.fillStyle = COLOR.marca;
-  ctx.fillRect(0, 0, lienzo.width * Math.min(1, r.progreso), 10);
-  decir(`Calibración · ${r.texto}`);
+  ctx.fillRect(0, 46, lienzo.width * Math.min(1, r.progreso), 8);
+  ctx.textAlign = 'center';
+  if (r.fase === 'prep') {
+    ctx.fillStyle = 'rgba(20,28,36,.6)';
+    circulo({ x: lienzo.width / 2, y: lienzo.height / 2 }, 90, 'rgba(20,28,36,.7)', COLOR.marca);
+    ctx.fillStyle = COLOR.blanco;
+    ctx.font = '800 110px Archivo, sans-serif';
+    ctx.fillText(String(r.cuenta), lienzo.width / 2, lienzo.height / 2 + 38);
+  } else if (r.fase === 'ok') {
+    circulo({ x: lienzo.width / 2, y: lienzo.height / 2 }, 90, 'rgba(47,125,67,.9)', COLOR.blanco);
+    ctx.fillStyle = COLOR.blanco;
+    ctx.font = '800 110px Archivo, sans-serif';
+    ctx.fillText('✓', lienzo.width / 2, lienzo.height / 2 + 38);
+  }
+  ctx.textAlign = 'start';
+  decir(r.texto, r.fase === 'ok' ? 'ok' : 'guia');
 }
 
 // Las dos cámaras lado a lado para elegir cuál está arriba.
@@ -382,8 +472,38 @@ function circulo(p, r, relleno, borde) {
 // inicial: hacia dónde apunta el mango al empezar (grados; 0 = a la derecha, 180 = a la izquierda).
 // sentido: 1 aprieta (gira como el reloj, en pantalla); -1 afloja.
 const punto = (par) => (par ? { x: par[0], y: par[1] } : null);
-const pivote = punto(P.pivote);
-const largoU = (P.largo ?? 0) * ASPECTO; // el largo se da en ancho de imagen
+const entre = (v, a, b) => Math.min(b, Math.max(a, v));
+
+// Geometría de la herramienta, a la medida de la mano: la calibración mide qué tan grande se ve
+// la palma y dónde descansa. El torquímetro mide unas 4 palmas (≈ 45 cm contra ≈ 10 cm de palma)
+// y se dibuja con la marca del mango justo donde descansa la mano. Sin calibrar, la del archivo.
+const G = { pivote: null, largoU: 0, ancho: 0, centro: null, radio: 0, radioTuerca: 0 };
+function ajustarGeometria() {
+  const m = AJUSTES.mano?.[camPosicion()?.id];
+  if (EJ.tipo === 'giro') {
+    const medida = Boolean(m && P.largoPalmas);
+    G.largoU = medida ? Math.min(P.largoPalmas * m.palma, 0.8 * ASPECTO) : (P.largo ?? 0) * ASPECTO;
+    G.ancho = medida ? Math.max(0.05, 0.9 * m.palma) : P.ancho;
+    if (medida) {
+      const a = ((P.inicial ?? 0) * Math.PI) / 180;
+      const enMarca = (P.zona[0] + P.zona[1]) / 2;
+      const c = U(m.centro);
+      G.pivote = {
+        x: entre((c.x - Math.cos(a) * G.largoU * enMarca) / ASPECTO, 0.1, 0.9),
+        y: entre(c.y - Math.sin(a) * G.largoU * enMarca, 0.15, 0.85),
+      };
+    } else G.pivote = punto(P.pivote);
+  }
+  if (EJ.tipo === 'secuencia') {
+    const medida = Boolean(m && P.radioPalmas);
+    G.radio = medida ? entre(P.radioPalmas * m.palma, 0.18, 0.36) : P.radio;
+    G.radioTuerca = medida ? entre(P.tuercaPalmas * m.palma, 0.035, 0.08) : G.radioTuerca;
+    G.centro = medida
+      ? { x: entre(m.centro.x, 0.3, 0.7), y: entre(m.centro.y, G.radio * 1.4, 1 - G.radio * 1.4) }
+      : punto(P.centro);
+  }
+}
+ajustarGeometria();
 const INICIAL = P.inicial ?? 0;
 const SENTIDO = P.sentido ?? 1;
 const CON_CLIC = P.clic !== false;
@@ -391,8 +511,8 @@ const anguloMango = (avance) => INICIAL + SENTIDO * avance;
 const diferencia = (a, b) => ((a - b + 540) % 360) - 180; // sin el salto de 180 a -180
 
 function dibujarTorquimetro(avance, agarrado) {
-  const piv = aPx(pivote);
-  const L = P.largo * lienzo.width;
+  const piv = aPx(G.pivote);
+  const L = G.largoU * lienzo.height;
   const rad = (g) => (g * Math.PI) / 180;
   ctx.save();
   ctx.translate(piv.x, piv.y);
@@ -444,9 +564,9 @@ function pasoGiro(manos, cerrada, ahora) {
     return;
   }
   const c = U(palma(mano));
-  const piv = U(pivote);
-  const { t, lejos } = sobreMango(c, piv, anguloMango(estado.angulo), largoU);
-  const enMango = lejos < P.ancho && t > 0.15 && t < 1.15;
+  const piv = U(G.pivote);
+  const { t, lejos } = sobreMango(c, piv, anguloMango(estado.angulo), G.largoU);
+  const enMango = lejos < G.ancho && t > 0.15 && t < 1.15;
   const enZona = enMango && t >= P.zona[0] - 0.04 && t <= P.zona[1] + 0.08;
 
   if (estado.fase === 'acerca' || estado.fase === 'toma') {
@@ -538,17 +658,16 @@ function pasoGiro(manos, cerrada, ahora) {
 // libre; las siguientes van en estrella, cada una "enfrente" de la anterior, para que la rueda
 // asiente pareja (Fleet Maintenance; manual Ram; DBA).
 const TUERCAS = P.tuercas ?? 10;
-const centroRueda = punto(P.centro);
 const posTuerca = (k) => {
   const a = -Math.PI / 2 + (k / TUERCAS) * Math.PI * 2;
-  return { x: centroRueda.x + (Math.cos(a) * P.radio) / ASPECTO, y: centroRueda.y + Math.sin(a) * P.radio };
+  return { x: G.centro.x + (Math.cos(a) * G.radio) / ASPECTO, y: G.centro.y + Math.sin(a) * G.radio };
 };
 const esperada = () =>
   estado.base == null ? null : (estado.base + P.orden[estado.apretadas.length]) % TUERCAS;
 
 function dibujarRueda(sobre, ahora) {
-  const c = aPx(centroRueda);
-  const R = P.radio * lienzo.height;
+  const c = aPx(G.centro);
+  const R = G.radio * lienzo.height;
   circulo(c, R * 1.45, 'rgba(51,64,76,.85)', '#c9d1d8');
   circulo(c, R * 0.55, '#5b636b', COLOR.blanco);
   const pista = estado.pista && ahora < estado.pista ? esperada() : null;
@@ -559,7 +678,7 @@ function dibujarRueda(sobre, ahora) {
     if (n >= 0) relleno = COLOR.ok;
     else if (k === pista && Math.floor(ahora / 250) % 2) relleno = COLOR.marca;
     else if (k === sobre) relleno = '#c9d1d8';
-    circulo(p, P.radioTuerca * lienzo.height, relleno, COLOR.blanco);
+    circulo(p, G.radioTuerca * lienzo.height, relleno, COLOR.blanco);
     if (n >= 0) {
       ctx.fillStyle = COLOR.blanco;
       ctx.font = '700 22px Archivo, sans-serif';
@@ -573,7 +692,7 @@ function dibujarRueda(sobre, ahora) {
     ctx.strokeStyle = COLOR.marca;
     ctx.lineWidth = 6;
     ctx.beginPath();
-    ctx.arc(p.x, p.y, P.radioTuerca * lienzo.height + 8, -Math.PI / 2, -Math.PI / 2 + f * Math.PI * 2);
+    ctx.arc(p.x, p.y, G.radioTuerca * lienzo.height + 8, -Math.PI / 2, -Math.PI / 2 + f * Math.PI * 2);
     ctx.stroke();
   }
 }
@@ -587,7 +706,7 @@ function pasoSecuencia(manos, cerrada, ahora) {
     let mejor = Infinity;
     for (let k = 0; k < TUERCAS; k += 1) {
       const d = distancia(c, U(posTuerca(k)));
-      if (d < mejor && d < P.radioTuerca * 1.6) {
+      if (d < mejor && d < G.radioTuerca * 1.6) {
         mejor = d;
         sobre = k;
       }

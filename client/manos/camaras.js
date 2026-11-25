@@ -134,7 +134,9 @@ export async function encenderCamaras(avisar) {
 
 // ---------- Roles, volteo y área ----------
 export const volteo = (cam) => AJUSTES.voltear?.[cam.id] ?? { x: false, y: false };
-export const area = (cam) => AJUSTES.area?.[cam.id] ?? [0, 0, 1, 1];
+// Ya no se recorta la imagen (el zoom dejaba la mano enorme y la herramienta chica): la herramienta
+// se ajusta al tamaño de la mano. Se ignora un área guardada por una calibración anterior.
+export const area = () => [0, 0, 1, 1];
 export const rolDe = (cam) => AJUSTES.rol?.[cam.id] ?? null;
 /** La de arriba da la posición; si no hay roles todavía, la primera. */
 export const camPosicion = () => camaras.find((c) => rolDe(c) === 'arriba') ?? camaras[0];
@@ -146,7 +148,9 @@ export const llaveCalibracion = () =>
     .map((c) => c.id)
     .sort()
     .join('|');
-export const calibrada = () => AJUSTES.calibrado === llaveCalibracion();
+// Calibrada con esta versión: además de la llave de las cámaras, debe tener la medida de la mano.
+export const calibrada = () =>
+  AJUSTES.calibrado === llaveCalibracion() && Boolean(AJUSTES.mano?.[camPosicion()?.id]);
 
 /** Punto crudo (0..1 de la cámara) → pantalla: volteo (espejo por defecto) y luego el área de trabajo. */
 export function aPantalla(cam, p, conArea = true) {

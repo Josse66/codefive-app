@@ -24,7 +24,8 @@
         "tiron": 14,
         "muneca": 35,
         "munecaGuante": 20,
-        "textoJalar": "Jala hacia abajo, hacia ti, parejo"
+        "textoJalar": "Jala hacia abajo, hacia ti, parejo",
+        "largoPalmas": 4.2
       },
       "reglas": [
         {
@@ -92,7 +93,9 @@
         "tuercas": 10,
         "radioTuerca": 0.055,
         "sostener": 0.6,
-        "orden": [0, 5, 2, 7, 4, 9, 6, 1, 8, 3]
+        "orden": [0, 5, 2, 7, 4, 9, 6, 1, 8, 3],
+        "radioPalmas": 2.2,
+        "tuercaPalmas": 0.5
       },
       "reglas": [
         {
@@ -184,7 +187,8 @@
         "muneca": 35,
         "munecaGuante": 20,
         "textoJalar": "Jala hacia abajo, hacia ti, parejo",
-        "textoFin": "¡Se aflojó! Suelta el mango"
+        "textoFin": "¡Se aflojó! Suelta el mango",
+        "largoPalmas": 4
       },
       "reglas": [
         {

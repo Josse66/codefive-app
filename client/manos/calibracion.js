@@ -1,8 +1,10 @@
-// Calibración de Entrena tus manos (unos 25 s, como la de hand-lab), una sola vez por equipo:
-//   1. Cuál cámara está arriba (si hay dos).
+// Calibración de Entrena tus manos (como la de hand-lab), una sola vez por equipo y con calma:
+// cada paso tiene "prepárate 3, 2, 1", luego mide y al final muestra "✓ listo" antes del siguiente.
+//   1. Cuál cámara está arriba (si hay dos): se detecta sola al subir la mano, o con botones.
 //   2. Orientación: "mueve la mano a tu derecha" y "hacia ti": así la imagen se voltea sola.
-//   3. Poses: mano abierta, puño y pinza → umbrales a la medida de la persona y de la luz.
-//   4. Área de trabajo: la herramienta se dibuja donde de verdad alcanza la mano.
+//   3. Poses: mano abierta, puño y pinza → umbrales a la medida de la persona y de la luz. Con la
+//      mano abierta también se mide qué tan grande se ve la palma y dónde descansa: la herramienta
+//      se dibuja a esa medida y en ese lugar (sin zoom: la mano y la herramienta en proporción).
 import {
   AJUSTES,
   agarre,
@@ -14,36 +16,50 @@ import {
 } from './camaras.js';
 import { escala, palma } from './reglas.js';
 
-const PASOS = ['rol', 'derecha', 'haciaTi', 'abierta', 'puno', 'pinza', 'area'];
+const PASOS = ['rol', 'derecha', 'haciaTi', 'abierta', 'puno', 'pinza'];
 export const TEXTOS = {
   rol: 'Pon la mano abajo, cerca de la cámara de ABAJO, y súbela despacio hacia la de ARRIBA',
   derecha: 'Mueve la mano despacio hacia tu DERECHA y regrésala',
-  haciaTi: 'Ahora muévela HACIA TI y regrésala',
-  abierta: 'Deja la mano ABIERTA y quieta entre las dos cámaras',
+  haciaTi: 'Mueve la mano HACIA TI y regrésala',
+  abierta: 'Deja la mano ABIERTA y quieta, donde vas a trabajar',
   puno: 'Cierra la mano en PUÑO, como si tomaras un mango',
   pinza: 'Junta el PULGAR y el ÍNDICE, como si tomaras una punta',
-  area: 'Mueve la mano despacio por TODA el área donde vas a trabajar',
 };
-const DURACION = { derecha: 2500, haciaTi: 2500, abierta: 2500, puno: 2500, pinza: 2500, area: 6000 };
+const LISTO = {
+  rol: 'Ya sé cuál cámara está arriba',
+  derecha: 'Derecha e izquierda listas',
+  haciaTi: 'Hacia ti y hacia atrás listos',
+  abierta: 'Mano abierta medida',
+  puno: 'Puño medido',
+  pinza: 'Pinza medida',
+};
+const PREPARA = 3000;
+const MIDE = 2500;
+const CONFIRMA = 1200;
+const ASPECTO_CAMARA = 4 / 3;
 const promedio = (xs) => xs.reduce((a, b) => a + b, 0) / Math.max(1, xs.length);
 
 export class Calibracion {
   constructor() {
     this.activa = false;
-    this.aviso = '';
   }
 
   get paso() {
     return PASOS[this.i];
   }
 
+  get numero() {
+    const primero = camaras.length > 1 ? 0 : 1;
+    return `Paso ${this.i - primero + 1} de ${PASOS.length - primero}`;
+  }
+
   empezar() {
-    const cam = camPosicion();
-    // El área anterior se olvida: se vuelve a medir con la imagen completa.
-    if (AJUSTES.area && cam) AJUSTES.area = {};
+    AJUSTES.area = {}; // ya no se recorta la imagen
     Object.assign(this, {
       activa: true,
       i: camaras.length > 1 ? 0 : 1,
+      fase: 'prep',
+      desde: 0,
       muestras: [],
       t: 0,
       ultimo: 0,
@@ -51,22 +67,24 @@ export class Calibracion {
     });
   }
 
-  /** La persona tocó la imagen izquierda (0) o derecha (1) en el paso "rol". */
-  elegirArriba(indice) {
+  siguiente(ahora) {
+    this.i += 1;
+    Object.assign(this, { fase: 'prep', desde: ahora, muestras: [], t: 0, ultimo: 0 });
+  }
+
+  /** Cuál cámara está arriba (0 o 1): por los botones o por la detección. */
+  elegirArriba(indice, ahora = performance.now()) {
     if (this.paso !== 'rol' || !camaras[indice]) return;
     AJUSTES.rol = {};
     camaras.forEach((c, k) => {
       AJUSTES.rol[c.id] = k === indice ? 'arriba' : 'abajo';
     });
-    this.i += 1;
-    this.muestras = [];
-    this.t = 0;
+    Object.assign(this, { fase: 'ok', desde: ahora, check: `${LISTO.rol}: la cámara ${indice + 1}` });
   }
 
   /**
    * ¿Cuál está arriba? Mientras la mano sube, en la cámara de arriba se ve cada vez más grande y en
-   * la de abajo cada vez más chica. Se miran los últimos 3 s: si una creció y la otra no, esa es la
-   * de arriba. (También se puede elegir con los botones.)
+   * la de abajo cada vez más chica. Se miran los últimos 3 s: si una creció bastante más, esa es.
    */
   detectarArriba(ahora) {
     const tamanos = camaras.slice(0, 2).map((c) => {
@@ -76,7 +94,6 @@ export class Calibracion {
     if (tamanos.every((x) => x != null)) this.muestras.push([ahora, ...tamanos]);
     this.muestras = this.muestras.filter(([t]) => ahora - t < 3000);
     const n = this.muestras.length;
-    const progreso = Math.min(1, n / 45);
     if (n >= 30) {
       const tercio = Math.floor(n / 3);
       const cambio = [1, 2].map((k) => {
@@ -84,46 +101,66 @@ export class Calibracion {
         const despues = promedio(this.muestras.slice(-tercio).map((m) => m[k]));
         return (despues - antes) / Math.max(antes, 1e-3);
       });
-      // Una creció al menos 25 % más que la otra: esa es la de arriba.
-      if (Math.abs(cambio[0] - cambio[1]) > 0.25) {
-        this.elegirArriba(cambio[0] > cambio[1] ? 0 : 1);
-        return {
-          texto:
-            cambio[0] > cambio[1]
-              ? 'Listo: la de arriba es la cámara 1'
-              : 'Listo: la de arriba es la cámara 2',
-          progreso: 1,
-        };
-      }
+      if (Math.abs(cambio[0] - cambio[1]) > 0.25) this.elegirArriba(cambio[0] > cambio[1] ? 0 : 1, ahora);
     }
-    const texto = tamanos.every((x) => x != null)
-      ? TEXTOS.rol
-      : 'Pon la mano entre las dos cámaras: las dos deben verla';
-    return { texto, progreso };
+    const ven = tamanos.every((x) => x != null);
+    return {
+      fase: 'mide',
+      numero: this.numero,
+      texto: ven ? TEXTOS.rol : 'Pon la mano entre las dos cámaras: las dos deben verla (o usa los botones)',
+      progreso: Math.min(1, n / 45),
+    };
   }
 
-  /** Se llama cada cuadro. Devuelve { texto, progreso } o { listo, aviso } al terminar. */
+  /**
+   * Se llama cada cuadro. Devuelve { fase: 'prep'|'mide'|'ok', numero, texto, progreso, cuenta, check }
+   * o { listo, aviso } al terminar.
+   */
   actualizar(ahora) {
+    this.desde ||= ahora;
     const { paso } = this;
+    if (this.fase === 'ok') {
+      if (ahora - this.desde < CONFIRMA)
+        return { fase: 'ok', numero: this.numero, texto: `✓ ${this.check}`, progreso: 1 };
+      this.siguiente(ahora);
+      if (this.i >= PASOS.length) return this.terminar();
+      return this.actualizar(ahora);
+    }
     if (paso === 'rol') return this.detectarArriba(ahora);
+    if (this.fase === 'prep') {
+      const falta = PREPARA - (ahora - this.desde);
+      if (falta > 0)
+        return {
+          fase: 'prep',
+          numero: this.numero,
+          texto: `Prepárate: ${TEXTOS[paso]}`,
+          cuenta: Math.ceil(falta / 1000),
+          progreso: 0,
+        };
+      Object.assign(this, { fase: 'mide', ultimo: ahora });
+    }
+    // Midiendo: el tiempo solo corre mientras se ve la mano.
     const cam = camPosicion();
     const mano = cam?.r?.landmarks?.[0];
     const ag = agarre();
     const pose = ['abierta', 'puno', 'pinza'].includes(paso);
-    const dt = this.ultimo ? Math.min(100, ahora - this.ultimo) : 0;
+    const dt = Math.min(100, ahora - this.ultimo);
     this.ultimo = ahora;
-    if (pose ? !ag : !mano)
-      return { texto: 'No veo tu mano: ponla entre las dos cámaras', progreso: this.t / DURACION[paso] };
+    if (pose ? !ag || (paso === 'abierta' && !mano) : !mano)
+      return {
+        fase: 'mide',
+        numero: this.numero,
+        texto: 'No veo tu mano: ponla entre las dos cámaras',
+        progreso: this.t / MIDE,
+      };
     this.t += dt;
-    if (pose) this.muestras.push([ag.apertura, ag.pinza]);
-    else if (paso === 'area') this.muestras.push(aPantalla(cam, palma(mano), false));
+    if (pose) this.muestras.push({ g: ag.apertura, p: ag.pinza, mano: paso === 'abierta' ? mano : null });
     else this.muestras.push(palma(mano)); // cruda: todavía no se sabe el volteo
-    if (this.t < DURACION[paso]) return { texto: TEXTOS[paso], progreso: this.t / DURACION[paso] };
+    if (this.t < MIDE)
+      return { fase: 'mide', numero: this.numero, texto: TEXTOS[paso], progreso: this.t / MIDE };
     this.cerrar(paso, cam);
-    this.i += 1;
-    Object.assign(this, { t: 0, muestras: [] });
-    if (this.i >= PASOS.length) return this.terminar();
-    return { texto: TEXTOS[this.paso], progreso: 0 };
+    Object.assign(this, { fase: 'ok', desde: ahora, check: LISTO[paso] });
+    return { fase: 'ok', numero: this.numero, texto: `✓ ${this.check}`, progreso: 1 };
   }
 
   cerrar(paso, cam) {
@@ -143,24 +180,24 @@ export class Calibracion {
       AJUSTES.voltear = { ...AJUSTES.voltear, [cam.id]: v };
       return;
     }
-    if (paso === 'area') {
-      // Rectángulo que cubre lo recorrido, cuadrado en coordenadas de la cámara (no deforma la imagen).
-      const xs = m.map((p) => p.x);
-      const ys = m.map((p) => p.y);
-      const cx = (Math.min(...xs) + Math.max(...xs)) / 2;
-      const cy = (Math.min(...ys) + Math.max(...ys)) / 2;
-      const lado = Math.min(
-        1,
-        Math.max(0.45, Math.max(...xs) - Math.min(...xs) + 0.25, Math.max(...ys) - Math.min(...ys) + 0.25),
-      );
-      const x0 = Math.min(Math.max(0, cx - lado / 2), 1 - lado);
-      const y0 = Math.min(Math.max(0, cy - lado / 2), 1 - lado);
-      AJUSTES.area = { ...AJUSTES.area, [cam.id]: [x0, y0, x0 + lado, y0 + lado] };
-      return;
-    }
     // Poses: el promedio de la segunda mitad (ya quieta).
     const quieta = m.slice(Math.floor(m.length / 2));
-    this.poses[paso] = { g: promedio(quieta.map((s) => s[0])), p: promedio(quieta.map((s) => s[1])) };
+    this.poses[paso] = { g: promedio(quieta.map((s) => s.g)), p: promedio(quieta.map((s) => s.p)) };
+    if (paso === 'abierta') {
+      // Tamaño de la palma (en unidades de alto de la imagen) y dónde descansa la mano.
+      const pantalla = quieta.map((s) => s.mano.map((q) => aPantalla(cam, q, false)));
+      const tam = promedio(
+        pantalla.map((q) => Math.hypot((q[9].x - q[0].x) * ASPECTO_CAMARA, q[9].y - q[0].y)),
+      );
+      const centros = pantalla.map((q) => palma(q));
+      AJUSTES.mano = {
+        ...AJUSTES.mano,
+        [cam.id]: {
+          palma: tam,
+          centro: { x: promedio(centros.map((c) => c.x)), y: promedio(centros.map((c) => c.y)) },
+        },
+      };
+    }
   }
 
   terminar() {
@@ -180,9 +217,10 @@ export class Calibracion {
     this.activa = false;
     return {
       listo: true,
+      ok,
       aviso: ok
-        ? 'Listo: cámaras calibradas a tu mano.'
-        : 'Calibrado, pero la mano abierta y el puño casi no se distinguen: más luz o acerca la mano. Puedes calibrar otra vez en "Ajustar cámaras".',
+        ? 'Cámaras calibradas a tu mano.'
+        : 'La mano abierta y el puño casi no se distinguen: revisa que la cámara de abajo vea tu palma, más luz o acerca la mano.',
     };
   }
 }
