@@ -1,40 +1,46 @@
 {{!-- Mi camino: la pantalla de inicio del técnico. Arriba lo que lleva; luego un solo botón
      Continuar al punto que toca; abajo cada sistema del autobús con sus puntos en orden. --}}
 <section class="grid gap-8 {{#if camino.pasoAPaso}}camino-grande{{/if}}">
-  <div class="grid gap-2">
-    <p class="font-narrow text-sm font-bold uppercase tracking-wider text-tinta-3">Mi camino · Volvo Access (urbano diésel, chasis B8R LE)</p>
-    <h1 class="text-4xl leading-tight lg:text-5xl">Hola, {{camino.tecnico.nombre}}</h1>
-    <dl class="mt-2 grid max-w-2xl grid-cols-3 border border-tinta bg-white">
-      <div class="grid gap-0.5 border-r border-placa-linea p-4">
-        <dt class="text-sm text-tinta-3">Sesiones</dt>
-        <dd class="codigo text-3xl font-semibold">{{camino.resumen.sesiones}}</dd>
-      </div>
-      <div class="grid gap-0.5 border-r border-placa-linea p-4">
-        <dt class="text-sm text-tinta-3">Tiempo de práctica</dt>
-        <dd class="codigo text-3xl font-semibold">{{camino.resumen.tiempo}}</dd>
-      </div>
-      <div class="grid gap-0.5 p-4">
-        <dt class="text-sm text-tinta-3">Sistemas con {{camino.resumen.aprobacion}}</dt>
-        <dd class="codigo text-3xl font-semibold">{{camino.resumen.acreditados}} <span class="text-lg text-tinta-3">de {{camino.resumen.sistemas}}</span></dd>
-      </div>
-    </dl>
-  </div>
-
-  {{#if camino.siguiente}}
-    <article class="grid gap-4 border-2 border-tinta bg-white p-5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center lg:p-6">
+  {{! Encabezado oscuro: quién eres, cuánto llevas y qué te toca; a la derecha el autobús que aprendes. }}
+  <header class="camino-portada relative grid overflow-hidden border-2 border-tinta bg-tinta text-white lg:grid-cols-[minmax(0,1fr)_minmax(0,0.85fr)]">
+    <div class="vitrina-fondo absolute inset-0" aria-hidden="true"></div>
+    <div class="relative grid content-start gap-6 p-6 lg:p-8">
       <div class="grid gap-1">
-        <p class="font-narrow text-sm font-bold uppercase tracking-wider text-tinta-3">Te toca</p>
-        <h2 class="font-sans text-2xl font-semibold tracking-normal">{{camino.siguiente.punto}} · {{camino.siguiente.sistema}}</h2>
-        <p class="text-tinta-2">FG {{camino.siguiente.grupo}}. Se abre el autobús justo en ese punto.</p>
+        <p class="font-narrow text-sm font-bold uppercase tracking-[0.16em] text-white/60">Mi camino · Volvo Access (urbano diésel, chasis B8R LE)</p>
+        <h1 class="text-4xl leading-tight lg:text-5xl">Hola, {{camino.tecnico.nombre}}</h1>
       </div>
-      <a href="{{camino.siguiente.enlace}}" class="boton px-10 py-4 text-lg">Continuar →</a>
-    </article>
-  {{else}}
-    <article class="grid gap-1 border-2 border-ok bg-ok-suave p-5">
-      <h2 class="font-sans text-2xl font-semibold tracking-normal">Terminaste todo el autobús</h2>
-      <p>Aprobaste cada sistema con {{camino.resumen.aprobacion}} o más. Puedes repasar el que quieras.</p>
-    </article>
-  {{/if}}
+      <dl class="grid grid-cols-3 border border-white/20">
+        <div class="grid gap-0.5 border-r border-white/20 p-4">
+          <dt class="text-sm text-white/60">Sesiones</dt>
+          <dd class="codigo text-3xl font-semibold">{{camino.resumen.sesiones}}</dd>
+        </div>
+        <div class="grid gap-0.5 border-r border-white/20 p-4">
+          <dt class="text-sm text-white/60">Tiempo de práctica</dt>
+          <dd class="codigo text-3xl font-semibold">{{camino.resumen.tiempo}}</dd>
+        </div>
+        <div class="grid gap-0.5 p-4">
+          <dt class="text-sm text-white/60">Sistemas con {{camino.resumen.aprobacion}}</dt>
+          <dd class="codigo text-3xl font-semibold">{{camino.resumen.acreditados}} <span class="text-lg text-white/60">de {{camino.resumen.sistemas}}</span></dd>
+        </div>
+      </dl>
+      {{#if camino.siguiente}}
+        <article class="grid gap-4 border-l-4 border-[#7dff9a] bg-white/[0.07] p-5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
+          <div class="grid gap-1">
+            <p class="font-narrow text-sm font-bold uppercase tracking-wider text-[#7dff9a]">Te toca</p>
+            <h2 class="font-sans text-2xl font-semibold tracking-normal">{{camino.siguiente.punto}} · {{camino.siguiente.sistema}}</h2>
+            <p class="text-white/70">FG {{camino.siguiente.grupo}}. Se abre el autobús justo en ese punto.</p>
+          </div>
+          <a href="{{camino.siguiente.enlace}}" class="boton-continuar">Continuar <span aria-hidden="true">→</span></a>
+        </article>
+      {{else}}
+        <article class="grid gap-1 border-l-4 border-[#7dff9a] bg-white/[0.07] p-5">
+          <h2 class="font-sans text-2xl font-semibold tracking-normal">Terminaste todo el autobús</h2>
+          <p class="text-white/75">Aprobaste cada sistema con {{camino.resumen.aprobacion}} o más. Puedes repasar el que quieras.</p>
+        </article>
+      {{/if}}
+    </div>
+    <div id="vitrina" class="relative hidden min-h-[340px] lg:block" aria-hidden="true"></div>
+  </header>
 
   <ol class="grid gap-4" aria-label="Sistemas del autobús">
     {{#each camino.unidades}}

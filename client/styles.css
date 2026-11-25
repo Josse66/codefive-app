@@ -266,3 +266,85 @@
     @apply border border-mal bg-mal-suave p-4 text-[15px] text-tinta;
   }
 }
+
+/* ---------- Entrada: vitrina del autobús y visor del gafete ---------- */
+.vitrina-fondo {
+  background:
+    radial-gradient(ellipse 70% 45% at 55% 78%, rgb(255 255 255 / 0.16), transparent 70%),
+    linear-gradient(180deg, #141c24 0%, #1d2833 60%, #26323d 100%);
+}
+.vitrina-fondo::after {
+  /* Cuadrícula tenue de taller, que se desvanece hacia arriba. */
+  content: '';
+  position: absolute;
+  inset: 40% 0 0;
+  background-image:
+    linear-gradient(rgb(255 255 255 / 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 255 255 / 0.05) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: linear-gradient(transparent, #000 60%);
+}
+#vitrina canvas {
+  opacity: 0;
+  transition: opacity 900ms ease-out;
+}
+#vitrina[data-listo] canvas {
+  opacity: 1;
+}
+.paso-entrada {
+  @apply grid gap-1 font-narrow text-lg font-semibold leading-tight;
+}
+.paso-entrada span {
+  @apply font-narrow text-sm font-bold text-white/50;
+}
+/* Esquinas del visor y una línea que barre: se ve que la cámara está buscando el gafete. */
+.visor-gafete i {
+  position: absolute;
+  width: 34px;
+  height: 34px;
+  border: 0 solid #fff;
+}
+.visor-gafete i:nth-child(1) { top: 0; left: 0; border-width: 4px 0 0 4px; }
+.visor-gafete i:nth-child(2) { top: 0; right: 0; border-width: 4px 4px 0 0; }
+.visor-gafete i:nth-child(3) { bottom: 0; left: 0; border-width: 0 0 4px 4px; }
+.visor-gafete i:nth-child(4) { bottom: 0; right: 0; border-width: 0 4px 4px 0; }
+.visor-gafete b {
+  position: absolute;
+  inset-inline: 6px;
+  top: 0;
+  height: 2px;
+  background: #7dff9a;
+  box-shadow: 0 0 14px 2px rgb(125 255 154 / 0.7);
+  animation: barrer 2.4s ease-in-out infinite alternate;
+}
+@keyframes barrer {
+  to { top: calc(100% - 2px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .visor-gafete b { animation: none; display: none; }
+}
+
+/* ---------- Mi camino ---------- */
+.boton-continuar {
+  @apply inline-flex items-center justify-center gap-3 bg-[#7dff9a] px-10 py-4 font-narrow text-xl font-bold text-tinta transition-colors duration-150 hover:bg-white;
+}
+.boton-continuar:active {
+  transform: scale(0.97);
+}
+.boton-continuar span {
+  transition: transform 150ms ease-out;
+}
+.boton-continuar:hover span {
+  transform: translateX(4px);
+}
+/* El punto donde vas "respira": se encuentra de un vistazo. */
+.camino-punto[data-aqui] .camino-circulo {
+  animation: latido 1.8s ease-out infinite;
+}
+@keyframes latido {
+  0% { box-shadow: 0 0 0 0 rgb(20 28 36 / 0.45); }
+  100% { box-shadow: 0 0 0 14px rgb(20 28 36 / 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .camino-punto[data-aqui] .camino-circulo { animation: none; }
+}

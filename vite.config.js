@@ -29,6 +29,7 @@ export default defineConfig(({ command }) => ({
         entrar: ruta('./client/pages/entrar.js'),
         gafetes: ruta('./client/pages/gafetes.js'),
         manos: ruta('./client/pages/manos.js'),
+        camino: ruta('./client/pages/camino.js'),
       },
     },
   },

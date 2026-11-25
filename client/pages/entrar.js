@@ -265,3 +265,9 @@ window.addEventListener('keydown', (e) => {
 });
 
 encenderCamara();
+
+// La vitrina con el autobús solo en pantallas anchas (en la columna izquierda); se carga aparte.
+const vitrina = $('vitrina');
+if (vitrina && window.matchMedia('(min-width: 1024px)').matches) {
+  import('../escena/vitrina.js').then(({ montarVitrina }) => montarVitrina(vitrina));
+}

@@ -1,6 +1,22 @@
 {{!-- Entrar con gafete (QR) + PIN, como en planta y en los hospitales: equipos compartidos, muchos
      trabajadores y nada de contraseñas largas. Correo y contraseña quedan para Volvo y responsables. --}}
-<section id="entrar" class="mx-auto grid w-full max-w-3xl gap-6">
+<div class="mx-auto grid w-full max-w-7xl items-stretch gap-6 lg:grid-cols-[1.05fr_1fr]">
+  {{! Vitrina: el autobús real que se va a aprender, girando como en una sala de exhibición. }}
+  <aside class="relative hidden min-h-[560px] overflow-hidden border-2 border-tinta bg-tinta text-white lg:block" aria-label="Volvo Access, el autobús de la capacitación">
+    <div class="vitrina-fondo absolute inset-0" aria-hidden="true"></div>
+    <div id="vitrina" class="absolute inset-x-0 bottom-0 top-[22%]"></div>
+    <div class="relative grid gap-2 p-8">
+      <p class="font-narrow text-sm font-bold uppercase tracking-[0.18em] text-white/60">Capacitación técnica · Volvo Buses México</p>
+      <p class="font-narrow text-5xl font-bold leading-none">Técnicos del Mañana</p>
+      <p class="max-w-md text-lg text-white/75">Aprende en un Volvo Access completo: por fuera, por dentro y el motor.</p>
+    </div>
+    <ol class="absolute inset-x-0 bottom-0 grid grid-cols-3 border-t border-white/15 bg-tinta/70 backdrop-blur">
+      <li class="paso-entrada border-r border-white/15 p-4"><span>1</span>Acerca tu gafete</li>
+      <li class="paso-entrada border-r border-white/15 p-4"><span>2</span>Escribe tu PIN</li>
+      <li class="paso-entrada p-4"><span>3</span>Sigue tu camino</li>
+    </ol>
+  </aside>
+<section id="entrar" class="grid w-full content-start gap-6">
 
   {{! Paso 1: acercar el gafete a la cámara. }}
   <div id="paso-gafete" class="grid gap-5 border-2 border-tinta bg-white p-6 lg:p-8">
@@ -14,7 +30,7 @@
     </div>
     <div class="relative mx-auto aspect-[4/3] w-full max-w-md overflow-hidden border-2 border-tinta bg-tinta">
       <video id="camara" class="h-full w-full -scale-x-100 object-cover" playsinline muted></video>
-      <div class="pointer-events-none absolute inset-[18%] border-4 border-dashed border-white/90" aria-hidden="true"></div>
+      <div class="visor-gafete pointer-events-none absolute inset-[16%]" aria-hidden="true"><i></i><i></i><i></i><i></i><b></b></div>
       <p id="camara-estado" class="absolute inset-x-0 bottom-0 bg-tinta/80 px-3 py-2 text-center text-white">Encendiendo la cámara…</p>
     </div>
     <details class="text-[15px]">
@@ -64,3 +80,4 @@
     </form>
   </details>
 </section>
+</div>

@@ -302,6 +302,7 @@ export function mostrarCamino(req, res) {
       titulo: `Mi camino · ${tecnico.nombre}`,
       tecnico,
       seccion: 'camino',
+      scriptPagina: 'pages/camino.js',
       camino: obtenerCamino(tecnico.id),
     }),
   );
