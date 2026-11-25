@@ -30,6 +30,8 @@ import {
   manosEnPantalla,
   motivo,
   pinzas,
+  sinImagen,
+  volteo,
 } from '../manos/camaras.js';
 import { Calibracion } from '../manos/calibracion.js';
 import { SerialGlove } from '../entradas/serialGlove.js';
@@ -203,6 +205,7 @@ async function encender() {
       fallas.length ? `Se abrió ${camaras.length} de ${pedidas} cámaras. ${fallas.join(' · ')}` : '',
     );
     $('arranque').hidden = true;
+    $('recalibrar').hidden = false;
     ajustarGeometria();
     if (calibrada()) reiniciar();
     else empezarCalibracion();
@@ -217,6 +220,11 @@ async function encender() {
 }
 $('encender').addEventListener('click', encender);
 $('otra-vez').addEventListener('click', reiniciar);
+$('recalibrar').addEventListener('click', () => {
+  verificando = false;
+  pintarVerificar(false);
+  empezarCalibracion();
+});
 // En el paso "¿cuál está arriba?" se toca la imagen de la izquierda o de la derecha.
 lienzo.addEventListener('click', (e) => {
   if (!calibracion.activa || calibracion.paso !== 'rol') return;
@@ -272,9 +280,21 @@ function pintarAjustes(dispositivos) {
 
 let verificando = false;
 
+let revisadoEn = 0;
+function revisarImagen(ahora) {
+  if (ahora - revisadoEn < 1000) return;
+  revisadoEn = ahora;
+  const sin = sinImagen(ahora);
+  if (sin.length)
+    avisoCamaras(
+      `${sin.map((c) => c.etiqueta.split('(')[0].trim()).join(' y ')} no manda imagen: conéctala a otro puerto USB (no al mismo hub que la otra) y recarga la página.`,
+    );
+}
+
 function ciclo() {
   requestAnimationFrame(ciclo);
   const ahora = performance.now();
+  revisarImagen(ahora);
   if (!detectar(ahora)) return;
   if (calibracion.activa) {
     pasoCalibracion(ahora);
@@ -315,7 +335,7 @@ function pasoVerificar(manos, ag, cerrada, lapiz) {
   ctx.textAlign = 'center';
   ctx.fillText(texto, lienzo.width / 2, 88);
   ctx.textAlign = 'start';
-  decir('Comprueba: abre, cierra y haz pinza. ¿Se lee bien? Elige a la derecha.');
+  decir('Comprueba: abre, cierra y haz pinza; mueve la mano a tu derecha y hacia ti. ¿Se ve bien?');
 }
 
 function pintarVerificar(mostrar, aviso = '') {
@@ -352,7 +372,40 @@ function pintarVerificar(mostrar, aviso = '') {
     pintarVerificar(false);
     empezarCalibracion();
   });
-  caja.append(bien, otra);
+  // Si la mano en pantalla se mueve al revés, se voltea aquí mismo sin calibrar todo otra vez.
+  const voltear = document.createElement('div');
+  voltear.className = 'grid grid-cols-2 gap-2';
+  [
+    ['x', 'Voltear de lado'],
+    ['y', 'Voltear de cabeza'],
+  ].forEach(([eje, texto]) => {
+    const b = Object.assign(document.createElement('button'), {
+      type: 'button',
+      className: 'boton-linea px-3 py-2 text-sm',
+      textContent: texto,
+    });
+    b.addEventListener('click', () => {
+      const cam = camPosicion();
+      if (!cam) return;
+      const v = volteo(cam);
+      AJUSTES.voltear = { ...AJUSTES.voltear, [cam.id]: { ...v, [eje]: !v[eje] } };
+      // El lugar donde descansa la mano también se voltea.
+      const m = AJUSTES.mano?.[cam.id];
+      if (m) m.centro = { ...m.centro, [eje]: 1 - m.centro[eje] };
+      guardarAjustes();
+      ajustarGeometria();
+    });
+    voltear.append(b);
+  });
+  caja.append(
+    bien,
+    Object.assign(document.createElement('p'), {
+      className: 'text-sm',
+      textContent: '¿La mano en la pantalla se mueve al revés que la tuya?',
+    }),
+    voltear,
+    otra,
+  );
 }
 
 function pasoCalibracion(ahora) {

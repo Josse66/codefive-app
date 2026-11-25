@@ -31,6 +31,9 @@ function conLimite(promesa, ms, que) {
   return Promise.race([promesa, limite]).finally(() => clearTimeout(reloj));
 }
 const INTENTOS = [{ width: 640, height: 480, frameRate: 30 }, { width: 320, height: 240, frameRate: 30 }, {}];
+// Con dos cámaras USB se pide 320×240 desde el principio: a 640×480 las dos no caben en el mismo
+// puerto o hub y una se queda en negro. Para las manos dentro de la caja alcanza.
+const INTENTOS_DOS = [{ width: 320, height: 240, frameRate: 30 }, { width: 320, height: 240 }, {}];
 const POR_QUE = {
   NotReadableError:
     'la está usando otro programa o pestaña (cierra hand-lab, la app Cámara, Teams o la pestaña de entrar con gafete)',
@@ -62,15 +65,15 @@ async function elegirCamaras() {
   return { elegidas: (ordenadas.length ? ordenadas : dispositivos).slice(0, 2), dispositivos };
 }
 
-async function abrirVideo(dispositivo) {
+async function abrirVideo(dispositivo, intentos) {
   let ultimoError = null;
   /* eslint-disable no-await-in-loop -- cada intento depende de que el anterior falle */
-  for (let k = 0; k < INTENTOS.length; k += 1) {
+  for (let k = 0; k < intentos.length; k += 1) {
     let stream = null;
     try {
       stream = await conLimite(
         navigator.mediaDevices.getUserMedia({
-          video: { deviceId: { exact: dispositivo.deviceId }, ...INTENTOS[k] },
+          video: { deviceId: { exact: dispositivo.deviceId }, ...intentos[k] },
         }),
         8000,
         dispositivo.label,
@@ -113,13 +116,14 @@ export async function encenderCamaras(avisar) {
     const d = elegidas[k];
     avisar(`Abriendo ${d.label}…`);
     try {
-      const video = await abrirVideo(d);
+      const video = await abrirVideo(d, elegidas.length > 1 ? INTENTOS_DOS : INTENTOS);
       camaras.push({
         id: d.deviceId,
         etiqueta: d.label || 'Cámara',
         video,
         detector: await crearDetector(vision),
         ultimo: -1,
+        cambio: performance.now(),
         r: null,
         score: 0,
         suaves: nuevosSuaves(),
@@ -184,16 +188,27 @@ function fuente(cam) {
 /** Detecta en las cámaras con cuadro nuevo. Devuelve true si la de posición trajo cuadro nuevo. */
 export function detectar(ahora) {
   let nuevo = false;
+  let otra = false;
   const pos = camPosicion();
   camaras.forEach((cam) => {
     if (cam.video.currentTime === cam.ultimo || cam.video.readyState < 2) return;
     const r = cam.detector.detectForVideo(fuente(cam), ahora);
-    Object.assign(cam, { ultimo: cam.video.currentTime, r, score: r.handedness?.[0]?.[0]?.score ?? 0 });
+    Object.assign(cam, {
+      ultimo: cam.video.currentTime,
+      cambio: ahora,
+      r,
+      score: r.handedness?.[0]?.[0]?.score ?? 0,
+    });
     if (!r.landmarks?.length) cam.suaves.flat().forEach((f) => f.reset());
     if (cam === pos) nuevo = true;
+    else otra = true;
   });
-  return nuevo;
+  // Si la de arriba dejó de mandar imagen, se sigue dibujando con la otra (para avisar y no congelarse).
+  return nuevo || (otra && ahora - (pos?.cambio ?? 0) > 1500);
 }
+
+/** Cámaras que no mandan imagen nueva desde hace más de 2.5 s (USB sin ancho de banda, cable flojo). */
+export const sinImagen = (ahora) => camaras.filter((c) => ahora - c.cambio > 2500);
 
 /** Manos de una cámara en coordenadas de pantalla, sin temblor. */
 export function manosEnPantalla(cam, ahora, conArea = true) {

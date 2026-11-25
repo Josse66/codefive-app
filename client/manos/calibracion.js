@@ -19,8 +19,8 @@ import { escala, palma } from './reglas.js';
 const PASOS = ['rol', 'derecha', 'haciaTi', 'abierta', 'puno', 'pinza'];
 export const TEXTOS = {
   rol: 'Pon la mano abajo, cerca de la cámara de ABAJO, y súbela despacio hacia la de ARRIBA',
-  derecha: 'Mueve la mano despacio hacia tu DERECHA y regrésala',
-  haciaTi: 'Mueve la mano HACIA TI y regrésala',
+  derecha: 'Pon la mano al centro y muévela despacio hacia tu DERECHA. Déjala ahí',
+  haciaTi: 'Pon la mano al centro y acércala despacio HACIA TI. Déjala ahí',
   abierta: 'Deja la mano ABIERTA y quieta, donde vas a trabajar',
   puno: 'Cierra la mano en PUÑO, como si tomaras un mango',
   pinza: 'Junta el PULGAR y el ÍNDICE, como si tomaras una punta',
@@ -33,9 +33,9 @@ const LISTO = {
   puno: 'Puño medido',
   pinza: 'Pinza medida',
 };
-const PREPARA = 3000;
-const MIDE = 2500;
-const CONFIRMA = 1200;
+const PREPARA = 4000;
+const MIDE = 3500;
+const CONFIRMA = 1800;
 const ASPECTO_CAMARA = 4 / 3;
 const promedio = (xs) => xs.reduce((a, b) => a + b, 0) / Math.max(1, xs.length);
 
@@ -57,6 +57,7 @@ export class Calibracion {
     AJUSTES.area = {}; // ya no se recorta la imagen
     Object.assign(this, {
       activa: true,
+      repetir: '',
       i: camaras.length > 1 ? 0 : 1,
       fase: 'prep',
       desde: 0,
@@ -133,7 +134,7 @@ export class Calibracion {
         return {
           fase: 'prep',
           numero: this.numero,
-          texto: `Prepárate: ${TEXTOS[paso]}`,
+          texto: `${this.repetir ? `${this.repetir} ` : 'Prepárate: '}${TEXTOS[paso]}`,
           cuenta: Math.ceil(falta / 1000),
           progreso: 0,
         };
@@ -158,7 +159,12 @@ export class Calibracion {
     else this.muestras.push(palma(mano)); // cruda: todavía no se sabe el volteo
     if (this.t < MIDE)
       return { fase: 'mide', numero: this.numero, texto: TEXTOS[paso], progreso: this.t / MIDE };
-    this.cerrar(paso, cam);
+    if (this.cerrar(paso, cam) === false) {
+      // Movimiento poco claro: se repite el paso en lugar de adivinar el volteo.
+      Object.assign(this, { fase: 'prep', desde: ahora, muestras: [], t: 0 });
+      return this.actualizar(ahora);
+    }
+    this.repetir = '';
     Object.assign(this, { fase: 'ok', desde: ahora, check: LISTO[paso] });
     return { fase: 'ok', numero: this.numero, texto: `✓ ${this.check}`, progreso: 1 };
   }
@@ -166,19 +172,27 @@ export class Calibracion {
   cerrar(paso, cam) {
     const m = this.muestras;
     if (paso === 'derecha' || paso === 'haciaTi') {
-      // El punto más lejano del inicio dice hacia dónde se movió la mano en la imagen cruda.
+      // Dónde empezó (primer 20 %) contra dónde terminó (último 30 %), en la imagen cruda. El
+      // movimiento debe ser claro y sobre todo en el eje pedido; si no, se repite el paso.
       const eje = paso === 'derecha' ? 'x' : 'y';
-      const inicio = promedio(m.slice(0, 5).map((p) => p[eje]));
-      const lejos = m.reduce(
-        (a, p) => (Math.abs(p[eje] - inicio) > Math.abs(a - inicio) ? p[eje] : a),
-        inicio,
-      );
+      const otro = eje === 'x' ? 'y' : 'x';
+      const ini = m.slice(0, Math.max(3, Math.floor(m.length * 0.2)));
+      const fin = m.slice(-Math.max(3, Math.floor(m.length * 0.3)));
+      const d = promedio(fin.map((p) => p[eje])) - promedio(ini.map((p) => p[eje]));
+      const dOtro = promedio(fin.map((p) => p[otro])) - promedio(ini.map((p) => p[otro]));
+      if (Math.abs(d) < 0.08 || Math.abs(d) < 1.3 * Math.abs(dOtro)) {
+        this.repetir =
+          paso === 'derecha'
+            ? 'No vi un movimiento claro. Otra vez, más amplio y solo hacia un lado:'
+            : 'No vi un movimiento claro. Otra vez, más amplio y solo hacia ti:';
+        return false;
+      }
       const v = { x: false, y: false, ...AJUSTES.voltear?.[cam.id] };
       // Se quiere: a la derecha = x crece en pantalla; hacia ti = y crece (baja en pantalla).
-      if (eje === 'x') v.x = lejos - inicio > 0;
-      else v.y = lejos - inicio < 0;
+      if (eje === 'x') v.x = d > 0;
+      else v.y = d < 0;
       AJUSTES.voltear = { ...AJUSTES.voltear, [cam.id]: v };
-      return;
+      return true;
     }
     // Poses: el promedio de la segunda mitad (ya quieta).
     const quieta = m.slice(Math.floor(m.length / 2));
@@ -198,6 +212,7 @@ export class Calibracion {
         },
       };
     }
+    return true;
   }
 
   terminar() {
