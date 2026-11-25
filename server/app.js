@@ -21,6 +21,8 @@ export async function crearApp() {
   app.use(express.urlencoded({ extended: false }));
   await configurarVite(app);
   app.use(express.static(path.resolve('public')));
+  // Archivos de MediaPipe de la misma versión que el paquete: Entrena tus manos funciona sin internet.
+  app.use('/mediapipe/wasm', express.static(path.resolve('node_modules/@mediapipe/tasks-vision/wasm')));
 
   // Quién está usando la app (cookie de sesión) antes de cualquier ruta.
   app.use(cargarSesion);
