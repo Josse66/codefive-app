@@ -1,3 +1,5 @@
+import fs from 'node:fs';
+import path from 'node:path';
 import { obtenerTecnico } from '#services/tecnicos.service.js';
 import { obtenerPlan } from '#services/plan.service.js';
 import { asegurarDominio, obtenerPerfil } from '#services/dominio.service.js';
@@ -10,6 +12,10 @@ import { competenciaDeLeccion, obtenerMision, pasoDespues } from '#services/misi
 import { obtenerEscenario } from '#services/escenarios.js';
 import { obtenerDesempeno } from '#services/desempeno.service.js';
 import { obtenerCamino } from '#services/camino.service.js';
+
+const EJERCICIOS_MANOS = JSON.parse(
+  fs.readFileSync(path.resolve('data', 'manos', 'ejercicios.json'), 'utf8'),
+).ejercicios;
 
 // La misión de la página: la que viene en ?mision= o, si no, la de la competencia que se está trabajando.
 const misionDe = (req, tecnico, competenciaId) =>
@@ -299,4 +305,23 @@ export function mostrarCamino(req, res) {
       camino: obtenerCamino(tecnico.id),
     }),
   );
+}
+
+// Entrena tus manos: un ejercicio de postura con una herramienta (data/manos/ejercicios.json).
+export function mostrarManos(req, res) {
+  conTecnico(req, res, (tecnico) => {
+    const ejercicio = EJERCICIOS_MANOS.find((e) => e.id === req.params.ejercicioId);
+    if (!ejercicio) {
+      res.status(404).render('404', { titulo: 'No encontrado', ruta: req.originalUrl });
+      return;
+    }
+    res.render('manos', {
+      titulo: `Entrena tus manos · ${ejercicio.herramienta}`,
+      tecnico,
+      ejercicio,
+      pasoAPaso: tecnico.experiencia === 'mayor',
+      seccion: 'camino',
+      scriptPagina: 'pages/manos.js',
+    });
+  });
 }

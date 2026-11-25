@@ -5,10 +5,16 @@ import { obtenerTecnico } from '#services/tecnicos.service.js';
 import { errorHttp } from '#helpers/errores.js';
 
 // Mi camino: la pantalla de inicio del técnico. Cada sistema del autobús es una unidad con sus
-// puntos en orden (Diagnóstico → Conoce → Encuéntralo → [Práctica] → Comprueba → [Orden]) y un
+// puntos en orden (Diagnóstico → Conoce → Encuéntralo → [Práctica] → Comprueba → [Manos] → [Orden]) y un
 // solo botón Continuar que lleva al siguiente punto que toca, dentro del autobús 3D.
 
 const DATOS = JSON.parse(fs.readFileSync(path.resolve('data', 'autobus', 'piezas.json'), 'utf8'));
+// Entrena tus manos: el ejercicio de postura que corresponde a cada sistema (si tiene).
+const MANOS = Object.fromEntries(
+  JSON.parse(fs.readFileSync(path.resolve('data', 'manos', 'ejercicios.json'), 'utf8')).ejercicios.map(
+    (e) => [e.sistema, e],
+  ),
+);
 
 const PUNTOS = {
   diagnostico: 'Diagnóstico',
@@ -16,6 +22,7 @@ const PUNTOS = {
   encuentra: 'Encuéntralo',
   libre: 'Práctica',
   comprueba: 'Comprueba',
+  manos: 'Manos',
   orden: 'Orden de taller',
 };
 
@@ -44,6 +51,9 @@ function puntosDe(sistema, p, pasoAPaso) {
     estado: estadoDe(p.comprueba >= APROBACION, Boolean(p.encuentra)),
     nota: p.comprueba ?? null,
   });
+  // Postura de las manos con la herramienta del sistema: se puede hacer en cualquier momento.
+  if (MANOS[sistema.id])
+    puntos.push({ id: 'manos', estado: estadoDe(p.manos >= APROBACION, true), nota: p.manos ?? null });
   if (sistema.orden_taller)
     puntos.push({ id: 'orden', estado: estadoDe(p.orden >= APROBACION, true), nota: p.orden ?? null });
   return puntos.map((punto) => ({ ...punto, nombre: PUNTOS[punto.id] }));
@@ -77,7 +87,10 @@ export function obtenerCamino(tecnicoId) {
 
   // Lo que toca: primero termina lo que ya empezó; si no, el siguiente sistema sin terminar.
   const actual = unidades.find((u) => u.empezado && !u.completo) ?? unidades.find((u) => !u.completo) ?? null;
-  const enlace = (u, punto) => `/tecnicos/${tecnicoId}/autobus?sistema=${u.id}&vuelta=${punto}`;
+  const enlace = (u, punto) =>
+    punto === 'manos'
+      ? `/tecnicos/${tecnicoId}/manos/${MANOS[u.id].id}`
+      : `/tecnicos/${tecnicoId}/autobus?sistema=${u.id}&vuelta=${punto}`;
   unidades.forEach((u) => {
     Object.assign(u, { actual: u === actual });
     u.puntos.forEach((punto) =>

@@ -1,0 +1,41 @@
+{{!-- Entrena tus manos: la cámara ve las manos y encima se dibuja la herramienta. Se revisa la
+     postura con señales grandes (dónde está la mano, si está cerrada, hacia dónde jala) y se
+     corrige una cosa a la vez. El guante, si está conectado, mide la muñeca y el agarre. --}}
+<section id="manos" class="grid gap-6 {{#if pasoAPaso}}manos-grande{{/if}}" data-tecnico-id="{{tecnico.id}}" data-ejercicio="{{ejercicio.id}}" data-experiencia="{{tecnico.experiencia}}">
+  <div class="grid gap-1">
+    <p class="font-narrow text-sm font-bold uppercase tracking-wider text-tinta-3">Entrena tus manos · {{ejercicio.herramienta}}</p>
+    <h1 class="text-4xl leading-tight">{{ejercicio.nombre}}</h1>
+    <p class="max-w-3xl text-tinta-2">{{ejercicio.porque}}</p>
+  </div>
+
+  <div class="grid gap-5 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start">
+    <div class="relative mx-auto w-full max-w-[calc(68vh*4/3)] overflow-hidden border-2 border-tinta bg-tinta">
+      <canvas id="lienzo-manos" class="block aspect-[4/3] w-full" width="960" height="720" aria-label="Tu mano con la herramienta dibujada encima"></canvas>
+      <video id="video-manos" class="hidden" playsinline muted></video>
+      <div id="arranque" class="absolute inset-0 grid place-content-center gap-3 bg-tinta/90 p-6 text-center text-white">
+        <p class="text-lg">La cámara solo ve tus manos; no se graba ni se manda nada.</p>
+        <button id="encender" type="button" class="boton mx-auto bg-white px-8 py-4 text-lg text-tinta hover:bg-placa">Encender la cámara</button>
+        <p id="error-camara" class="text-sm text-mal-suave" hidden></p>
+      </div>
+      <p id="estado-manos" class="absolute inset-x-0 bottom-0 bg-tinta/85 px-4 py-3 text-center text-lg font-semibold text-white" aria-live="polite"></p>
+    </div>
+
+    <aside class="grid content-start gap-4 border border-tinta bg-white p-5">
+      <ol class="grid gap-2" aria-label="Pasos">
+        {{#each ejercicio.pasos}}
+          <li class="flex gap-3" data-paso="{{@index}}"><span class="recuadro h-7 w-7 shrink-0 text-sm">{{inc @index}}</span><span>{{this}}</span></li>
+        {{/each}}
+      </ol>
+      <div id="resultado-manos" class="grid gap-2" hidden></div>
+      <div class="flex flex-wrap gap-2">
+        <button id="otra-vez" type="button" class="boton px-5 py-3" hidden>Otra vez</button>
+        <a href="/tecnicos/{{tecnico.id}}/camino" class="boton-linea px-5 py-3 no-underline">Volver a Mi camino</a>
+      </div>
+      <div class="grid gap-1 border-t border-placa-linea pt-3 text-sm text-tinta-2">
+        <p><strong>Guante (opcional):</strong> si está conectado, mide la muñeca y el agarre con su sensor.</p>
+        <button id="guante" type="button" class="boton-linea w-fit px-4 py-2 text-sm">Conectar guante</button>
+        <p id="estado-guante" class="text-xs text-tinta-3">Sin guante: todo se revisa con la cámara.</p>
+      </div>
+    </aside>
+  </div>
+</section>

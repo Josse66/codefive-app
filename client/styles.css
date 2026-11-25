@@ -197,6 +197,14 @@
   .camino-nota {
     @apply text-xs text-tinta-3;
   }
+  /* Entrena tus manos en Paso a paso: la corrección y los pasos más grandes. */
+  .manos-grande #estado-manos {
+    @apply py-4 text-2xl;
+  }
+  .manos-grande ol,
+  .manos-grande .text-sm {
+    @apply text-lg;
+  }
   /* Paso a paso: todo más grande en Mi camino. */
   .camino-grande {
     @apply text-lg;

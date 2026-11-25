@@ -6,6 +6,7 @@ import {
   empezarPrincipiante,
   mostrarAutobus,
   mostrarCamino,
+  mostrarManos,
   mostrarDesempeno,
   mostrarDiagnostico,
   mostrarEmpezar,
@@ -57,6 +58,7 @@ router.get('/tecnicos/:id/ruta', mostrarRuta);
 router.get('/tecnicos/:id/practica/:competenciaId', mostrarPractica);
 router.get('/tecnicos/:id/evaluacion/:competenciaId', mostrarEvaluacion);
 router.get('/tecnicos/:id/camino', mostrarCamino);
+router.get('/tecnicos/:id/manos/:ejercicioId', mostrarManos);
 router.get('/tecnicos/:id/autobus', mostrarAutobus);
 router.get('/tecnicos/:id/taller', mostrarTaller);
 router.get('/tecnicos/:id/aprender', mostrarTemario);

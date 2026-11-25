@@ -28,6 +28,7 @@ export default defineConfig(({ command }) => ({
         recorrido: ruta('./client/pages/recorrido.js'),
         entrar: ruta('./client/pages/entrar.js'),
         gafetes: ruta('./client/pages/gafetes.js'),
+        manos: ruta('./client/pages/manos.js'),
       },
     },
   },

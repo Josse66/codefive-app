@@ -88,6 +88,11 @@ const SONIDOS = {
     [0, 0.07, 0.15, 0.22, 0.3].forEach((r, i) =>
       tono(500 + i * 90, 0.06, { volumen: 0.05, retraso: r, hasta: 900 + i * 120 }),
     ),
+  // Clic del torquímetro al llegar al torque.
+  clic: () => {
+    ruido(0.02, { filtro: 3200, q: 6, volumen: 0.45 });
+    ruido(0.02, { filtro: 2400, q: 6, volumen: 0.35, retraso: 0.05 });
+  },
   // Resultados
   bien: () => {
     tono(660, 0.12, { volumen: 0.08 });

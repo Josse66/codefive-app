@@ -1,0 +1,122 @@
+{
+  "nota": "Entrena tus manos: cada ejercicio es una herramienta con postura específica. Para agregar otra herramienta del mismo tipo ('giro' = se jala alrededor de un tornillo; 'punta' = se toca un punto con una sola mano) basta otra entrada aquí. Las coordenadas van de 0 a 1 sobre la imagen de la cámara (ya en espejo). El peso es lo que resta cada falla a la calificación; se aprueba con 91.",
+  "ejercicios": [
+    {
+      "id": "torquimetro",
+      "sistema": "suspension",
+      "nombre": "Torquímetro en las tuercas de la rueda",
+      "herramienta": "Torquímetro de clic",
+      "tipo": "giro",
+      "porque": "Una tuerca de rueda floja o apretada de más puede hacer que la rueda se suelte. El torquímetro solo marca bien si se toma en la marca del mango, se jala parejo y se para en el clic.",
+      "pasos": [
+        "Pon tu mano frente a la cámara, abierta.",
+        "Lleva la mano a la marca amarilla del mango y ciérrala, como si lo tomaras.",
+        "Jala hacia abajo (hacia ti), parejo, sin tirones.",
+        "Cuando suene el clic, para y suelta."
+      ],
+      "parametros": {
+        "pivote": [0.3, 0.42],
+        "largo": 0.5,
+        "zona": [0.76, 0.98],
+        "ancho": 0.09,
+        "objetivo": 32,
+        "pasarse": 7,
+        "tiron": 14,
+        "muneca": 35,
+        "munecaGuante": 20
+      },
+      "reglas": [
+        {
+          "id": "zona",
+          "frase": "Toma el mango en la marca amarilla, no más adentro",
+          "detalle": "Torquímetro: tomó el mango fuera de la marca",
+          "peso": 15
+        },
+        {
+          "id": "agarre",
+          "frase": "Cierra toda la mano en el mango",
+          "detalle": "Torquímetro: soltó el agarre mientras jalaba",
+          "peso": 15
+        },
+        {
+          "id": "sentido",
+          "frase": "Jala hacia abajo, hacia ti; no empujes",
+          "detalle": "Torquímetro: empujó en lugar de jalar",
+          "peso": 25
+        },
+        {
+          "id": "parejo",
+          "frase": "Más despacio y parejo, sin tirones",
+          "detalle": "Torquímetro: jalón con tirones",
+          "peso": 8
+        },
+        {
+          "id": "muneca",
+          "frase": "Endereza la muñeca: la mano en línea con el brazo",
+          "detalle": "Torquímetro: muñeca doblada al jalar",
+          "peso": 8
+        },
+        {
+          "id": "clic",
+          "frase": "Para en el clic: seguir jalando aprieta de más",
+          "detalle": "Torquímetro: siguió jalando después del clic",
+          "peso": 15
+        }
+      ],
+      "fuentes": [
+        "https://knowhow.napaonline.com/precision-matters-how-to-use-a-torque-wrench-the-right-way/",
+        "https://stahlwille.com/en_gb/news/use-a-torque-wrench-correctly!/16518757768",
+        "https://www.parktool.com/en-int/blog/repair-help/torque-wrench-use-and-care",
+        "https://stacks.cdc.gov/view/cdc/185869"
+      ]
+    },
+    {
+      "id": "multimetro",
+      "sistema": "electrico",
+      "nombre": "Multímetro con una sola mano",
+      "herramienta": "Multímetro y puntas",
+      "tipo": "punta",
+      "porque": "Con una mano en cada punta, la corriente puede cruzar el pecho de una mano a la otra. Se mide con una sola mano: la punta negra se fija con caimán y la otra mano queda fuera del circuito.",
+      "pasos": [
+        "La punta negra ya está fija con caimán en el borne negativo.",
+        "Toma la punta roja como lápiz: pulgar e índice juntos.",
+        "Llévala al borne positivo (+) y sostenla hasta leer el voltaje.",
+        "La otra mano, fuera del circuito: atrás o abajo."
+      ],
+      "parametros": {
+        "zonaCircuito": [0.42, 0.2, 0.98, 0.85],
+        "positivo": [0.62, 0.36],
+        "negativo": [0.84, 0.36],
+        "radio": 0.05,
+        "sostener": 1.5,
+        "lectura": "24.6 V"
+      },
+      "reglas": [
+        {
+          "id": "unaMano",
+          "frase": "Saca la otra mano del circuito",
+          "detalle": "Multímetro: las dos manos dentro del circuito",
+          "peso": 40,
+          "critico": true
+        },
+        {
+          "id": "lapiz",
+          "frase": "Toma la punta como lápiz: pulgar e índice juntos",
+          "detalle": "Multímetro: no tomó la punta como lápiz",
+          "peso": 15
+        },
+        {
+          "id": "borne",
+          "frase": "Ese no es el borne positivo: busca el (+)",
+          "detalle": "Multímetro: tocó el borne equivocado",
+          "peso": 15
+        }
+      ],
+      "fuentes": [
+        "https://www.fluke.com/en-in/learn/blog/safety/how-to-go-home-safely-at-the-end-of-the-day",
+        "https://www.allaboutcircuits.com/textbook/direct-current/chpt-3/safe-meter-usage/",
+        "https://ecmweb.com/safety/article/55332144/safety-best-practices-for-using-electrical-testing-equipment"
+      ]
+    }
+  ]
+}
