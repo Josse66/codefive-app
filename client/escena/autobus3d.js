@@ -722,6 +722,31 @@ export function crearEscena(
     Object.assign(p, { x: THREE.MathUtils.clamp(p.x, -14, 14), z: THREE.MathUtils.clamp(p.z, -9, 9) });
   }
 
+  // Autobús completo: se entra caminando por la puerta delantera (lado +z) y adentro
+  // se camina por el pasillo, con los ojos a la altura del piso del autobús.
+  const PUERTA = { x0: 4.9, x1: 5.75 };
+  const PISO_DENTRO = 0.42;
+  function limitarPaso(p) {
+    const enPuerta = p.x > PUERTA.x0 && p.x < PUERTA.x1;
+    if (inmersivo.dentro) {
+      if (enPuerta && p.z > 1.2) {
+        inmersivo.dentro = false;
+        return;
+      }
+      Object.assign(p, {
+        x: THREE.MathUtils.clamp(p.x, -4.3, 5.6),
+        z: THREE.MathUtils.clamp(p.z, -1.0, enPuerta ? 1.3 : 1.0),
+      });
+      return;
+    }
+    // Afuera, frente a la puerta abierta: se puede pasar.
+    if (completo && enPuerta && p.z > 0.5 && p.z < 1.9) {
+      if (p.z < 1.1) inmersivo.dentro = true;
+      return;
+    }
+    fueraDelAutobus(p);
+  }
+
   function activarInmersivo(encender) {
     if (encender === inmersivo.activo) return;
     inmersivo.activo = encender;
@@ -729,10 +754,17 @@ export function crearEscena(
       inmersivo.guardado = { posicion: camara.position.clone(), mira: controles.target.clone() };
       controles.enabled = false;
       llegada.t = 1;
-      // Se para frente a la zona del trabajo, a 2.6 m del lado de la puerta, mirándola.
-      camara.position.set(objetivo.x, OJOS.parado, objetivo.z + 2.6);
       inmersivo.altura = OJOS.parado;
-      camara.lookAt(objetivo.x, Math.max(0.6, objetivo.y), objetivo.z);
+      inmersivo.dentro = false;
+      if (completo) {
+        // Frente a la puerta delantera, mirando hacia ella.
+        camara.position.set(5.3, OJOS.parado, 3.6);
+        camara.lookAt(5.3, 1.3, 0);
+      } else {
+        // Se para frente a la zona del trabajo, a 2.6 m del lado de la puerta, mirándola.
+        camara.position.set(objetivo.x, OJOS.parado, objetivo.z + 2.6);
+        camara.lookAt(objetivo.x, Math.max(0.6, objetivo.y), objetivo.z);
+      }
       camara.fov = 70;
       camara.updateProjectionMatrix();
       camara.add(herramienta);
@@ -761,7 +793,8 @@ export function crearEscena(
     if (!inmersivo.activo) return false;
     const adelante = (teclas.has('KeyW') ? 1 : 0) - (teclas.has('KeyS') ? 1 : 0);
     const lado = (teclas.has('KeyD') ? 1 : 0) - (teclas.has('KeyA') ? 1 : 0);
-    const meta = teclas.has('ShiftLeft') || teclas.has('ShiftRight') ? OJOS.agachado : OJOS.parado;
+    const ojos = teclas.has('ShiftLeft') || teclas.has('ShiftRight') ? OJOS.agachado : OJOS.parado;
+    const meta = ojos + (inmersivo.dentro ? PISO_DENTRO : 0);
     const subiendo = Math.abs(inmersivo.altura - meta) > 0.005;
     if (!adelante && !lado && !subiendo) return false;
     const velocidad = 2.4 * dt;
@@ -773,8 +806,8 @@ export function crearEscena(
     const derecha = new THREE.Vector3(-frente.z, 0, frente.x);
     camara.position.addScaledVector(frente, adelante * velocidad).addScaledVector(derecha, lado * velocidad);
     inmersivo.altura += (meta - inmersivo.altura) * Math.min(1, dt * 10);
+    limitarPaso(camara.position);
     camara.position.y = inmersivo.altura;
-    fueraDelAutobus(camara.position);
     return true;
   }
 

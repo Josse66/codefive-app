@@ -156,6 +156,8 @@ function caminar(encender) {
   escena.activarInmersivo(encender);
   marcarVista('vista-dentro', encender);
   marcarVista('vista-fuera', !encender);
+  // Caminando, la lista de sistemas se esconde para ver el taller completo.
+  $('panel-sistemas').hidden = encender;
   $('ayuda').textContent = encender
     ? 'Clic derecho sostenido: mirar · W A S D: caminar · Shift: agacharte · clic: usar la herramienta'
     : 'Clic derecho y arrastrar: girar · rueda: acercar · clic en una pieza: verla';
