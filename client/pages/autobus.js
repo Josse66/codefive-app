@@ -289,6 +289,7 @@ function fichaPieza(base, conBoton) {
 
 function abrirSistema(sistema) {
   Object.assign(estado, { sistema, modo: 'sistema', vista: null, herramienta: null });
+  escena.quitarMarcas();
   escena.elegirHerramienta(null);
   escena.resaltar(null);
   irA(sistema);
@@ -535,7 +536,8 @@ function revisarConoce(baseTocada) {
   } else {
     estado.hecho = true;
     estado.retro = aviso('ok', 'Hecho', f.hazlo.resultado);
-    escena.efecto('chispa', instancias.get(base)?.[0]);
+    // La herramienta empuja hacia la pieza; con agua jabonosa salen burbujas.
+    escena.efecto(estado.herramienta === 'jabon' ? 'burbujas' : 'uso', instancias.get(base)?.[0]);
     const p = progresoDe(estado.sistema.id);
     if (!p.conoce.includes(base)) p.conoce.push(base);
     guardar();
@@ -588,7 +590,7 @@ function revisarEncuentra(baseTocada) {
   const base = estado.cola[estado.i];
   if (baseTocada === base) {
     if (estado.errores === 0) estado.aciertos += 1;
-    escena.efecto('chispa', instancias.get(base)?.[0]);
+    escena.marcarPieza(instancias.get(base)?.[0]);
     escena.resaltar(null);
     Object.assign(estado, { i: estado.i + 1, errores: 0, retro: aviso('ok', `¡Sí! ${ficha(base).nombre}.`) });
     if (estado.i >= estado.cola.length) {

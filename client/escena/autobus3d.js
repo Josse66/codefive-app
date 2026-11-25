@@ -1076,7 +1076,12 @@ export function crearEscena(
       tamano: 0.32,
     });
     marca.position.set(0, (malla.geometry?.parameters.height ?? 0.4) / 2 + 0.25, 0);
+    marca.userData.marca = true;
     malla.add(marca);
+  }
+
+  function quitarMarcas() {
+    mallasPieza.forEach((malla) => malla.remove(...malla.children.filter((h) => h.userData.marca)));
   }
 
   // Botón de calidad en la esquina del lienzo.
@@ -1283,6 +1288,7 @@ export function crearEscena(
     },
     marcarGrupo: yRedibujar(marcarGrupo),
     marcarPieza: yRedibujar(marcarPieza),
+    quitarMarcas: yRedibujar(quitarMarcas),
     enfocar: yRedibujar(enfocar),
     activarInmersivo: yRedibujar(activarInmersivo),
     // En primera persona la herramienta va pegada a la cámara: mover el cursor no cambia la imagen.
