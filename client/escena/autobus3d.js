@@ -876,7 +876,6 @@ export function crearEscena(
   window.addEventListener('keyup', alSoltar);
 
   const raycaster = new THREE.Raycaster();
-  const plano = new THREE.Plane(new THREE.Vector3(0, 0, 1), -1.8);
 
   function rayo(x, y) {
     raycaster.setFromCamera(new THREE.Vector2(x * 2 - 1, -(y * 2 - 1)), camara);
@@ -943,11 +942,63 @@ export function crearEscena(
 
   // La pieza resaltada late con un brillo suave (ver cuadro()).
   let resaltada = null;
+  // Además del brillo, la pieza resaltada lleva un contorno naranja y una silueta que se ve a
+  // través de lo que la tape (así se encuentra aunque esté detrás de otra pieza). Solo existen
+  // mientras está resaltada: no suman llamadas de dibujo al resto del tiempo.
+  const matContorno = new THREE.MeshBasicMaterial({ color: 0xff7a00, side: THREE.BackSide });
+  const matSilueta = new THREE.MeshBasicMaterial({
+    color: 0xff7a00,
+    transparent: true,
+    opacity: 0.28,
+    depthTest: false,
+    depthWrite: false,
+  });
+  let contorno = [];
+  function quitarContorno() {
+    contorno.forEach((c) => c.removeFromParent());
+    contorno = [];
+  }
+  function ponerContorno(grupo) {
+    grupo.updateMatrixWorld(true);
+    const inversa = grupo.matrixWorld.clone().invert();
+    const limites = new THREE.Box3().setFromObject(grupo).applyMatrix4(inversa);
+    const centro = limites.getCenter(new THREE.Vector3());
+    const lado = Math.max(...limites.getSize(new THREE.Vector3()).toArray()) || 1;
+    // Unos 2.5 cm de borde sin importar el tamaño de la pieza.
+    const k = THREE.MathUtils.clamp(1 + 0.05 / lado, 1.02, 1.25);
+    const crecer = new THREE.Matrix4()
+      .makeTranslation(centro.x, centro.y, centro.z)
+      .multiply(new THREE.Matrix4().makeScale(k, k, k))
+      .multiply(new THREE.Matrix4().makeTranslation(-centro.x, -centro.y, -centro.z));
+    const mallas = [];
+    grupo.traverse((n) => {
+      if (n.isMesh) mallas.push(n);
+    });
+    mallas.forEach((malla) => {
+      const local = inversa.clone().multiply(malla.matrixWorld);
+      [
+        [matContorno, crecer.clone().multiply(local), 0],
+        [matSilueta, local, 999],
+      ].forEach(([material, matriz, orden]) => {
+        const copia = new THREE.Mesh(malla.geometry, material);
+        copia.matrixAutoUpdate = false;
+        copia.matrix.copy(matriz);
+        copia.renderOrder = orden;
+        copia.raycast = () => {}; // no estorba al señalar
+        grupo.add(copia);
+        contorno.push(copia);
+      });
+    });
+  }
+
   function resaltar(id) {
     if (resaltada === id) return;
     const anterior = mallasPieza.get(resaltada);
     if (anterior && anterior.userData.cambio == null) tenir(anterior, 0x000000);
+    quitarContorno();
     resaltada = id;
+    const grupo = mallasPieza.get(id);
+    if (grupo) ponerContorno(grupo);
   }
 
   function marcarGrupo(grupo, color) {
@@ -962,8 +1013,19 @@ export function crearEscena(
     // En modo inmersivo la herramienta va en la mano (pegada a la cámara), no sigue al puntero.
     if (inmersivo.activo) return piezaEn(x, y);
     const encima = piezaEn(x, y);
-    const punto = encima?.punto ?? rayo(x, y).ray.intersectPlane(plano, new THREE.Vector3());
-    if (punto) herramienta.position.copy(punto).add(new THREE.Vector3(0, 0, 0.35));
+    // Sin pieza bajo el cursor, la herramienta flota a la distancia de lo que se está mirando
+    // (antes iba a un plano fijo que, según desde dónde se mirara, quedaba fuera de la vista).
+    const punto =
+      encima?.punto ?? rayo(x, y).ray.at(camara.position.distanceTo(controles.target), new THREE.Vector3());
+    // Se pone entre la pieza y la cámara (35 cm hacia quien mira), de frente: su lado de enfrente
+    // (+z) mira a la cámara y la punta (-z) a la pieza, así se ve igual desde cualquier lado.
+    if (punto) {
+      const haciaCamara = camara.position.clone().sub(punto).normalize();
+      herramienta.position.copy(punto).addScaledVector(haciaCamara, 0.35);
+      herramienta.lookAt(camara.position);
+      // Más grande cuando la cámara está lejos, para que se lea a cualquier distancia.
+      herramienta.scale.setScalar(THREE.MathUtils.clamp(camara.position.distanceTo(punto) / 5, 0.7, 2));
+    }
     if (giro) {
       const g = THREE.MathUtils.degToRad;
       herramienta.rotation.set(g(giro.pitch), g(-giro.yaw), g(-giro.roll));
@@ -1000,8 +1062,18 @@ export function crearEscena(
       .then((biblioteca) => {
         const original = modeloDe(biblioteca, `h_${id}`);
         if (!original || herramientaActual !== id) return null;
-        const modelo = copiaDe(original);
-        modelo.scale.setScalar(2);
+        // Cada modelo trae otro origen y otro tamaño: se centra en la mano y se lleva a 40 cm
+        // en su lado más largo, para que todas se lean igual desde lejos.
+        const crudo = copiaDe(original);
+        crudo.scale.setScalar(1);
+        crudo.updateMatrixWorld(true);
+        const limites = new THREE.Box3().setFromObject(crudo);
+        const lado = Math.max(...limites.getSize(new THREE.Vector3()).toArray()) || 1;
+        const escala = 0.4 / lado;
+        crudo.scale.setScalar(escala);
+        crudo.position.copy(limites.getCenter(new THREE.Vector3()).multiplyScalar(-escala));
+        const modelo = new THREE.Group();
+        modelo.add(crudo);
         return compilar(modelo)
           .catch(() => {})
           .then(() => {
