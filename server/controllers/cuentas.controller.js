@@ -1,4 +1,3 @@
-import { yaEmpezo } from '#services/carrera.service.js';
 import { COOKIE, escribirCookie, leerCookie } from '#helpers/sesion.js';
 import { abrirSesion, cerrarSesion, registrarTecnico, verificar } from '#services/cuentas.service.js';
 import { elegirModelo, listarModelos, modeloDelTecnico } from '#services/modelos.service.js';
@@ -23,13 +22,10 @@ const TALLERES = [
   'Flota de cliente (otra)',
 ];
 
-/** A dónde va cada quien al entrar: Volvo al panel; el técnico a elegir autobús, al diagnóstico o a su plan. */
+/** A dónde va cada quien al entrar: Volvo al panel; el técnico directo al autobús, donde aprende. */
 function destino(cuenta) {
   if (cuenta.rol === 'volvo') return '/volvo';
-  const tecnico = obtenerTecnico(cuenta.tecnicoId ?? cuenta.tecnico_id);
-  if (!tecnico.modelo_id) return '/bienvenida';
-  if (!yaEmpezo(tecnico)) return `/tecnicos/${tecnico.id}/empezar`;
-  return `/tecnicos/${tecnico.id}/plan`;
+  return `/tecnicos/${cuenta.tecnicoId ?? cuenta.tecnico_id}/autobus`;
 }
 
 export function inicio(req, res) {
@@ -79,7 +75,7 @@ export function registrar(req, res) {
     const cuenta = registrarTecnico(req.body);
     const { token, segundos } = abrirSesion(cuenta.id);
     escribirCookie(res, token, segundos);
-    res.redirect('/bienvenida');
+    res.redirect(destino(cuenta));
   } catch (error) {
     if (error.status !== 400) throw error;
     res.status(400).render('registro', {
@@ -123,6 +119,5 @@ export function mostrarBienvenida(req, res) {
 export function guardarBienvenida(req, res) {
   const tecnico = obtenerTecnico(req.cuenta.tecnicoId);
   elegirModelo(tecnico.id, req.body.modelo);
-  // Un técnico nuevo sigue a elegir cómo empieza; si solo cambió de autobús, vuelve a su plan.
-  res.redirect(yaEmpezo(tecnico) ? `/tecnicos/${tecnico.id}/plan` : `/tecnicos/${tecnico.id}/empezar`);
+  res.redirect(`/tecnicos/${tecnico.id}/autobus`);
 }

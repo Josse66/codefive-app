@@ -108,9 +108,10 @@ function etiqueta(texto, { fondo = '#141c24', tinta = '#ffffff', tamano = 0.42 }
 }
 
 // Modelo realista del autobús (GLB hecho en Blender, 12 m de largo, frente hacia +x, puerta en +z).
+// Es el autobús urbano diésel completo: carrocería, interior, motor, transmisión, frenos,
+// suspensión, sistema eléctrico. Cada pieza que se aprende es un nodo "p_<id>".
 // Se descarga una sola vez y cada escena usa una copia.
-const RUTA_MODELO = '/modelos/autobus_urbano.glb';
-const TECHO = 3.25;
+const RUTA_MODELO = '/modelos/autobus_diesel.glb';
 // Quien pide menos movimiento ve la cámara llegar sin vuelo.
 const menosMovimiento = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 let modeloCargando = null;
@@ -273,41 +274,6 @@ function copiaDe(original) {
   return copia;
 }
 
-// Paquete de baterías o escape, encima del techo cuya altura se recibe.
-// Con la biblioteca cargada usa los modelos; si no, cajas.
-function agregarExtras(bus, tipo, techo, biblioteca) {
-  const extras = new THREE.Group();
-  const modelo = biblioteca?.getObjectByName(tipo === 'electrico' ? 'baterias_techo' : 'escape');
-  if (tipo === 'electrico') {
-    // Paquete de baterías de 600 V en el techo, con su marca naranja.
-    if (modelo) {
-      const baterias = copiaDe(modelo);
-      baterias.position.set(0, techo, 0);
-      extras.add(baterias);
-    } else {
-      const baterias = caja([5.2, 0.3, 1.9], COLOR.hvSuave, [0, techo + 0.15, 0]);
-      baterias.children[0].material.color.set(COLOR.hv);
-      extras.add(baterias);
-    }
-    const marca = etiqueta('600 V', { fondo: '#d9480f', tamano: 0.6 });
-    marca.position.set(2.4, techo + 0.6, -0.7);
-    extras.add(marca);
-  } else if (modelo) {
-    const escape = copiaDe(modelo);
-    escape.position.set(-5.7, techo + 0.2, -0.9);
-    extras.add(escape);
-  } else {
-    const escape = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.08, 0.08, 1.0, 12),
-      new THREE.MeshStandardMaterial({ color: COLOR.metal }),
-    );
-    escape.position.set(-5.7, techo + 0.2, -0.9);
-    extras.add(conAristas(escape));
-  }
-  bus.add(extras);
-  return extras;
-}
-
 // `compilar(objeto)` prepara los shaders antes de mostrar el modelo (sin trabar la página).
 function construirAutobus(tipo, alCargar = () => {}, compilar = () => Promise.resolve()) {
   const bus = new THREE.Group();
@@ -333,15 +299,10 @@ function construirAutobus(tipo, alCargar = () => {}, compilar = () => Promise.re
   // Compartimiento del motor atrás en el diésel.
   if (tipo === 'diesel') bloques.add(caja([0.03, 1.1, 2.0], 0xe3e8ec, [-6.01, 1.25, 0]));
 
-  let extras = agregarExtras(bus, tipo, TECHO);
-
-  // Cuando llega el modelo realista, sustituye a los bloques y los extras se acomodan a su techo.
-  Promise.all([cargarModelo(), cargarBiblioteca().catch(() => null)])
-    .then(([modelo, biblioteca]) => {
+  // Cuando llega el modelo realista, sustituye a los bloques.
+  cargarModelo()
+    .then((modelo) => {
       const copia = copiaDe(modelo);
-      // Las piezas de los escenarios están medidas sobre el techo de 3.25 m de los bloques.
-      // La carrocería se estira a lo alto; las ruedas crecen parejo para seguir redondas y en el piso.
-      const factor = TECHO / new THREE.Box3().setFromObject(copia).max.y;
       copia.children.forEach((parte) => {
         const p = parte;
         if (p.name === 'sombra_piso') {
@@ -367,22 +328,13 @@ function construirAutobus(tipo, alCargar = () => {}, compilar = () => Promise.re
           // Tampoco recibe: cada píxel del autobús leía el mapa de sombras sin que se notara.
           if (nodo.isMesh) Object.assign(nodo, { castShadow: false, receiveShadow: false });
         });
-        if (p.name.startsWith('rueda')) {
-          p.scale.multiplyScalar(factor);
-          p.position.y *= factor;
-        } else {
-          p.scale.y *= factor;
-        }
       });
-      const nuevosExtras = agregarExtras(new THREE.Group(), tipo, TECHO, biblioteca);
       return compilar(copia)
-        .then(() => compilar(nuevosExtras))
         .catch(() => {})
         .then(() => {
-          bus.remove(bloques, extras);
-          bus.add(copia, nuevosExtras);
-          extras = nuevosExtras;
-          alCargar();
+          bus.remove(bloques);
+          bus.add(copia);
+          alCargar(copia);
         });
     })
     .catch(() => {});
@@ -394,7 +346,11 @@ function construirAutobus(tipo, alCargar = () => {}, compilar = () => Promise.re
  * @param {HTMLElement} contenedor
  * @param {{ autobus: 'electrico'|'diesel', piezas?: any[], enfoque?: {objetivo, distancia}, grupos?: boolean }} opciones
  */
-export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos = false }) {
+// completo: las piezas del modelo (nodos "p_<id>") se pueden señalar; catalogo(id) da su ficha.
+export function crearEscena(
+  contenedor,
+  { autobus, piezas = [], enfoque, grupos = false, completo = false, catalogo = null },
+) {
   // Calidad: "normal" (sombras, resolución hasta 1.5) o "ligero" (sin sombras, resolución 1).
   // Se guarda en el navegador; si la computadora va lenta se cambia sola a ligero.
   let calidad = localStorage.getItem('calidad3d') ?? 'normal';
@@ -564,8 +520,6 @@ export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos 
   // compileAsync usa la compilación en paralelo del navegador: el modelo aparece ya listo
   // en vez de congelar la página medio segundo en su primer cuadro.
   const compilar = (objeto) => renderer.compileAsync(objeto, camara, escena);
-  const bus = construirAutobus(autobus, () => pedirCuadro(true), compilar);
-  escena.add(bus);
 
   // Piezas del escenario: se pueden señalar y reciben herramientas.
   const mallasPieza = new Map();
@@ -599,6 +553,8 @@ export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos 
   cargarBiblioteca()
     .then((biblioteca) => {
       mallasPieza.forEach((malla, id) => {
+        // Las piezas del autobús completo ya vienen modeladas (no son cajas).
+        if (!malla.isMesh) return;
         const original = modeloDe(biblioteca, id);
         if (!original) return;
         const modelo = copiaDe(original);
@@ -629,6 +585,68 @@ export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos 
     } else {
       aplicar(malla.material);
     }
+  }
+
+  // ---------- Autobús completo: cada nodo "p_<id>" del modelo es una pieza que se aprende ----------
+  // La carrocería y la tapa del motor tapan lo de adentro (salvo con rayos X).
+  const ocluyentes = [];
+  let tapaMotor = null;
+  function registrarModelo(copia) {
+    copia.traverse((n) => {
+      const nodo = n;
+      if (nodo.name === 'carroceria' || nodo.name === 'tapa_motor') ocluyentes.push(nodo);
+      if (nodo.name === 'tapa_motor') tapaMotor = nodo;
+      // Solo el nodo de la pieza (sus mallas se llaman "p_<id>__<material>").
+      if (!completo || !nodo.name.startsWith('p_') || nodo.name.includes('__')) return;
+      const id = nodo.name.slice(2);
+      const info = catalogo?.(id);
+      if (!info) return;
+      nodo.userData.pieza = { id, nombre: info.nombre, base: info.base };
+      nodo.userData.modelo = nodo;
+      mallasPieza.set(id, nodo);
+    });
+    // Avisa a la página que ya puede pedir piezas.
+    renderer.domElement.dispatchEvent(new CustomEvent('modelo-listo'));
+  }
+  const bus = construirAutobus(
+    autobus,
+    (copia) => {
+      registrarModelo(copia);
+      pedirCuadro(true);
+    },
+    compilar,
+  );
+  escena.add(bus);
+
+  // Rayos X: la carrocería se vuelve casi transparente para ver motor, bajos e interior.
+  const rayosX = { activo: false };
+  function verRayosX(encender) {
+    rayosX.activo = encender;
+    ocluyentes.forEach((o) =>
+      o.traverse((n) => {
+        if (!n.isMesh) return;
+        (Array.isArray(n.material) ? n.material : [n.material]).forEach((material) => {
+          const mt = material;
+          mt.userData.original ??= {
+            transparent: mt.transparent,
+            opacity: mt.opacity,
+            depthWrite: mt.depthWrite,
+          };
+          Object.assign(
+            mt,
+            encender ? { transparent: true, opacity: 0.12, depthWrite: false } : mt.userData.original,
+          );
+          mt.needsUpdate = true;
+        });
+      }),
+    );
+  }
+
+  // Tapa trasera del motor: gira sobre su bisagra de arriba.
+  const tapa = { t: 1, desde: 0, hasta: 0 };
+  function abrirTapa(abrir) {
+    if (!tapaMotor) return;
+    Object.assign(tapa, { t: 0, desde: tapaMotor.rotation.z, hasta: abrir ? -1.25 : 0 });
   }
 
   // Recuadros 1 a 9 para explorar por grupo de función.
@@ -783,9 +801,21 @@ export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos 
   // Margen para señalar: con cámara o guante la mano no es tan precisa como el mouse.
   const MARGEN = 0.035;
 
+  // Sube desde la malla tocada hasta el nodo que es la pieza.
+  function piezaDe(objeto) {
+    let o = objeto;
+    while (o && !o.userData.pieza) o = o.parent;
+    return o;
+  }
+
   function piezaEn(x, y) {
-    const [primera] = rayo(x, y).intersectObjects([...mallasPieza.values()], false);
-    if (primera) return { pieza: primera.object.userData.pieza, punto: primera.point };
+    // En el autobús completo la carrocería tapa lo de adentro (si no hay rayos X).
+    const tapan = completo && !rayosX.activo ? ocluyentes : [];
+    const golpes = rayo(x, y).intersectObjects([...mallasPieza.values(), ...tapan], true);
+    const primera = golpes.find((g) => g.object.isMesh);
+    const nodo = primera && piezaDe(primera.object);
+    if (nodo) return { pieza: nodo.userData.pieza, punto: primera.point };
+    if (completo) return null;
     // Si no cae justo encima, la pieza más cercana en pantalla dentro del margen.
     let cercana = null;
     let mejor = MARGEN;
@@ -801,6 +831,23 @@ export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos 
       }
     });
     return cercana ? { pieza: cercana.userData.pieza, punto: cercana.position.clone() } : null;
+  }
+
+  // Todas las piezas que atraviesa el rayo, de la más cercana a la más lejana (sin repetir).
+  function piezasEn(x, y) {
+    const tapan = completo && !rayosX.activo ? ocluyentes : [];
+    const ids = [];
+    const golpes = rayo(x, y)
+      .intersectObjects([...mallasPieza.values(), ...tapan], true)
+      .filter((g) => g.object.isMesh);
+    // Se detiene en la carrocería: lo que sigue detrás no se ve.
+    golpes.every((g) => {
+      const nodo = piezaDe(g.object);
+      if (!nodo) return false;
+      if (!ids.includes(nodo.userData.pieza.id)) ids.push(nodo.userData.pieza.id);
+      return true;
+    });
+    return ids;
   }
 
   function grupoEn(x, y) {
@@ -968,15 +1015,21 @@ export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos 
 
   // Marca una pieza ya atendida (por ejemplo, el candado puesto).
   // Vuela la cámara hacia una pieza (o a la vista general si no hay id) y la deja de frente.
+  // También acepta una zona: { objetivo: [x, y, z], distancia, vista?: [x, y, z] (de dónde se mira) }.
   function enfocar(id, cerca = 4.2) {
-    const malla = mallasPieza.get(id);
-    const mira = malla ? malla.position.clone() : objetivo.clone();
-    const lejos = malla ? cerca : distancia * 1.6;
+    const zona = id && typeof id === 'object' ? id : null;
+    const malla = zona ? null : mallasPieza.get(id);
+    let mira = objetivo.clone();
+    if (zona) mira = new THREE.Vector3(...zona.objetivo);
+    else if (malla) mira = malla.getWorldPosition(new THREE.Vector3());
+    let lejos = malla ? cerca : distancia * 1.6;
+    if (zona) lejos = zona.distancia;
+    const desdeDonde = zona?.vista ? new THREE.Vector3(...zona.vista).normalize() : direccion;
     Object.assign(llegada, {
       t: 0,
       duracion: menosMovimiento ? 0.01 : 0.9,
       desde: camara.position.clone(),
-      hasta: mira.clone().addScaledVector(direccion, lejos),
+      hasta: mira.clone().addScaledVector(desdeDonde, lejos),
       miraDesde: controles.target.clone(),
       miraHasta: mira,
     });
@@ -989,7 +1042,7 @@ export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos 
       fondo: tipo === 'candado' ? '#b3121f' : '#2f7d43',
       tamano: 0.32,
     });
-    marca.position.set(0, (malla.geometry.parameters.height ?? 0.4) / 2 + 0.25, 0);
+    marca.position.set(0, (malla.geometry?.parameters.height ?? 0.4) / 2 + 0.25, 0);
     malla.add(marca);
   }
 
@@ -1032,6 +1085,7 @@ export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos 
       llegada.t < 1 ||
       uso < 1 ||
       movimientos.length > 0 ||
+      tapa.t < 1 ||
       [...mallasPieza.values()].some((m) => m.userData.cambio != null);
     // Caminar en primera persona o el amortiguado de la cámara también piden cuadros.
     const camaraMovida = moverPrimeraPersona(dt) || (!inmersivo.activo && controles.update());
@@ -1077,7 +1131,7 @@ export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos 
       const { modelo } = m.userData;
       if (m.userData.cambio == null) {
         // Pieza resaltada: brillo fijo (latir obligaría a redibujar todo el tiempo).
-        if (id === resaltada) tenir(m, 0x3a3020, 0.9);
+        if (id === resaltada) tenir(m, 0xff7a00, 0.55);
         return;
       }
       m.userData.cambio += dt;
@@ -1137,6 +1191,11 @@ export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos 
       uso = Math.min(1, uso + dt / 0.45);
       mano.position.set(0, 0, -Math.sin(uso * Math.PI) * 0.3);
     }
+    if (tapa.t < 1 && tapaMotor) {
+      tapa.t = Math.min(1, tapa.t + dt / (menosMovimiento ? 0.01 : 0.8));
+      const k = tapa.t * tapa.t * (3 - 2 * tapa.t);
+      tapaMotor.rotation.z = THREE.MathUtils.lerp(tapa.desde, tapa.hasta, k);
+    }
     // Entrada de la cámara.
     if (llegada.t < 1) {
       llegada.t = Math.min(1, llegada.t + dt / llegada.duracion);
@@ -1175,6 +1234,7 @@ export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos 
   return {
     lienzo: renderer.domElement,
     piezaEn,
+    piezasEn,
     grupoEn,
     // Solo redibuja si cambia la pieza resaltada (se llama en cada movimiento del mouse).
     resaltar: (id) => {
@@ -1194,6 +1254,16 @@ export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos 
       return r;
     },
     elegirHerramienta: yRedibujar(elegirHerramienta),
+    verRayosX: yRedibujar(verRayosX),
+    abrirTapa: yRedibujar(abrirTapa),
+    rayosXActivo: () => rayosX.activo,
+    idsPiezas: () => [...mallasPieza.keys()],
+    // Dónde se ve la pieza en el lienzo (x, y de 0 a 1).
+    pantallaDe: (id) => {
+      const p = mallasPieza.get(id)?.getWorldPosition(new THREE.Vector3()).project(camara);
+      return p ? [(p.x + 1) / 2, (1 - p.y) / 2] : null;
+    },
+    posicionDe: (id) => mallasPieza.get(id)?.getWorldPosition(new THREE.Vector3()).toArray() ?? null,
     efecto: yRedibujar(efecto, true),
     nombrePieza: (id) => mallasPieza.get(id)?.userData.pieza.nombre ?? id,
     destruir() {

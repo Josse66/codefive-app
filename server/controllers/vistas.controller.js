@@ -179,6 +179,7 @@ export function mostrarAutobus(req, res) {
       tecnico,
       seccion: 'autobus',
       autobus: tecnico.tecnologia === 'electrica' ? 'electrico' : 'diesel',
+      layout: 'simulador',
       scriptPagina: 'pages/autobus.js',
     }),
   );

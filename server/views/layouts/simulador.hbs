@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#14181c">
+  <title>{{#if titulo}}{{titulo}} · {{/if}}Técnicos del Mañana</title>
+  {{{viteAssets "main.js"}}}
+  {{#if scriptPagina}}{{{viteAssets scriptPagina}}}{{/if}}
+</head>
+{{!-- El simulador ocupa toda la ventana: el autobús es lo principal y la interfaz flota encima. --}}
+<body class="h-screen overflow-hidden bg-placa">
+  {{{body}}}
+</body>
+</html>

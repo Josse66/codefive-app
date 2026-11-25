@@ -115,6 +115,13 @@
 }
 
 @layer components {
+  /* Botones de vista del simulador (barra oscura de arriba). */
+  .vista {
+    @apply px-3 py-1.5 text-placa-linea hover:text-white;
+  }
+  .vista[aria-pressed='true'] {
+    @apply bg-white font-semibold text-tinta hover:text-tinta;
+  }
   .contenedor {
     @apply mx-auto w-full max-w-[1360px] px-6 lg:px-8;
   }

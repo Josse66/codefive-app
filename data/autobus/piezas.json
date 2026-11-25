@@ -1,0 +1,989 @@
+{
+  "autobus": "Autobús urbano diésel de piso bajo (modelo genérico de demostración, sin marcas)",
+  "fuente": "Conocimiento público de servicio de autobuses diésel (motor de 6 cilindros en línea con turbo, frenos de aire, suspensión neumática). Valores de demostración.",
+  "herramientas": [
+    {
+      "id": "mano",
+      "nombre": "Mano",
+      "uso": "Tocar, mover y sentir juego o temperatura."
+    },
+    {
+      "id": "linterna",
+      "nombre": "Linterna",
+      "uso": "Inspección visual: fugas, grietas, desgaste, conexiones."
+    },
+    {
+      "id": "llave",
+      "nombre": "Llave",
+      "uso": "Aflojar, apretar o revisar que algo esté firme."
+    },
+    {
+      "id": "multimetro",
+      "nombre": "Multímetro",
+      "uso": "Medir voltaje, continuidad y resistencia."
+    },
+    {
+      "id": "escaner",
+      "nombre": "Escáner de diagnóstico",
+      "uso": "Leer códigos de falla y datos en vivo de los módulos."
+    },
+    {
+      "id": "jabon",
+      "nombre": "Agua jabonosa",
+      "uso": "Encontrar fugas de aire: donde hay fuga salen burbujas."
+    }
+  ],
+  "sistemas": [
+    {
+      "id": "motor",
+      "grupo": 2,
+      "nombre": "Motor diésel",
+      "resumen": "Seis cilindros en línea, atrás y de lado. Quema diésel con aire comprimido por el turbo; el radiador le quita el calor.",
+      "zona": {
+        "objetivo": [
+          -5.1,
+          1.1,
+          -0.2
+        ],
+        "distancia": 4.2,
+        "vista": [
+          -1,
+          0.55,
+          -0.45
+        ]
+      },
+      "rayosX": true,
+      "tapa": true,
+      "orden": [
+        "bloque_motor",
+        "cabeza_motor",
+        "tapa_punterias",
+        "carter",
+        "varilla_aceite",
+        "filtro_aceite",
+        "inyectores",
+        "filtro_combustible",
+        "separador_agua",
+        "turbo",
+        "multiple_admision",
+        "enfriador_aire",
+        "multiple_escape",
+        "radiador",
+        "ventilador",
+        "bomba_agua",
+        "deposito_refrigerante",
+        "banda_accesorios",
+        "volante_motor"
+      ]
+    },
+    {
+      "id": "combustible",
+      "grupo": 2,
+      "nombre": "Combustible y emisiones",
+      "resumen": "El diésel viaja del tanque al motor; los gases salen limpios gracias al filtro de partículas y a la urea.",
+      "zona": {
+        "objetivo": [
+          -1.5,
+          0.8,
+          -0.4
+        ],
+        "distancia": 9,
+        "vista": [
+          0.15,
+          0.35,
+          -1
+        ]
+      },
+      "rayosX": true,
+      "orden": [
+        "tanque_combustible",
+        "linea_combustible",
+        "filtro_particulas",
+        "tanque_urea",
+        "tubo_escape"
+      ]
+    },
+    {
+      "id": "transmision",
+      "grupo": 4,
+      "nombre": "Transmisión",
+      "resumen": "La fuerza del motor pasa por la caja, gira 90° en la transmisión en ángulo y llega por la flecha al diferencial y a las ruedas traseras.",
+      "zona": {
+        "objetivo": [
+          -4.4,
+          0.8,
+          0.4
+        ],
+        "distancia": 4.5,
+        "vista": [
+          -0.7,
+          0.35,
+          1
+        ]
+      },
+      "rayosX": true,
+      "tapa": true,
+      "orden": [
+        "caja_cambios",
+        "modulo_caja",
+        "transmision_angulo",
+        "flecha_cardan",
+        "diferencial",
+        "eje_trasero"
+      ]
+    },
+    {
+      "id": "frenos",
+      "grupo": 5,
+      "nombre": "Frenos de aire",
+      "resumen": "El compresor llena los depósitos de aire; al pisar el pedal, el aire empuja las cámaras de freno y éstas abren las balatas contra el tambor.",
+      "zona": {
+        "objetivo": [
+          -1.2,
+          0.6,
+          0.6
+        ],
+        "distancia": 8.5,
+        "vista": [
+          0.1,
+          0.3,
+          1
+        ]
+      },
+      "rayosX": true,
+      "practica": {
+        "escenario": "frenos-balatas",
+        "texto": "Cambia las balatas de la rueda trasera"
+      },
+      "orden": [
+        "compresor_aire",
+        "secador_aire",
+        "deposito_aire",
+        "valvula_purga",
+        "lineas_aire",
+        "camara_freno",
+        "tambor"
+      ]
+    },
+    {
+      "id": "direccion",
+      "grupo": 6,
+      "nombre": "Dirección",
+      "resumen": "El volante mueve la caja de dirección; el brazo pitman y la barra de dirección giran las ruedas delanteras.",
+      "zona": {
+        "objetivo": [
+          4.4,
+          0.8,
+          0
+        ],
+        "distancia": 4.5,
+        "vista": [
+          0.6,
+          0.35,
+          -1
+        ]
+      },
+      "rayosX": true,
+      "orden": [
+        "volante",
+        "caja_direccion",
+        "brazo_pitman",
+        "barra_direccion",
+        "eje_delantero"
+      ]
+    },
+    {
+      "id": "suspension",
+      "grupo": 7,
+      "nombre": "Bastidor y suspensión de aire",
+      "resumen": "El autobús va sobre bolsas de aire; la válvula niveladora mantiene la altura y los amortiguadores frenan el rebote.",
+      "zona": {
+        "objetivo": [
+          -3.9,
+          0.7,
+          0.3
+        ],
+        "distancia": 5,
+        "vista": [
+          0.25,
+          0.3,
+          1
+        ]
+      },
+      "rayosX": true,
+      "orden": [
+        "bastidor",
+        "bolsa_aire",
+        "valvula_niveladora",
+        "amortiguador"
+      ]
+    },
+    {
+      "id": "electrico",
+      "grupo": 3,
+      "nombre": "Sistema eléctrico 24 V",
+      "resumen": "Dos baterías de 12 V en serie dan 24 V; el alternador las recarga y la central eléctrica reparte la corriente con fusibles y relevadores.",
+      "zona": {
+        "objetivo": [
+          4.5,
+          0.9,
+          -0.9
+        ],
+        "distancia": 4.5,
+        "vista": [
+          0.3,
+          0.35,
+          -1
+        ]
+      },
+      "rayosX": true,
+      "orden": [
+        "bateria",
+        "interruptor_maestro",
+        "motor_arranque",
+        "alternador",
+        "central_electrica",
+        "arnes_principal",
+        "conector_diagnostico"
+      ]
+    },
+    {
+      "id": "interior",
+      "grupo": 8,
+      "nombre": "Puesto del conductor e interior",
+      "resumen": "Lo que usa el operador y los pasajeros: tablero, pedales, puertas, pasamanos y clima.",
+      "zona": {
+        "objetivo": [
+          5.2,
+          1.3,
+          -0.6
+        ],
+        "distancia": 3.2,
+        "vista": [
+          -1,
+          0.3,
+          0.15
+        ]
+      },
+      "rayosX": true,
+      "orden": [
+        "tablero",
+        "asiento_conductor",
+        "pedales",
+        "mecanismo_puerta",
+        "pasamanos",
+        "unidad_clima"
+      ]
+    },
+    {
+      "id": "incendios",
+      "grupo": 9,
+      "nombre": "Detección y supresión de incendios",
+      "resumen": "Un detector vigila el compartimiento del motor; si hay fuego, el tanque descarga el agente extintor y el tablero avisa al operador.",
+      "zona": {
+        "objetivo": [
+          -4.9,
+          1.5,
+          0.3
+        ],
+        "distancia": 4,
+        "vista": [
+          -1,
+          0.6,
+          0.35
+        ]
+      },
+      "rayosX": true,
+      "tapa": true,
+      "orden": [
+        "detector_incendio",
+        "tanque_supresion",
+        "panel_supresion"
+      ]
+    }
+  ],
+  "piezas": {
+    "bloque_motor": {
+      "nombre": "Bloque del motor",
+      "que": "La estructura principal del motor: adentro están los 6 cilindros, los pistones y el cigüeñal.",
+      "falla": "Grietas por sobrecalentamiento o fugas de aceite y refrigerante por los empaques.",
+      "revisa": "Busca manchas de aceite o refrigerante y grietas con la linterna, sobre todo alrededor de los empaques.",
+      "hazlo": {
+        "herramienta": "linterna",
+        "instruccion": "Revisa el bloque con la linterna en busca de fugas.",
+        "resultado": "Sin fugas: solo polvo seco. El bloque está bien."
+      }
+    },
+    "cabeza_motor": {
+      "nombre": "Cabeza del motor",
+      "que": "Tapa los cilindros por arriba; ahí están las válvulas que dejan entrar aire y salir los gases.",
+      "falla": "Si el motor se calienta de más, la cabeza se tuerce y el empaque deja pasar refrigerante al aceite.",
+      "revisa": "Revisa que el aceite no se vea lechoso y que no baje el refrigerante sin fuga visible.",
+      "hazlo": {
+        "herramienta": "linterna",
+        "instruccion": "Busca fugas en la unión entre cabeza y bloque.",
+        "resultado": "El empaque se ve seco. No hay paso de refrigerante."
+      }
+    },
+    "tapa_punterias": {
+      "nombre": "Tapa de punterías",
+      "que": "Cubre el mecanismo de válvulas encima de la cabeza y lo mantiene lubricado y limpio.",
+      "falla": "Su empaque se endurece y escurre aceite sobre el motor, que puede caer al escape caliente.",
+      "revisa": "Busca aceite en los bordes de la tapa y que todos sus tornillos estén firmes.",
+      "hazlo": {
+        "herramienta": "llave",
+        "instruccion": "Revisa que los tornillos de la tapa estén firmes.",
+        "resultado": "Tornillos firmes. Sin escurrimientos."
+      }
+    },
+    "carter": {
+      "nombre": "Cárter",
+      "que": "El depósito de aceite abajo del motor. De aquí la bomba toma el aceite para lubricar todo.",
+      "falla": "Golpes que lo abollan o fugas por el tapón de drenado.",
+      "revisa": "Revisa debajo del motor: gotas en el tapón de drenado o manchas en el piso.",
+      "hazlo": {
+        "herramienta": "linterna",
+        "instruccion": "Ilumina el tapón de drenado y busca gotas de aceite.",
+        "resultado": "El tapón está seco y bien apretado."
+      }
+    },
+    "varilla_aceite": {
+      "nombre": "Varilla del aceite",
+      "que": "Sirve para medir cuánto aceite tiene el motor.",
+      "falla": "Si el nivel queda abajo del mínimo, el motor se queda sin lubricación y se desbiela.",
+      "revisa": "Con el motor apagado y en plano: saca, limpia, mete otra vez y lee. El nivel va entre MIN y MAX.",
+      "hazlo": {
+        "herramienta": "mano",
+        "instruccion": "Saca la varilla y lee el nivel del aceite.",
+        "resultado": "El aceite está entre MIN y MAX, color ámbar oscuro. Nivel correcto."
+      }
+    },
+    "filtro_aceite": {
+      "nombre": "Filtro de aceite",
+      "que": "Atrapa la suciedad y las partículas de metal del aceite antes de que llegue a las piezas del motor.",
+      "falla": "Tapado, deja pasar aceite sucio; mal apretado, tira aceite.",
+      "revisa": "Se cambia en cada servicio junto con el aceite; revisa que no tenga fuga en la base.",
+      "hazlo": {
+        "herramienta": "linterna",
+        "instruccion": "Revisa la base del filtro buscando fugas.",
+        "resultado": "Base seca. El filtro toca en el siguiente servicio."
+      }
+    },
+    "inyectores": {
+      "nombre": "Inyectores",
+      "que": "Rocían el diésel a muy alta presión dentro de cada cilindro, en el momento exacto.",
+      "falla": "Un inyector sucio o goteando hace humo negro, cascabeleo y pérdida de fuerza.",
+      "revisa": "Con el escáner revisa los códigos de falla y las correcciones de cada inyector.",
+      "hazlo": {
+        "herramienta": "escaner",
+        "instruccion": "Conecta el escáner y revisa el balance de los inyectores.",
+        "resultado": "Los 6 inyectores están dentro de rango. Sin códigos."
+      }
+    },
+    "filtro_combustible": {
+      "nombre": "Filtro de combustible",
+      "que": "Limpia el diésel antes de que llegue a la bomba y a los inyectores.",
+      "falla": "Tapado, el motor pierde fuerza y se apaga al acelerar.",
+      "revisa": "Se cambia por kilometraje; si hay pérdida de fuerza, es de lo primero que se revisa.",
+      "hazlo": {
+        "herramienta": "linterna",
+        "instruccion": "Revisa el filtro y sus conexiones.",
+        "resultado": "Conexiones secas. Cartucho dentro de su intervalo."
+      }
+    },
+    "separador_agua": {
+      "nombre": "Separador de agua",
+      "que": "Separa el agua que trae el diésel; el agua se junta abajo, en el vaso.",
+      "falla": "Si no se purga, el agua llega a los inyectores y los daña.",
+      "revisa": "Mira el vaso: si hay agua abajo, se purga por la válvula del fondo.",
+      "hazlo": {
+        "herramienta": "mano",
+        "instruccion": "Abre la purga del vaso y saca el agua.",
+        "resultado": "Salió un poco de agua y luego diésel limpio. Purga cerrada."
+      }
+    },
+    "turbo": {
+      "nombre": "Turbocargador",
+      "que": "Los gases de escape giran una turbina que mueve un compresor: mete más aire al motor y da más fuerza.",
+      "falla": "Juego en la flecha, aceite en la admisión o un silbido fuerte; pierde fuerza y echa humo azul.",
+      "revisa": "Con el motor apagado y frío, mueve la flecha con la mano: no debe tener juego ni rozar.",
+      "hazlo": {
+        "herramienta": "mano",
+        "instruccion": "Con el motor frío, revisa el juego de la flecha del turbo.",
+        "resultado": "Gira libre y sin juego. Turbo bien."
+      }
+    },
+    "multiple_admision": {
+      "nombre": "Múltiple de admisión",
+      "que": "Reparte el aire comprimido del turbo a los 6 cilindros.",
+      "falla": "Mangueras o abrazaderas flojas: se escapa el aire y el motor pierde fuerza.",
+      "revisa": "Revisa abrazaderas y mangueras entre el turbo, el enfriador y el múltiple.",
+      "hazlo": {
+        "herramienta": "llave",
+        "instruccion": "Revisa que las abrazaderas de la admisión estén firmes.",
+        "resultado": "Todas firmes. Sin aceite en las uniones."
+      }
+    },
+    "enfriador_aire": {
+      "nombre": "Enfriador de aire de carga",
+      "que": "Enfría el aire que sale caliente del turbo: el aire frío es más denso y quema mejor.",
+      "falla": "Tapado por mugre o con fuga, el motor pierde fuerza y se calienta.",
+      "revisa": "Revisa que el panal esté limpio y sin aceite.",
+      "hazlo": {
+        "herramienta": "linterna",
+        "instruccion": "Inspecciona el panal del enfriador.",
+        "resultado": "Panal limpio, sin aceite ni golpes."
+      }
+    },
+    "multiple_escape": {
+      "nombre": "Múltiple de escape",
+      "que": "Junta los gases calientes de los 6 cilindros y los manda al turbo.",
+      "falla": "Se agrieta con el calor o se rompen sus birlos: se oye un golpeteo y huele a gases.",
+      "revisa": "Busca marcas de hollín en las uniones: indican fuga de gases.",
+      "hazlo": {
+        "herramienta": "linterna",
+        "instruccion": "Busca hollín en las uniones del múltiple.",
+        "resultado": "Sin marcas de hollín. Sin fugas."
+      }
+    },
+    "radiador": {
+      "nombre": "Radiador",
+      "que": "Enfría el refrigerante caliente que viene del motor con el aire que pasa por su panal.",
+      "falla": "Panal tapado o con fuga: el motor se sobrecalienta.",
+      "revisa": "Revisa que el panal no tenga basura ni fugas verdes o rosas.",
+      "hazlo": {
+        "herramienta": "linterna",
+        "instruccion": "Revisa el panal del radiador.",
+        "resultado": "Panal limpio y sin fugas."
+      }
+    },
+    "ventilador": {
+      "nombre": "Ventilador",
+      "que": "Jala aire a través del radiador cuando el autobús va lento o está parado.",
+      "falla": "Aspas rotas o embrague del ventilador dañado: se calienta en el tráfico.",
+      "revisa": "Con el motor apagado, revisa aspas sin grietas y que no tenga juego.",
+      "hazlo": {
+        "herramienta": "mano",
+        "instruccion": "Con el motor apagado, revisa las aspas y su juego.",
+        "resultado": "Aspas completas y sin juego."
+      }
+    },
+    "bomba_agua": {
+      "nombre": "Bomba de agua",
+      "que": "Hace circular el refrigerante entre el motor y el radiador.",
+      "falla": "Tira refrigerante por el orificio de alivio o hace ruido de balero.",
+      "revisa": "Busca rastros de refrigerante bajo la bomba.",
+      "hazlo": {
+        "herramienta": "linterna",
+        "instruccion": "Busca escurrimientos bajo la bomba.",
+        "resultado": "Seca. La bomba está bien."
+      }
+    },
+    "deposito_refrigerante": {
+      "nombre": "Depósito de refrigerante",
+      "que": "Guarda el refrigerante de reserva y muestra el nivel.",
+      "falla": "Si el nivel baja seguido, hay una fuga en algún lado.",
+      "revisa": "Revisa el nivel en frío. Nunca abras el tapón con el motor caliente: el líquido sale a presión y quema.",
+      "hazlo": {
+        "herramienta": "mano",
+        "instruccion": "Con el motor frío, revisa el nivel del refrigerante.",
+        "resultado": "El nivel está en la marca. Correcto."
+      }
+    },
+    "banda_accesorios": {
+      "nombre": "Banda de accesorios",
+      "que": "Una banda que mueve el alternador y la bomba de agua con la fuerza del cigüeñal.",
+      "falla": "Grietas, deshilachado o falta de tensión: chilla y deja de cargar la batería o de enfriar.",
+      "revisa": "Revisa grietas en las ranuras y que tenga la tensión correcta.",
+      "hazlo": {
+        "herramienta": "mano",
+        "instruccion": "Revisa la tensión y las grietas de la banda.",
+        "resultado": "Tensión correcta, sin grietas."
+      }
+    },
+    "volante_motor": {
+      "nombre": "Volante del motor",
+      "que": "Un disco pesado al final del cigüeñal: hace que el motor gire parejo y ahí engrana la marcha.",
+      "falla": "Dientes de la corona gastados: la marcha patina o rechina al arrancar.",
+      "revisa": "Se revisa la corona cuando se quita la marcha o la caja.",
+      "hazlo": {
+        "herramienta": "linterna",
+        "instruccion": "Revisa la carcasa del volante buscando fugas de aceite.",
+        "resultado": "Sin aceite: el retén trasero está bien."
+      }
+    },
+    "tanque_combustible": {
+      "nombre": "Tanque de combustible",
+      "que": "Guarda el diésel. Va adelante del eje trasero, del lado izquierdo.",
+      "falla": "Golpes, fugas por las soldaduras o tapón dañado que deja entrar agua y polvo.",
+      "revisa": "Revisa soportes, fugas y que el tapón cierre bien.",
+      "hazlo": {
+        "herramienta": "linterna",
+        "instruccion": "Revisa el tanque y sus soportes.",
+        "resultado": "Soportes firmes y sin fugas."
+      }
+    },
+    "linea_combustible": {
+      "nombre": "Línea de combustible",
+      "que": "Lleva el diésel del tanque al filtro y a la bomba del motor.",
+      "falla": "Rozaduras contra el bastidor que terminan en fuga.",
+      "revisa": "Sigue la línea completa buscando rozaduras y fugas.",
+      "hazlo": {
+        "herramienta": "linterna",
+        "instruccion": "Sigue la línea buscando rozaduras.",
+        "resultado": "Bien sujeta y sin rozaduras."
+      }
+    },
+    "filtro_particulas": {
+      "nombre": "Filtro de partículas (DPF) y catalizador",
+      "que": "Atrapa el hollín del escape y lo quema (regeneración); el catalizador limpia los gases con la urea.",
+      "falla": "Se tapa si el autobús nunca hace una regeneración: pierde fuerza y prende un testigo.",
+      "revisa": "Con el escáner revisa la carga de hollín y si necesita regeneración.",
+      "hazlo": {
+        "herramienta": "escaner",
+        "instruccion": "Lee la carga de hollín con el escáner.",
+        "resultado": "Carga del 35 %: no necesita regeneración todavía."
+      }
+    },
+    "tanque_urea": {
+      "nombre": "Tanque de urea (AdBlue / DEF)",
+      "que": "Guarda la urea que se inyecta en el escape para limpiar los gases.",
+      "falla": "Si se acaba o se contamina, el motor limita su fuerza.",
+      "revisa": "Revisa el nivel. Solo se le pone urea: nunca agua ni diésel.",
+      "hazlo": {
+        "herramienta": "linterna",
+        "instruccion": "Revisa el nivel y que no haya cristales blancos en el tapón.",
+        "resultado": "Nivel al 60 %, sin cristales. Correcto."
+      }
+    },
+    "tubo_escape": {
+      "nombre": "Tubo de escape",
+      "que": "Saca los gases ya limpios fuera del autobús.",
+      "falla": "Abrazaderas flojas o tubo roto: ruido y gases cerca de los pasajeros.",
+      "revisa": "Revisa abrazaderas y soportes.",
+      "hazlo": {
+        "herramienta": "llave",
+        "instruccion": "Revisa que las abrazaderas del escape estén firmes.",
+        "resultado": "Firmes. Sin fugas."
+      }
+    },
+    "caja_cambios": {
+      "nombre": "Caja de cambios automática",
+      "que": "Cambia la relación entre el motor y las ruedas para arrancar con fuerza y luego ir rápido.",
+      "falla": "Cambios bruscos, patina o se calienta el aceite de la caja.",
+      "revisa": "Revisa el nivel de aceite de la caja y los códigos de falla con el escáner.",
+      "hazlo": {
+        "herramienta": "escaner",
+        "instruccion": "Lee los códigos y la temperatura del aceite de la caja.",
+        "resultado": "Sin códigos; temperatura normal."
+      }
+    },
+    "modulo_caja": {
+      "nombre": "Módulo de control de la caja",
+      "que": "La computadora que decide cuándo cambiar de velocidad.",
+      "falla": "Conectores sucios o flojos: la caja se queda en una sola velocidad (modo de emergencia).",
+      "revisa": "Revisa conectores y códigos con el escáner.",
+      "hazlo": {
+        "herramienta": "escaner",
+        "instruccion": "Comunícate con el módulo de la caja.",
+        "resultado": "El módulo responde. Sin códigos guardados."
+      }
+    },
+    "transmision_angulo": {
+      "nombre": "Transmisión en ángulo",
+      "que": "Gira la fuerza 90°: el motor está de lado y la flecha tiene que ir hacia el eje trasero.",
+      "falla": "Fuga de aceite o ruido de engranes.",
+      "revisa": "Revisa el nivel de su aceite y fugas en los retenes.",
+      "hazlo": {
+        "herramienta": "linterna",
+        "instruccion": "Revisa los retenes buscando aceite.",
+        "resultado": "Retenes secos."
+      }
+    },
+    "flecha_cardan": {
+      "nombre": "Flecha cardán",
+      "que": "Lleva el giro de la transmisión al diferencial; sus crucetas le permiten moverse con la suspensión.",
+      "falla": "Crucetas gastadas: golpeteo al arrancar y vibración.",
+      "revisa": "Mueve la flecha con la mano: las crucetas no deben tener juego.",
+      "hazlo": {
+        "herramienta": "mano",
+        "instruccion": "Revisa el juego de las crucetas.",
+        "resultado": "Sin juego. Crucetas bien engrasadas."
+      }
+    },
+    "diferencial": {
+      "nombre": "Diferencial",
+      "que": "Reparte la fuerza a las dos ruedas traseras y deja que giren distinto en las curvas.",
+      "falla": "Zumbido al acelerar o desacelerar, o fuga por el retén del piñón.",
+      "revisa": "Revisa el nivel de aceite por el tapón de llenado y fugas en el piñón.",
+      "hazlo": {
+        "herramienta": "llave",
+        "instruccion": "Quita el tapón de llenado y revisa el nivel.",
+        "resultado": "El aceite llega al borde del tapón. Nivel correcto."
+      }
+    },
+    "eje_trasero": {
+      "nombre": "Eje trasero",
+      "que": "Carga la parte trasera del autobús y lleva la fuerza a las ruedas de tracción.",
+      "falla": "Fugas por los retenes de las mazas: el aceite llega a las balatas.",
+      "revisa": "Revisa que no haya aceite en el interior de las ruedas.",
+      "hazlo": {
+        "herramienta": "linterna",
+        "instruccion": "Revisa la cara interior de las ruedas traseras.",
+        "resultado": "Secas. Retenes bien."
+      }
+    },
+    "compresor_aire": {
+      "nombre": "Compresor de aire",
+      "que": "Lo mueve el motor y produce el aire a presión para los frenos, la suspensión y las puertas.",
+      "falla": "Tarda en llenar los depósitos o manda aceite al sistema de aire.",
+      "revisa": "Mide cuánto tarda en subir la presión: si tarda de más, el compresor está gastado o hay fuga.",
+      "hazlo": {
+        "herramienta": "escaner",
+        "instruccion": "Revisa en el tablero o escáner el tiempo de llenado.",
+        "resultado": "Llena de 85 a 100 psi en menos de 45 s. Correcto."
+      }
+    },
+    "secador_aire": {
+      "nombre": "Secador de aire",
+      "que": "Quita la humedad y el aceite del aire antes de mandarlo a los depósitos.",
+      "falla": "Con el cartucho saturado entra agua a las válvulas y en invierno se congelan.",
+      "revisa": "Si purgas los depósitos y sale mucha agua, el cartucho del secador ya no sirve.",
+      "hazlo": {
+        "herramienta": "jabon",
+        "instruccion": "Busca fugas en las conexiones del secador.",
+        "resultado": "Sin burbujas: sin fugas."
+      }
+    },
+    "deposito_aire": {
+      "nombre": "Depósito de aire",
+      "que": "Guarda el aire a presión para que siempre haya para frenar, aunque el motor se apague.",
+      "falla": "Se llena de agua si no se purga, y se oxida por dentro.",
+      "revisa": "Púrgalo en cada inspección diaria: debe salir solo aire.",
+      "hazlo": {
+        "herramienta": "jabon",
+        "instruccion": "Pon agua jabonosa en las conexiones del depósito.",
+        "resultado": "No salen burbujas: sin fugas."
+      }
+    },
+    "valvula_purga": {
+      "nombre": "Válvula de purga",
+      "que": "Abajo de cada depósito; al abrirla sale el agua que se juntó.",
+      "falla": "Si nadie purga, el agua y el aceite llegan a las válvulas de freno.",
+      "revisa": "Ábrela en la inspección diaria hasta que salga solo aire.",
+      "hazlo": {
+        "herramienta": "mano",
+        "instruccion": "Jala la válvula de purga del depósito.",
+        "resultado": "Salió un poco de agua y luego aire seco."
+      }
+    },
+    "lineas_aire": {
+      "nombre": "Líneas de aire",
+      "que": "Las mangueras azules y rojas que llevan el aire a las cámaras de freno.",
+      "falla": "Rozaduras y conexiones flojas que fugan: baja la presión.",
+      "revisa": "Con el sistema lleno y el motor apagado, la presión no debe bajar más de 2 psi por minuto.",
+      "hazlo": {
+        "herramienta": "jabon",
+        "instruccion": "Busca fugas con agua jabonosa en las conexiones.",
+        "resultado": "Sin burbujas. La presión se sostiene."
+      }
+    },
+    "camara_freno": {
+      "nombre": "Cámara de freno",
+      "que": "El aire empuja su diafragma y la varilla gira la leva que abre las balatas. Atrás también tiene un resorte de estacionamiento.",
+      "falla": "Diafragma roto (fuga de aire) o carrera de la varilla fuera de límite: frena poco.",
+      "revisa": "Mide la carrera de la varilla con el freno aplicado y busca fugas con agua jabonosa.",
+      "hazlo": {
+        "herramienta": "jabon",
+        "instruccion": "Con el freno aplicado, busca fugas en la cámara.",
+        "resultado": "Sin burbujas. Diafragma sano."
+      }
+    },
+    "tambor": {
+      "nombre": "Tambor de freno",
+      "que": "Gira con la rueda; las balatas se abren y rozan contra él para frenar.",
+      "falla": "Se raya, se calienta de más o se agrieta; las balatas se gastan.",
+      "revisa": "Mira el espesor de las balatas por la ventana del tambor y busca grietas.",
+      "hazlo": {
+        "herramienta": "linterna",
+        "instruccion": "Revisa por la ventana el espesor de las balatas.",
+        "resultado": "Balatas con 4 mm: abajo del mínimo de 6 mm. Hay que cambiarlas."
+      }
+    },
+    "eje_delantero": {
+      "nombre": "Eje delantero",
+      "que": "Carga el frente del autobús y en sus puntas giran las ruedas para dar vuelta.",
+      "falla": "Juego en los muñones: el autobús se va de lado y desgasta las llantas.",
+      "revisa": "Con el frente levantado, mueve la rueda arriba-abajo: no debe tener juego.",
+      "hazlo": {
+        "herramienta": "mano",
+        "instruccion": "Revisa el juego de la rueda delantera.",
+        "resultado": "Sin juego en los muñones."
+      }
+    },
+    "caja_direccion": {
+      "nombre": "Caja de dirección",
+      "que": "Convierte el giro del volante en el movimiento que gira las ruedas, con ayuda hidráulica.",
+      "falla": "Fugas de aceite hidráulico o la dirección se siente dura.",
+      "revisa": "Revisa fugas y el nivel del aceite de la dirección.",
+      "hazlo": {
+        "herramienta": "linterna",
+        "instruccion": "Busca fugas en la caja de dirección.",
+        "resultado": "Seca. Sin fugas."
+      }
+    },
+    "brazo_pitman": {
+      "nombre": "Brazo pitman",
+      "que": "Sale de la caja de dirección y empuja la barra que gira las ruedas.",
+      "falla": "Rótula gastada: juego en el volante.",
+      "revisa": "Con alguien moviendo el volante, la rótula no debe tener juego.",
+      "hazlo": {
+        "herramienta": "mano",
+        "instruccion": "Revisa el juego de la rótula del brazo.",
+        "resultado": "Sin juego."
+      }
+    },
+    "barra_direccion": {
+      "nombre": "Barra de dirección y terminales",
+      "que": "Une las dos ruedas delanteras para que giren juntas y alineadas.",
+      "falla": "Terminales con juego: las llantas se gastan disparejo y el volante vibra.",
+      "revisa": "Mueve la barra con la mano: las terminales no deben tener juego.",
+      "hazlo": {
+        "herramienta": "mano",
+        "instruccion": "Revisa el juego de las terminales.",
+        "resultado": "Sin juego. Guardapolvos completos."
+      }
+    },
+    "volante": {
+      "nombre": "Volante",
+      "que": "Con él el operador dirige el autobús.",
+      "falla": "Juego libre de más antes de que las ruedas giren.",
+      "revisa": "Con el motor encendido, el juego libre no debe pasar de unos 5 cm en el aro.",
+      "hazlo": {
+        "herramienta": "mano",
+        "instruccion": "Mide el juego libre del volante.",
+        "resultado": "3 cm de juego libre. Dentro de límite."
+      }
+    },
+    "bastidor": {
+      "nombre": "Bastidor",
+      "que": "La estructura de acero que sostiene todo el autobús: motor, ejes y carrocería.",
+      "falla": "Grietas o corrosión en las uniones, sobre todo cerca de los soportes.",
+      "revisa": "Revisa con linterna las soldaduras y soportes.",
+      "hazlo": {
+        "herramienta": "linterna",
+        "instruccion": "Revisa las uniones del bastidor.",
+        "resultado": "Sin grietas ni corrosión fuerte."
+      }
+    },
+    "bolsa_aire": {
+      "nombre": "Bolsa de aire (suspensión)",
+      "que": "En lugar de muelles, el autobús va sobre bolsas de hule llenas de aire.",
+      "falla": "Grietas o fugas: el autobús se baja de ese lado.",
+      "revisa": "Busca grietas y fugas con agua jabonosa; revisa la altura de manejo.",
+      "hazlo": {
+        "herramienta": "jabon",
+        "instruccion": "Busca fugas en la bolsa con agua jabonosa.",
+        "resultado": "Sin burbujas. La bolsa está bien."
+      }
+    },
+    "valvula_niveladora": {
+      "nombre": "Válvula niveladora",
+      "que": "Mete o saca aire de las bolsas para que el autobús siempre quede a la misma altura.",
+      "falla": "Varilla desajustada o rota: el autobús queda muy alto o muy bajo.",
+      "revisa": "Mide la altura de manejo y revisa la varilla de la válvula.",
+      "hazlo": {
+        "herramienta": "mano",
+        "instruccion": "Revisa la varilla de la válvula.",
+        "resultado": "La varilla está firme y en su posición."
+      }
+    },
+    "amortiguador": {
+      "nombre": "Amortiguador",
+      "que": "Frena el rebote de la suspensión para que el autobús no brinque.",
+      "falla": "Fuga de aceite: el autobús rebota y las llantas se gastan en parches.",
+      "revisa": "Busca aceite en el cuerpo del amortiguador y bujes gastados.",
+      "hazlo": {
+        "herramienta": "linterna",
+        "instruccion": "Revisa el cuerpo del amortiguador.",
+        "resultado": "Seco. Bujes en buen estado."
+      }
+    },
+    "bateria": {
+      "nombre": "Batería de 12 V",
+      "que": "Hay dos conectadas en serie: juntas dan 24 V para arrancar y para todo el sistema eléctrico.",
+      "falla": "Terminales sulfatadas o batería descargada: el autobús no arranca.",
+      "revisa": "Mide el voltaje: cada batería debe tener unos 12.6 V en reposo. Terminales limpias.",
+      "hazlo": {
+        "herramienta": "multimetro",
+        "instruccion": "Mide el voltaje de la batería.",
+        "resultado": "12.5 V en reposo. Carga correcta."
+      }
+    },
+    "interruptor_maestro": {
+      "nombre": "Interruptor maestro",
+      "que": "Corta toda la corriente de las baterías. Se apaga antes de trabajar en el sistema eléctrico.",
+      "falla": "Contactos quemados: el autobús se queda sin corriente al moverse.",
+      "revisa": "Antes de trabajar en lo eléctrico, apágalo y comprueba que no hay corriente.",
+      "hazlo": {
+        "herramienta": "mano",
+        "instruccion": "Apaga el interruptor maestro.",
+        "resultado": "Corriente cortada. Ya puedes trabajar seguro."
+      }
+    },
+    "motor_arranque": {
+      "nombre": "Motor de arranque (marcha)",
+      "que": "Un motor eléctrico que gira el volante del motor para encenderlo.",
+      "falla": "Hace clic y no gira (solenoide o batería) o gira lento.",
+      "revisa": "Mide la caída de voltaje al dar marcha: si baja de unos 19 V, revisa baterías y cables.",
+      "hazlo": {
+        "herramienta": "multimetro",
+        "instruccion": "Mide el voltaje en la marcha al arrancar.",
+        "resultado": "21 V al dar marcha. Correcto."
+      }
+    },
+    "alternador": {
+      "nombre": "Alternador",
+      "que": "Con el motor encendido genera corriente: recarga las baterías y alimenta todo.",
+      "falla": "Deja de cargar: las baterías se descargan y prende el testigo de carga.",
+      "revisa": "Con el motor encendido mide el voltaje en baterías: debe estar entre 27 y 28.5 V.",
+      "hazlo": {
+        "herramienta": "multimetro",
+        "instruccion": "Con el motor encendido, mide el voltaje de carga.",
+        "resultado": "27.8 V. El alternador carga bien."
+      }
+    },
+    "central_electrica": {
+      "nombre": "Central eléctrica",
+      "que": "Caja de fusibles, relevadores y módulos que reparten la corriente a cada circuito.",
+      "falla": "Un fusible fundido deja sin funcionar un circuito; humedad que sulfata los contactos.",
+      "revisa": "Revisa fusibles con el multímetro (continuidad) y que no haya humedad.",
+      "hazlo": {
+        "herramienta": "multimetro",
+        "instruccion": "Prueba la continuidad de los fusibles.",
+        "resultado": "Todos con continuidad."
+      }
+    },
+    "arnes_principal": {
+      "nombre": "Arnés principal",
+      "que": "El cableado que corre a lo largo del autobús y une la central eléctrica con el motor.",
+      "falla": "Rozaduras que hacen cortos o fallas intermitentes.",
+      "revisa": "Sigue el arnés buscando rozaduras y que esté bien sujeto.",
+      "hazlo": {
+        "herramienta": "linterna",
+        "instruccion": "Sigue el arnés buscando rozaduras.",
+        "resultado": "Bien sujeto, sin rozaduras."
+      }
+    },
+    "conector_diagnostico": {
+      "nombre": "Conector de diagnóstico",
+      "que": "Ahí se conecta el escáner para hablar con todos los módulos del autobús.",
+      "falla": "Pines doblados o sin corriente: el escáner no comunica.",
+      "revisa": "Conecta el escáner y comprueba que se comunique.",
+      "hazlo": {
+        "herramienta": "escaner",
+        "instruccion": "Conecta el escáner al conector.",
+        "resultado": "Comunicación correcta con todos los módulos."
+      }
+    },
+    "tablero": {
+      "nombre": "Tablero del operador",
+      "que": "Muestra velocidad, presión de aire, temperatura y testigos de falla.",
+      "falla": "Testigos encendidos que el operador ignora.",
+      "revisa": "Al dar contacto, todos los testigos prenden y luego se apagan. Si uno se queda prendido, hay falla.",
+      "hazlo": {
+        "herramienta": "mano",
+        "instruccion": "Da contacto y revisa los testigos.",
+        "resultado": "Todos prendieron y se apagaron. Presión de aire en 120 psi."
+      }
+    },
+    "asiento_conductor": {
+      "nombre": "Asiento del operador",
+      "que": "Asiento con suspensión de aire, ajustable, con cinturón de seguridad.",
+      "falla": "Suspensión del asiento con fuga o cinturón que no se retrae.",
+      "revisa": "Revisa que ajuste, que la suspensión sostenga y que el cinturón trabe.",
+      "hazlo": {
+        "herramienta": "mano",
+        "instruccion": "Revisa el ajuste y el cinturón.",
+        "resultado": "Ajusta bien. El cinturón traba."
+      }
+    },
+    "pedales": {
+      "nombre": "Pedales",
+      "que": "Acelerador y freno (sin clutch, la caja es automática).",
+      "falla": "Pedal de freno que baja de más o acelerador que no regresa.",
+      "revisa": "Que regresen solos y que no tengan obstrucciones.",
+      "hazlo": {
+        "herramienta": "mano",
+        "instruccion": "Revisa que los pedales regresen solos.",
+        "resultado": "Regresan libres."
+      }
+    },
+    "mecanismo_puerta": {
+      "nombre": "Mecanismo de la puerta",
+      "que": "Un cilindro de aire abre y cierra la puerta; los sensores evitan que se cierre sobre una persona.",
+      "falla": "Abre lento, golpea al cerrar o el sensor no detecta.",
+      "revisa": "Prueba apertura y cierre, y que la puerta se detenga si algo la bloquea.",
+      "hazlo": {
+        "herramienta": "jabon",
+        "instruccion": "Busca fugas de aire en el cilindro de la puerta.",
+        "resultado": "Sin burbujas. Abre y cierra parejo."
+      }
+    },
+    "pasamanos": {
+      "nombre": "Pasamanos",
+      "que": "Tubos amarillos para que los pasajeros se sostengan.",
+      "falla": "Tornillos flojos: el tubo se mueve.",
+      "revisa": "Jala cada pasamanos: no debe moverse.",
+      "hazlo": {
+        "herramienta": "mano",
+        "instruccion": "Jala los pasamanos.",
+        "resultado": "Todos firmes."
+      }
+    },
+    "unidad_clima": {
+      "nombre": "Unidad de aire acondicionado",
+      "que": "En el techo: enfría el interior del autobús.",
+      "falla": "Filtros tapados o fuga de gas: no enfría.",
+      "revisa": "Revisa filtros y la temperatura del aire que sale.",
+      "hazlo": {
+        "herramienta": "escaner",
+        "instruccion": "Revisa los códigos del módulo de clima.",
+        "resultado": "Sin códigos. Presiones normales."
+      }
+    },
+    "detector_incendio": {
+      "nombre": "Detector de incendio",
+      "que": "Un cable o sensor en el compartimiento del motor que detecta calor de fuego.",
+      "falla": "Sensor dañado: no avisa o da falsas alarmas.",
+      "revisa": "Revisa que el sensor esté completo y sin aceite encima.",
+      "hazlo": {
+        "herramienta": "linterna",
+        "instruccion": "Inspecciona el sensor y su cable.",
+        "resultado": "Completo y limpio."
+      }
+    },
+    "tanque_supresion": {
+      "nombre": "Tanque del supresor",
+      "que": "Guarda el agente extintor a presión; lo descarga en el compartimiento del motor.",
+      "falla": "Sin presión: no apaga el fuego.",
+      "revisa": "Revisa que la aguja del manómetro esté en verde.",
+      "hazlo": {
+        "herramienta": "linterna",
+        "instruccion": "Revisa el manómetro del tanque.",
+        "resultado": "Aguja en verde. Presión correcta."
+      }
+    },
+    "panel_supresion": {
+      "nombre": "Panel del supresor",
+      "que": "En el tablero: avisa al operador si hay fuego o si el sistema falla.",
+      "falla": "Testigo de falla encendido: el sistema no protege.",
+      "revisa": "Al dar contacto hace su autoprueba: debe quedar en verde.",
+      "hazlo": {
+        "herramienta": "mano",
+        "instruccion": "Da contacto y observa la autoprueba.",
+        "resultado": "Autoprueba correcta: luz verde."
+      }
+    }
+  }
+}
