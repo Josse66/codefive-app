@@ -358,18 +358,22 @@ export function crearEscena(
   contenedor,
   { autobus, piezas = [], enfoque, grupos = false, completo = false, catalogo = null },
 ) {
-  // Calidad: "normal" (sombras, resolución hasta 1.5) o "ligero" (sin sombras, resolución 1).
-  // Se guarda en el navegador; si la computadora va lenta se cambia sola a ligero.
-  let calidad = localStorage.getItem('calidad3d') ?? 'normal';
-  // En GPU integrada el suavizado de bordes (MSAA) cuesta mucho por píxel: se quita.
+  // Calidad: "alta" (bordes suavizados, resolución completa y texturas nítidas), "normal" o
+  // "ligero" (sin sombras, resolución 1). Empieza en alta; se guarda en el navegador y, si la
+  // computadora va lenta, baja sola un nivel (y la resolución dinámica cuida cada cuadro).
+  let calidad = localStorage.getItem('calidad3d') ?? 'alta';
+  // En GPU integrada el suavizado de bordes (MSAA) cuesta por píxel: solo en calidad alta.
+  // Se decide al crear el lienzo; cambiarlo pide recargar la página.
   const integrada = gpuIntegrada();
-  const renderer = new THREE.WebGLRenderer({ antialias: !integrada, powerPreference: 'high-performance' });
+  const conMsaa = !integrada || calidad === 'alta';
+  const renderer = new THREE.WebGLRenderer({ antialias: conMsaa, powerPreference: 'high-performance' });
+  const anisotropiaMax = renderer.capabilities.getMaxAnisotropy();
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   // PCF simple: la sombra del autobús ya viene horneada; la suave costaba muchas lecturas por píxel.
   renderer.shadowMap.type = THREE.PCFShadowMap;
   // El autobús completo trae su sombra horneada: sin sombras en tiempo real (cada píxel del piso
   // ya no lee el mapa de sombras).
-  const conSombras = () => !completo && calidad === 'normal';
+  const conSombras = () => !completo && calidad !== 'ligero';
   renderer.shadowMap.enabled = conSombras();
   // Las sombras no cambian solas: se recalculan solo cuando algo se carga o se mueve.
   renderer.shadowMap.autoUpdate = false;
@@ -392,7 +396,7 @@ export function crearEscena(
   const sol = new THREE.DirectionalLight(0xffffff, 1.8);
   sol.position.set(4, 14, 7);
   sol.castShadow = true;
-  sol.shadow.mapSize.set(1024, 1024);
+  sol.shadow.mapSize.setScalar(calidad === 'alta' ? 2048 : 1024);
   Object.assign(sol.shadow.camera, { left: -9, right: 9, top: 9, bottom: -9, near: 1, far: 40 });
   sol.shadow.bias = -0.0005;
   escena.add(sol);
@@ -412,7 +416,7 @@ export function crearEscena(
       t.wrapS = THREE.RepeatWrapping;
       t.wrapT = THREE.RepeatWrapping;
       t.repeat.set(24, 24);
-      t.anisotropy = 8;
+      t.anisotropy = calidad === 'alta' ? anisotropiaMax : 8;
       piso.material.normalMap = t;
       piso.material.normalScale.set(0.6, 0.6);
       piso.material.needsUpdate = true;
@@ -443,12 +447,20 @@ export function crearEscena(
   // se limita el total de píxeles y, si los cuadros tardan, se baja la escala sola; si sobra
   // tiempo, se sube poco a poco. Así la pantalla completa no traba una GPU integrada.
   // Con GPU integrada (la de la mayoría de las laptops) el tope de píxeles es menor.
-  const PIXELES_MAX = integrada ? { normal: 1.1e6, ligero: 0.8e6 } : { normal: 2.4e6, ligero: 1.2e6 };
+  const PIXELES_MAX = integrada
+    ? { alta: 2.1e6, normal: 1.1e6, ligero: 0.8e6 }
+    : { alta: 4.2e6, normal: 2.4e6, ligero: 1.2e6 };
+  // Tope de densidad: en alta se dibuja un poco por encima de la pantalla (bordes más finos).
+  const TOPE_DPR = {
+    alta: Math.min(2, Math.max(window.devicePixelRatio, 1.25)),
+    normal: Math.min(window.devicePixelRatio, 1.5),
+    ligero: Math.min(window.devicePixelRatio, 1),
+  };
   const resolucion = { escala: 1, promedio: 1 / 60, cuenta: 0, holgura: 0, bajadas: 0 };
   function ajustarResolucion() {
     const { clientWidth: ancho, clientHeight: alto } = contenedor;
     if (!ancho || !alto) return;
-    const tope = Math.min(window.devicePixelRatio, calidad === 'normal' ? 1.5 : 1);
+    const tope = TOPE_DPR[calidad];
     const porPixeles = Math.sqrt(PIXELES_MAX[calidad] / (ancho * alto));
     const dpr = Math.max(0.5, Math.min(tope, porPixeles) * resolucion.escala);
     if (Math.abs(renderer.getPixelRatio() - dpr) > 0.01) {
@@ -483,7 +495,22 @@ export function crearEscena(
   }
 
   // Aplica la calidad: resolución y sombras. Cambiar las sombras obliga a recompilar materiales.
+  // Texturas nítidas vistas de lado (piso, carrocería, letreros) en calidad alta.
+  function afinarTexturas() {
+    const nivel = calidad === 'alta' ? anisotropiaMax : 4;
+    escena.traverse((n) => {
+      const materiales = Array.isArray(n.material) ? n.material : [n.material];
+      materiales.forEach((m) =>
+        ['map', 'normalMap', 'roughnessMap', 'aoMap'].forEach((k) => {
+          const t = m?.[k];
+          if (t && t.anisotropy !== nivel) Object.assign(t, { anisotropy: nivel, needsUpdate: true });
+        }),
+      );
+    });
+  }
+
   function aplicarCalidad() {
+    afinarTexturas();
     resolucion.escala = 1;
     ajustarResolucion();
     if (renderer.shadowMap.enabled !== conSombras()) {
@@ -686,6 +713,7 @@ export function crearEscena(
     });
     actualizarOcultos();
     // Avisa a la página que ya puede pedir piezas.
+    afinarTexturas();
     renderer.domElement.dispatchEvent(new CustomEvent('modelo-listo'));
   }
   const bus = construirAutobus(
@@ -1338,13 +1366,19 @@ export function crearEscena(
   botonCalidad.className =
     'absolute bottom-2 right-2 z-10 border border-placa-linea bg-white/90 px-2 py-1 text-xs font-semibold text-tinta hover:border-tinta';
   const rotularCalidad = () => {
-    botonCalidad.textContent = calidad === 'normal' ? 'Calidad: normal' : 'Calidad: ligera';
-    botonCalidad.title = 'Cambia entre calidad normal y ligera (sin sombras, para computadoras lentas)';
+    botonCalidad.textContent = `Calidad: ${{ alta: 'alta', normal: 'normal', ligero: 'ligera' }[calidad]}`;
+    botonCalidad.title = 'Cambia entre calidad alta, normal y ligera (para computadoras lentas)';
   };
   botonCalidad.addEventListener('click', () => {
-    calidad = calidad === 'normal' ? 'ligero' : 'normal';
+    calidad = { ligero: 'normal', normal: 'alta', alta: 'ligero' }[calidad];
     localStorage.setItem('calidad3d', calidad);
     localStorage.setItem('calidad3dElegida', '1');
+    // El suavizado de bordes se fija al crear el lienzo: si cambia, se recarga la página
+    // (el avance vive en el servidor).
+    if (integrada && conMsaa !== (calidad === 'alta')) {
+      window.location.reload();
+      return;
+    }
     rotularCalidad();
     aplicarCalidad();
   });
@@ -1435,8 +1469,8 @@ export function crearEscena(
       medicion.tiempo += dt;
       if (medicion.cuadros >= 40) {
         medicion.lista = true;
-        if (calidad === 'normal' && medicion.tiempo / medicion.cuadros > 1 / 30) {
-          calidad = 'ligero';
+        if (calidad !== 'ligero' && medicion.tiempo / medicion.cuadros > 1 / 30) {
+          calidad = calidad === 'alta' ? 'normal' : 'ligero';
           localStorage.setItem('calidad3d', calidad);
           rotularCalidad();
           aplicarCalidad();
