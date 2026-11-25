@@ -193,6 +193,12 @@ const boton = (texto, clase, alClic) => {
   b.addEventListener('click', alClic);
   return b;
 };
+// Al terminar una vuelta: regresar a Mi camino, donde se ve el punto lleno y lo que sigue.
+const alCamino = () => {
+  const a = el('a', 'boton-linea w-fit px-6 py-3 no-underline', 'Volver a Mi camino');
+  a.href = `/tecnicos/${tecnicoId}/camino`;
+  return a;
+};
 const mezclar = (lista) =>
   lista
     .map((x) => [Math.random(), x])
@@ -772,6 +778,7 @@ function tarjetaDiagnostico() {
     partes.push(
       lista,
       boton('Ver mi siguiente paso →', 'boton w-fit px-6', () => abrirSistema(sistema)),
+      alCamino(),
     );
     return partes;
   }
@@ -1021,7 +1028,10 @@ function tarjetaEncuentra() {
   ];
   if (i >= cola.length) {
     partes.push(aviso('ok', '¡Las encontraste todas!', `${estado.aciertos} de ${cola.length} a la primera.`));
-    partes.push(boton('Seguir →', 'boton w-fit px-6', () => abrirSistema(sistema)));
+    partes.push(
+      boton('Seguir →', 'boton w-fit px-6', () => abrirSistema(sistema)),
+      alCamino(),
+    );
     return partes;
   }
   const base = cola[i];
@@ -1152,6 +1162,7 @@ function tarjetaComprueba() {
       boton(aprobado ? 'Volver al sistema →' : 'Volver a intentarlo', 'boton w-fit px-6', () =>
         aprobado ? abrirSistema(sistema) : empezarComprueba(),
       ),
+      alCamino(),
     );
     return partes;
   }
@@ -1554,6 +1565,7 @@ function tarjetaOrden() {
     boton(aprobado ? 'Volver al sistema →' : 'Repetir la orden', 'boton w-fit px-6', () =>
       aprobado ? abrirSistema(sistema) : empezarOrden(),
     ),
+    alCamino(),
   );
   return partes;
 }
