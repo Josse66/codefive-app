@@ -125,7 +125,7 @@ function vaciarCola(alCerrar = false) {
 }
 setInterval(() => vaciarCola(), 4000);
 // Al abrir, el avance del servidor manda sobre la copia del navegador.
-fetch(API)
+const progresoListo = fetch(API)
   .then((r) => (r.ok ? r.json() : null))
   .then((d) => {
     if (!d) return;
@@ -360,6 +360,7 @@ function pintar() {
       encuentra: tarjetaEncuentra,
       comprueba: tarjetaComprueba,
       orden: tarjetaOrden,
+      diagnostico: tarjetaDiagnostico,
     }[estado.modo](),
   );
   if (MAYOR) {
@@ -521,6 +522,17 @@ function tarjetaSistema() {
   ];
   const vueltas = [
     {
+      nombre: 'Diagnóstico',
+      detalle:
+        p.diagnostico != null
+          ? `Tu punto de partida: ${p.diagnostico}`
+          : '8 preguntas: lo que ya sabes te lo saltas',
+      hecho: p.diagnostico != null,
+      abierta: p.diagnostico == null,
+      ir: empezarDiagnostico,
+      texto: 'Empezar',
+    },
+    {
       nombre: '1 · Conoce',
       detalle: `Guiado, ${sistema.orden.length} piezas`,
       hecho: conocidas,
@@ -574,7 +586,7 @@ function tarjetaSistema() {
       li.append(
         boton(v.texto, v === siguiente ? 'boton px-4 py-2' : 'boton-linea px-3 py-1.5 text-sm', v.ir),
       );
-    else li.append(el('span', 'text-xs text-tinta-3', 'Termina la anterior'));
+    else if (!v.hecho) li.append(el('span', 'text-xs text-tinta-3', 'Termina la anterior'));
     lista.append(li);
   });
   partes.push(lista);
@@ -631,6 +643,177 @@ function tarjetaSistema() {
     practica.append(a);
     partes.push(practica);
   }
+  return partes;
+}
+
+// ---------- Diagnóstico: qué sabes antes de aprender (evaluación inicial del IEF) ----------
+// Cuatro tipos de pregunta sobre el autobús 3D, dos de cada uno: ¿qué es? (señalarla), ¿para qué
+// sirve?, ¿qué pasa si falla? y ¿con qué la revisas? No corrige pregunta por pregunta (no es
+// examen): al final dice qué ya sabe y se salta lo dominado. En Paso a paso empieza por lo práctico.
+const TIPOS_DIAGNOSTICO = MAYOR
+  ? ['senala', 'herramienta', 'sirve', 'falla']
+  : ['sirve', 'falla', 'senala', 'herramienta'];
+const NOMBRE_TIPO = {
+  senala: '¿Qué es? (señalarla)',
+  sirve: '¿Para qué sirve?',
+  falla: '¿Qué pasa si falla?',
+  herramienta: '¿Con qué la revisas?',
+};
+// Con 91 o más se salta Conoce y Encuéntralo (va directo a Comprueba); con 70, solo Conoce.
+const SALTA_CONOCE = 70;
+
+function opcionesDiagnostico(sistema, { tipo, base }) {
+  if (tipo === 'senala') return [];
+  if (tipo === 'herramienta') {
+    const correcta = ficha(base).hazlo.herramienta;
+    const otras = mezclar(HERRAMIENTAS.filter((h) => h.id !== correcta)).slice(0, 3);
+    return mezclar([
+      { texto: HERRAMIENTAS.find((h) => h.id === correcta).nombre, bien: true },
+      ...otras.map((h) => ({ texto: h.nombre, bien: false })),
+    ]);
+  }
+  const campo = tipo === 'sirve' ? 'que' : 'falla';
+  // Distractores: otras piezas del mismo sistema y, si no alcanzan, de los demás.
+  const vecinas = mezclar(sistema.orden.filter((b) => b !== base));
+  const lejanas = mezclar(Object.keys(DATOS.piezas).filter((b) => b !== base && !sistema.orden.includes(b)));
+  const textos = [...vecinas, ...lejanas]
+    .map((b) => ficha(b)[campo])
+    .filter((t, i, todos) => t && t !== ficha(base)[campo] && todos.indexOf(t) === i)
+    .slice(0, 2);
+  return mezclar([
+    { texto: ficha(base)[campo], bien: true },
+    ...textos.map((texto) => ({ texto, bien: false })),
+  ]);
+}
+
+function empezarDiagnostico() {
+  const { sistema } = estado;
+  const piezas = mezclar(sistema.orden);
+  const cola = [];
+  [0, 1].forEach(() =>
+    TIPOS_DIAGNOSTICO.forEach((tipo) => cola.push({ tipo, base: piezas[cola.length % piezas.length] })),
+  );
+  cola.forEach((p) => Object.assign(p, { opciones: opcionesDiagnostico(sistema, p) }));
+  escena.quitarMarcas();
+  escena.elegirHerramienta(null);
+  Object.assign(estado, { modo: 'diagnostico', cola, i: 0, respuestas: [], evaluado: false, retro: null });
+  mostrarPreguntaDiagnostico();
+}
+
+// Las preguntas de teoría muestran la pieza resaltada en el autobús; la de señalar, no.
+function mostrarPreguntaDiagnostico() {
+  const p = estado.cola[estado.i];
+  if (p && p.tipo !== 'senala') {
+    escena.resaltar(instancias.get(p.base)?.[0] ?? null);
+    irA(estado.sistema, p.base);
+  } else {
+    escena.resaltar(null);
+    irA(estado.sistema);
+  }
+  pintar();
+}
+
+function responderDiagnostico(bien) {
+  const p = estado.cola[estado.i];
+  estado.respuestas.push({ tipo: p.tipo, base: p.base, bien });
+  estado.i += 1;
+  mostrarPreguntaDiagnostico();
+}
+
+function cerrarDiagnostico() {
+  const { sistema, respuestas } = estado;
+  const nota = Math.round((respuestas.filter((r) => r.bien).length / respuestas.length) * 100);
+  const p = progresoDe(sistema.id);
+  p.diagnostico = nota;
+  if (nota >= SALTA_CONOCE && p.conoce.length < sistema.orden.length) p.conoce = [...sistema.orden];
+  if (nota >= APROBACION) p.encuentra = true;
+  guardar();
+  const porTipo = Object.fromEntries(
+    TIPOS_DIAGNOSTICO.map((tipo) => {
+      const de = respuestas.filter((r) => r.tipo === tipo);
+      return [tipo, { bien: de.filter((r) => r.bien).length, total: de.length }];
+    }),
+  );
+  evaluar('inicial', nota, { porTipo, fallos: respuestas.filter((r) => !r.bien).map((r) => r.base) });
+  return { nota, porTipo };
+}
+
+function tarjetaDiagnostico() {
+  const { sistema, cola, i } = estado;
+  const partes = [
+    encabezado(sistema, 'Diagnóstico'),
+    el(
+      'p',
+      'text-sm text-tinta-2',
+      `${Math.min(i + 1, cola.length)} de ${cola.length} · no cuenta para aprobar`,
+    ),
+    barra(i, cola.length),
+  ];
+  if (i >= cola.length) {
+    if (!estado.evaluado) {
+      estado.evaluado = true;
+      estado.resultadoDiagnostico = cerrarDiagnostico();
+    }
+    const { nota, porTipo } = estado.resultadoDiagnostico;
+    let salto = 'Empiezas desde Conoce: te enseño pieza por pieza.';
+    if (nota >= APROBACION) salto = 'Ya lo dominas: te saltas Conoce y Encuéntralo. Ve directo a Comprueba.';
+    else if (nota >= SALTA_CONOCE)
+      salto = 'Ya conoces las piezas: te saltas Conoce y empiezas en Encuéntralo.';
+    partes.push(aviso(nota >= SALTA_CONOCE ? 'ok' : 'pista', `Tu punto de partida: ${nota} de 100`, salto));
+    const lista = el('ul', 'grid gap-1 text-sm');
+    TIPOS_DIAGNOSTICO.forEach((tipo) => {
+      const { bien, total } = porTipo[tipo];
+      lista.append(el('li', 'flex justify-between gap-2', ''));
+      lista.lastChild.append(
+        el('span', '', NOMBRE_TIPO[tipo]),
+        el('span', 'font-semibold', `${bien} de ${total}`),
+      );
+    });
+    partes.push(
+      lista,
+      boton('Ver mi siguiente paso →', 'boton w-fit px-6', () => abrirSistema(sistema)),
+    );
+    return partes;
+  }
+  const p = cola[i];
+  if (i === 0)
+    partes.push(
+      paraLeer(
+        el(
+          'p',
+          'text-tinta-2',
+          'Antes de aprender, veamos qué ya sabes. Si no lo sabes, toca «No lo sé»: está bien.',
+        ),
+      ),
+    );
+  if (p.tipo === 'senala') {
+    const objetivo = paraLeer(el('div', 'grid gap-1 border-2 border-tinta p-4'));
+    objetivo.append(
+      el('p', 'text-sm text-tinta-3', '¿Qué es? Señala en el autobús:'),
+      el('p', 'font-sans text-2xl font-semibold', ficha(p.base).nombre),
+    );
+    partes.push(objetivo);
+  } else {
+    const pregunta = {
+      sirve: `¿Para qué sirve: ${ficha(p.base).nombre.toLowerCase()}?`,
+      falla: `¿Qué pasa cuando falla: ${ficha(p.base).nombre.toLowerCase()}?`,
+      herramienta: `¿Con qué revisas: ${ficha(p.base).nombre.toLowerCase()}?`,
+    }[p.tipo];
+    partes.push(
+      el('p', 'text-sm text-tinta-3', 'Es la pieza resaltada en el autobús.'),
+      el('h2', 'font-sans text-xl font-semibold tracking-normal', pregunta),
+    );
+    const opciones = el('div', p.tipo === 'herramienta' ? 'grid grid-cols-2 gap-2' : 'grid gap-2');
+    p.opciones.forEach((o) =>
+      opciones.append(
+        boton(o.texto, 'border border-tinta px-3 py-2 text-left text-sm hover:bg-placa', () =>
+          responderDiagnostico(o.bien),
+        ),
+      ),
+    );
+    partes.push(opciones);
+  }
+  partes.push(boton('No lo sé', 'boton-linea w-fit px-4 py-2 text-sm', () => responderDiagnostico(false)));
   return partes;
 }
 
@@ -1557,6 +1740,7 @@ function buscada() {
   if (estado.modo === 'orden' && estado.fase === 'inspeccion' && estado.guiada)
     return estado.orden.guia[estado.g]?.pieza ?? null;
   if (estado.modo === 'encuentra' || estado.modo === 'comprueba') return estado.cola[estado.i];
+  if (estado.modo === 'diagnostico') return estado.cola[estado.i]?.base ?? null;
   return null;
 }
 
@@ -1568,6 +1752,8 @@ entradas.addEventListener('grab', ({ detail }) => {
   if (estado.modo === 'conoce' && estado.paso === 'hazlo' && !estado.hecho) revisarConoce(base);
   else if (estado.modo === 'encuentra' && estado.i < estado.cola.length) revisarEncuentra(base);
   else if (estado.modo === 'comprueba' && estado.i < estado.cola.length) revisarComprueba(base);
+  else if (estado.modo === 'diagnostico' && estado.cola[estado.i]?.tipo === 'senala')
+    responderDiagnostico(base === estado.cola[estado.i].base);
   else if (estado.modo === 'orden' && (estado.fase === 'inspeccion' || estado.fase === 'reparar'))
     revisarOrden(base);
   else if (explorando()) {
@@ -1589,6 +1775,32 @@ window.addEventListener('keydown', (e) => {
 });
 
 pintar();
+
+// Desde Mi camino: ?sistema=motor&vuelta=conoce abre ese sistema directo en esa vuelta, cuando el
+// modelo y el avance del servidor ya llegaron (o a los 8 s, para no dejar al técnico esperando).
+const params = new URLSearchParams(window.location.search);
+const sistemaUrl = SISTEMAS.find((s) => s.id === params.get('sistema'));
+if (sistemaUrl) {
+  const modeloListo = new Promise((listo) => {
+    escena.lienzo.addEventListener('modelo-listo', listo, { once: true });
+  });
+  const espera = new Promise((listo) => {
+    setTimeout(listo, 8000);
+  });
+  Promise.race([Promise.all([modeloListo, progresoListo]), espera]).then(() => {
+    abrirSistema(sistemaUrl);
+    const p = progresoDe(sistemaUrl.id);
+    const vueltas = {
+      diagnostico: empezarDiagnostico,
+      conoce: () => empezarConoce(p.conoce.length < sistemaUrl.orden.length ? p.conoce.length : 0),
+      encuentra: empezarEncuentra,
+      libre: () => empezarComprueba(true),
+      comprueba: () => empezarComprueba(),
+      orden: () => sistemaUrl.orden_taller && empezarOrden(),
+    };
+    vueltas[params.get('vuelta')]?.();
+  });
+}
 
 // Solo en desarrollo: para probar el flujo desde la consola.
 if (import.meta.env.DEV)
