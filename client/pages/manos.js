@@ -28,6 +28,7 @@ import {
   encenderCamaras,
   guardarAjustes,
   manosEnPantalla,
+  modoGuante,
   motivo,
   pinzas,
   sinImagen,
@@ -162,6 +163,7 @@ function frase(guia, tono = 'guia') {
 // ---------- Guante (manos/guante.js): estado y lecturas en vivo ----------
 function pintarGuante() {
   const ok = guante.conectado;
+  modoGuante(ok);
   $('guante').textContent = ok ? 'Desconectar guante' : 'Conectar guante';
   $('muneca-recta').hidden = !ok;
   $('lectura-guante').hidden = !ok;
@@ -313,6 +315,7 @@ function pintarAjustes(dispositivos) {
 }
 
 let verificando = false;
+const ultimaVista = { manos: [], en: 0 };
 
 let revisadoEn = 0;
 function revisarImagen(ahora) {
@@ -334,7 +337,11 @@ function ciclo() {
     pasoCalibracion(ahora);
     return;
   }
-  const manos = manosEnPantalla(camPosicion(), ahora);
+  let manos = manosEnPantalla(camPosicion(), ahora);
+  // Con guante la cámara pierde la mano a ratos: se sostiene la última posición hasta 0.8 s (el
+  // agarre y la muñeca siguen llegando del guante), en vez de cortar el ejercicio.
+  if (manos.length) Object.assign(ultimaVista, { manos, en: ahora });
+  else if (guanteActivo() && ahora - ultimaVista.en < 800) manos = ultimaVista.manos;
   // Agarre con la vista de abajo (ve la palma); el guante, si está, también cuenta.
   const ag = agarre();
   const conGuante = guanteActivo() && guante.grip;

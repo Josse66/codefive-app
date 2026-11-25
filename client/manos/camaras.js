@@ -18,6 +18,8 @@ export const guardarAjustes = () => localStorage.setItem('manosCamaras', JSON.st
 const DE_LAPTOP = /integrated|integrada|hd webcam|facetime|ir camera|infrarroj|front|frontal/i;
 const PREFERIDAS = /general|usb/i;
 export const camaras = []; // { id, etiqueta, video, detector, ultimo, r, score, suaves }
+// Guante puesto: detector más tolerante y mejora de imagen (ver modoGuante).
+let conGuante = false;
 
 const nuevosSuaves = () =>
   [0, 1].map(() => Array.from({ length: 42 }, () => new OneEuro({ minCutoff: 1.2, beta: 6 })));
@@ -97,9 +99,9 @@ function crearDetector(vision) {
       baseOptions: { modelAssetPath: '/mediapipe/hand_landmarker.task', delegate },
       runningMode: 'VIDEO',
       numHands: 2,
-      minHandDetectionConfidence: 0.4,
-      minHandPresenceConfidence: 0.4,
-      minTrackingConfidence: 0.4,
+      minHandDetectionConfidence: conGuante ? 0.25 : 0.4,
+      minHandPresenceConfidence: conGuante ? 0.25 : 0.4,
+      minTrackingConfidence: conGuante ? 0.25 : 0.4,
     });
   return crear('GPU').catch(() => crear('CPU'));
 }
@@ -169,8 +171,23 @@ export function aPantalla(cam, p, conArea = true) {
 // ---------- Cada cuadro ----------
 // Un lienzo por cámara (pueden tener resoluciones distintas).
 const lienzosMejora = new Map();
+// Con guante puesto MediaPipe encuentra peor la mano (se entrenó sobre todo con manos sin guante):
+// se baja el umbral de detección y se mejora la imagen, que ayuda a separar el guante del fondo.
+export async function modoGuante(activar) {
+  if (conGuante === activar) return;
+  conGuante = activar;
+  const u = activar ? 0.25 : 0.4;
+  await Promise.all(
+    camaras.map((cam) =>
+      cam.detector
+        .setOptions({ minHandDetectionConfidence: u, minHandPresenceConfidence: u, minTrackingConfidence: u })
+        .catch(() => {}),
+    ),
+  );
+}
+
 function fuente(cam) {
-  if (!AJUSTES.mejorar) return cam.video;
+  if (!AJUSTES.mejorar && !conGuante) return cam.video;
   // Poca luz: más brillo y contraste antes de detectar (como el "enhance" de hand-lab).
   const v = cam.video;
   if (!lienzosMejora.has(cam.id)) lienzosMejora.set(cam.id, document.createElement('canvas'));
