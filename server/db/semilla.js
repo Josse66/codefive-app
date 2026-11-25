@@ -1,4 +1,4 @@
-import { randomInt } from 'node:crypto';
+import { createHash, randomInt } from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import logger from '#config/logger.js';
@@ -71,6 +71,13 @@ export function nuevaCredencial() {
 
 // Gafetes de demostración: a cada técnico sin gafete se le da código, el PIN de prueba de
 // data/cuentas.json y la experiencia de data/tecnicos.json. No toca los que ya tienen.
+// Gafete de demostración: el código sale del id del técnico, así es el mismo después de cada
+// db:reset y los gafetes impresos siguen sirviendo. Los técnicos nuevos llevan uno al azar.
+function credencialDemo(id) {
+  const bytes = createHash('sha256').update(`codefive-gafete-${id}`).digest();
+  return `CF-${Array.from({ length: 6 }, (_, i) => ALFABETO[bytes[i] % ALFABETO.length]).join('')}`;
+}
+
 export function sembrarGafetes(db) {
   const { pinDemo } = leerJson('cuentas.json');
   const experiencias = Object.fromEntries(leerJson('tecnicos.json').map((t) => [t.id, t.experiencia]));
@@ -78,7 +85,7 @@ export function sembrarGafetes(db) {
   const poner = db.prepare(
     'UPDATE tecnicos SET credencial = ?, pin_hash = ?, experiencia = COALESCE(?, experiencia) WHERE id = ?',
   );
-  sinGafete.forEach(({ id }) => poner.run(nuevaCredencial(), cifrar(pinDemo), experiencias[id] ?? null, id));
+  sinGafete.forEach(({ id }) => poner.run(credencialDemo(id), cifrar(pinDemo), experiencias[id] ?? null, id));
 }
 
 export function baseVacia(db) {
