@@ -217,6 +217,7 @@ export class FaseGuante {
         'Toma un mango imaginario y gira la mano como si APRETARAS (jalando hacia ti); regresa',
       );
       this.ui.decir('Toma un mango imaginario y gira la mano como si apretaras, jalando hacia ti, y regresa');
+      this.dibujarDiagnostico();
       return null;
     }
     const eje = EJES.reduce(
@@ -246,7 +247,12 @@ export class FaseGuante {
       // Esperando: mientras la mano está quieta, el punto de partida la sigue (así no cuenta la
       // deriva del sensor). La aguja ya se mueve con la mano para que se vea que el guante la lee.
       const { eje } = AJUSTES.guanteEje;
-      if (this.base == null || guante.gmag < 20) this.base = guante[eje];
+      if (this.base == null) this.base = guante[eje];
+      const casiCero = Math.abs(this.giroActual()) < 3;
+      if (guante.gmag < 4 && casiCero) {
+        this.quietoDesde ||= ahora;
+        if (ahora - this.quietoDesde > 1000) this.base = guante[eje]; // corrige la deriva del sensor
+      } else this.quietoDesde = 0;
       this.avance = this.giroActual();
       led(guante.grip);
       this.dibujarTablero(ahora);
@@ -365,6 +371,23 @@ export class FaseGuante {
     ctx.fillText(`Parte 2 · Con el guante · ${this.ej.herramienta}`, 18, 35);
   }
 
+  // Para comprobar que el sensor responde: ángulos crudos, eje aprendido y giro que se está midiendo.
+  dibujarDiagnostico() {
+    const { ctx, lienzo } = this.ui;
+    const ej = AJUSTES.guanteEje;
+    const txt = [
+      `Sensor · lado ${Math.round(guante.roll)}° · adelante ${Math.round(guante.pitch)}° · giro ${Math.round(guante.yaw)}° · movimiento ${Math.round(guante.gmag)} °/s · botón ${guante.grip ? 'sí' : 'no'}`,
+      ej
+        ? `Aprendido: eje ${{ roll: 'lado', pitch: 'adelante', yaw: 'giro' }[ej.eje]} (${ej.signo > 0 ? '+' : '−'}) · tu giro cómodo ${Math.round(ej.rango ?? 0)}° · medido ahora ${Math.round(this.avance ?? 0)}° de ${this.u?.objetivo ?? '-'}°`
+        : 'Todavía no aprende tu giro',
+    ];
+    ctx.fillStyle = 'rgba(255,255,255,.08)';
+    ctx.fillRect(0, lienzo.height - 118, lienzo.width, 54);
+    ctx.fillStyle = '#c9d1d8';
+    ctx.font = '500 15px ui-monospace, monospace';
+    txt.forEach((t, k) => ctx.fillText(t, 14, lienzo.height - 96 + k * 22));
+  }
+
   dibujarCentro(grande, chico) {
     const { ctx, lienzo } = this.ui;
     ctx.textAlign = 'center';
@@ -392,6 +415,7 @@ export class FaseGuante {
   }
 
   dibujarTablero(ahora) {
+    this.dibujarDiagnostico();
     const { ctx, lienzo } = this.ui;
     const { g } = this;
     const W = lienzo.width;
