@@ -23,7 +23,7 @@ export const LINEA_BASE_HORAS = 4;
 const META_REDUCCION = 0.2;
 const MAX_LATIDO_S = 60; // un latido nunca suma más de un minuto (evita tiempos inflados)
 
-const ACTIVIDADES = new Set(['conoce', 'encuentra', 'comprueba', 'orden', 'libre']);
+const ACTIVIDADES = new Set(['conoce', 'encuentra', 'comprueba', 'orden', 'libre', 'manos']);
 const RESULTADOS = new Set(['correcta', 'error', 'critico', 'ayuda']);
 
 function tecnicoOError(tecnicoId) {
@@ -182,10 +182,10 @@ export function calcularIndices(tecnicoId) {
        FROM sim_acciones WHERE tecnico_id = ? ORDER BY id`,
     )
     .all(tecnicoId);
-  // Solo cuenta la práctica (Encuéntralo, órdenes de taller y práctica libre): Conoce es la fase
+  // Solo cuenta la práctica (Encuéntralo, órdenes de taller, práctica libre y Entrena tus manos): Conoce es la fase
   // guiada de aprendizaje y Comprueba ya es la evaluación del IEF.
   const intentos = acciones.filter(
-    (a) => a.resultado !== 'ayuda' && ['encuentra', 'orden', 'libre'].includes(a.actividad),
+    (a) => a.resultado !== 'ayuda' && ['encuentra', 'orden', 'libre', 'manos'].includes(a.actividad),
   );
   const correctas = intentos.filter((a) => a.resultado === 'correcta');
   const precision = intentos.length ? correctas.length / intentos.length : null;
@@ -364,7 +364,7 @@ export function indicesRed() {
       `SELECT COALESCE(detalle, pieza, 'acción') AS error, COUNT(*) AS veces,
               SUM(resultado = 'critico') AS criticos, COUNT(DISTINCT tecnico_id) AS tecnicos
        FROM sim_acciones
-       WHERE resultado IN ('error', 'critico') AND actividad IN ('encuentra', 'orden', 'libre')
+       WHERE resultado IN ('error', 'critico') AND actividad IN ('encuentra', 'orden', 'libre', 'manos')
        GROUP BY 1 ORDER BY veces DESC LIMIT 8`,
     )
     .all();

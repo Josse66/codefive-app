@@ -166,7 +166,7 @@ CREATE TABLE IF NOT EXISTS sim_acciones (
   tecnico_id   TEXT NOT NULL REFERENCES tecnicos (id),
   sesion_id    INTEGER REFERENCES sim_sesiones (id),
   sistema      TEXT NOT NULL,
-  actividad    TEXT NOT NULL CHECK (actividad IN ('conoce', 'encuentra', 'comprueba', 'orden', 'libre')),
+  actividad    TEXT NOT NULL CHECK (actividad IN ('conoce', 'encuentra', 'comprueba', 'orden', 'libre', 'manos')),
   intento      INTEGER NOT NULL DEFAULT 1,
   pieza        TEXT,
   herramienta  TEXT,

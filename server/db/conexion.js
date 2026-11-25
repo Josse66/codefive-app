@@ -66,6 +66,18 @@ if (!columnasTecnico.includes('experiencia')) {
   db.exec("ALTER TABLE tecnicos ADD COLUMN experiencia TEXT NOT NULL DEFAULT 'general'");
 }
 db.exec('CREATE UNIQUE INDEX IF NOT EXISTS idx_tecnicos_credencial ON tecnicos (credencial)');
+// Entrena tus manos agrega la actividad 'manos' a la bitácora. SQLite no deja cambiar un CHECK:
+// se rehace la tabla con el esquema nuevo y se copian las acciones que ya había.
+const sqlAcciones = db.prepare("SELECT sql FROM sqlite_master WHERE name = 'sim_acciones'").get()?.sql ?? '';
+if (sqlAcciones && !sqlAcciones.includes("'manos'")) {
+  db.exec('BEGIN');
+  db.exec('ALTER TABLE sim_acciones RENAME TO sim_acciones_vieja');
+  db.exec(sqlAcciones.replace("'libre')", "'libre', 'manos')"));
+  db.exec('INSERT INTO sim_acciones SELECT * FROM sim_acciones_vieja');
+  db.exec('DROP TABLE sim_acciones_vieja');
+  db.exec('CREATE INDEX IF NOT EXISTS idx_sim_acciones_tecnico ON sim_acciones (tecnico_id, creado_en)');
+  db.exec('COMMIT');
+}
 logger.debug(`Base de datos lista en ${rutaBaseDatos}`);
 
 // Ejecuta varias operaciones como una sola: si algo falla, no se guarda nada.
