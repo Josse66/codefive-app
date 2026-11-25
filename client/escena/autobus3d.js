@@ -1084,7 +1084,7 @@ export function crearEscena(
   const botonCalidad = document.createElement('button');
   botonCalidad.type = 'button';
   botonCalidad.className =
-    'absolute right-2 top-2 z-10 border border-placa-linea bg-white/90 px-2 py-1 text-xs font-semibold text-tinta hover:border-tinta';
+    'absolute bottom-2 right-2 z-10 border border-placa-linea bg-white/90 px-2 py-1 text-xs font-semibold text-tinta hover:border-tinta';
   const rotularCalidad = () => {
     botonCalidad.textContent = calidad === 'normal' ? 'Calidad: normal' : 'Calidad: ligera';
     botonCalidad.title = 'Cambia entre calidad normal y ligera (sin sombras, para computadoras lentas)';
@@ -1240,6 +1240,8 @@ export function crearEscena(
     renderer.render(escena, camara);
   }
 
+  // Paneles que tapan los lados del lienzo (px): el centro de la vista se corre al espacio libre.
+  const margen = { izquierda: 0, derecha: 0 };
   function ajustarTamano() {
     const { clientWidth: ancho, clientHeight: alto } = contenedor;
     if (!ancho || !alto) return;
@@ -1248,6 +1250,9 @@ export function crearEscena(
     renderer.domElement.style.width = '100%';
     renderer.domElement.style.height = '100%';
     camara.aspect = ancho / alto;
+    const corrimiento = (margen.derecha - margen.izquierda) / 2;
+    if (corrimiento && !inmersivo.activo) camara.setViewOffset(ancho, alto, corrimiento, 0, ancho, alto);
+    else camara.clearViewOffset();
     camara.updateProjectionMatrix();
     pedirCuadro();
   }
@@ -1292,6 +1297,10 @@ export function crearEscena(
     rayosXActivo: () => rayosX.activo,
     idsPiezas: () => [...mallasPieza.keys()],
     // Dónde se ve la pieza en el lienzo (x, y de 0 a 1).
+    fijarMargenes(izquierda, derecha) {
+      Object.assign(margen, { izquierda, derecha });
+      ajustarTamano();
+    },
     pantallaDe: (id) => {
       const p = mallasPieza.get(id)?.getWorldPosition(new THREE.Vector3()).project(camara);
       return p ? [(p.x + 1) / 2, (1 - p.y) / 2] : null;

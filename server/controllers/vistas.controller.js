@@ -197,6 +197,7 @@ export function mostrarEscenario(req, res) {
       escenarioId: req.params.escenarioId,
       mision,
       siguienteMision: pasoDespues(mision, 'hazlo'),
+      layout: 'simulador',
       scriptPagina: 'pages/escenario.js',
     });
   });
@@ -222,6 +223,7 @@ export function mostrarOrden(req, res) {
       tecnico,
       seccion: 'taller',
       ordenId: req.params.ordenId,
+      layout: 'simulador',
       scriptPagina: 'pages/escenario.js',
     }),
   );

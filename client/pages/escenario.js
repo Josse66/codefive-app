@@ -346,9 +346,9 @@ const inmersivo = { activo: false };
 
 function mostrarHud(encendido) {
   $('ayuda-orbita').hidden = encendido;
-  ['ayuda-inmersivo', 'salir-inmersivo'].forEach((id) => {
-    $(id).hidden = !encendido;
-  });
+  $('ayuda-inmersivo').hidden = !encendido;
+  $('boton-inmersivo').setAttribute('aria-pressed', String(encendido));
+  $('salir-inmersivo').setAttribute('aria-pressed', String(!encendido));
   $('mira').hidden = true;
   $('mira-pieza').hidden = true;
 }
@@ -356,16 +356,16 @@ function mostrarHud(encendido) {
 function entrarInmersivo() {
   if (inmersivo.activo) return;
   inmersivo.activo = true;
-  raiz.classList.add('inmersivo');
   estado.escena.activarInmersivo(true);
+  estado.escena.fijarMargenes(0, 412);
   mostrarHud(true);
 }
 
 function salirInmersivo() {
   if (!inmersivo.activo) return;
   inmersivo.activo = false;
-  raiz.classList.remove('inmersivo');
   estado.escena.activarInmersivo(false);
+  estado.escena.fijarMargenes(0, 412);
   mostrarHud(false);
 }
 
@@ -453,6 +453,8 @@ carga
     $('titulo').textContent = escenario.titulo;
     $('grupo').textContent = escenario.grupo;
     $('sintoma').textContent = escenario.sintoma;
+    $('titulo-practica').textContent = escenario.titulo;
+    $('sintoma-practica').textContent = escenario.sintoma;
     $('profundidad').textContent = PROFUNDIDAD[escenario.profundidad] ?? '';
     $('marca-hv').hidden = !(escenario.tecnologia === 'electrica' && escenario.grupo === 3);
     $('fuente').textContent =
@@ -463,6 +465,8 @@ carga
       piezas: escenario.piezas,
       enfoque: escenario.enfoque,
     });
+    // La tarjeta de pasos tapa la derecha: el autobús se encuadra en el espacio libre.
+    estado.escena.fijarMargenes(0, 412);
     conectarEntradas();
     conectarInmersivo();
     // Solo en desarrollo: acceso a la escena para pruebas desde la consola.

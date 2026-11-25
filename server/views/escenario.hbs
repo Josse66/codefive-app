@@ -1,4 +1,14 @@
-<section id="escenario" class="relative grid gap-5" data-tecnico-id="{{tecnico.id}}" data-escenario-id="{{escenarioId}}" data-orden-id="{{ordenId}}">
+<section id="escenario" class="practica relative grid gap-5" data-tecnico-id="{{tecnico.id}}" data-escenario-id="{{escenarioId}}" data-orden-id="{{ordenId}}">
+  {{! Barra del simulador: volver al autobús y cambiar de vista. }}
+  <header id="barra-practica" class="absolute inset-x-0 top-0 z-20 flex h-12 items-center gap-3 bg-tinta px-4 text-white">
+    <a href="/tecnicos/{{tecnico.id}}/autobus" class="text-sm text-white underline decoration-placa-linea hover:decoration-white">← Volver al autobús</a>
+    <span class="font-narrow text-base font-bold uppercase tracking-wide">Práctica de taller</span>
+    <nav class="ml-4 flex gap-1 text-sm" aria-label="Vistas">
+      <button id="salir-inmersivo" type="button" class="vista" aria-pressed="true">Por fuera</button>
+      <button id="boton-inmersivo" type="button" class="vista" aria-pressed="false">Caminar (primera persona)</button>
+    </nav>
+    <span class="ml-auto text-sm text-placa-linea">{{tecnico.nombre}}</span>
+  </header>
   {{> mision-pasos mision=mision clave="hazlo"}}
   {{! Orden de trabajo del Taller: folio, cliente, reloj y gasto en refacciones. }}
   <div id="orden-barra" class="flex flex-wrap items-center gap-x-6 gap-y-2 border-2 border-tinta bg-tinta px-4 py-3 text-white" hidden>
@@ -23,12 +33,16 @@
     <div class="flex flex-wrap items-center gap-2">
       <span id="marca-hv" class="marca-hv" hidden>Alto voltaje 600 V</span>
       <span class="chip border-tinta-3 text-tinta-2">Datos de demostración</span>
-      <button id="boton-inmersivo" type="button" class="boton">Entrar al taller en primera persona</button>
     </div>
   </div>
 
   <div id="area-trabajo" class="grid gap-5 lg:grid-cols-[400px_minmax(0,1fr)] lg:items-start">
     <div id="panel-escenario" class="grid gap-4">
+      <div id="practica-titulo" class="grid gap-1 border-2 border-tinta bg-white p-4">
+        <p class="font-narrow text-xs font-bold uppercase tracking-wider text-tinta-3">Práctica · datos de demostración</p>
+        <h1 id="titulo-practica" class="font-sans text-xl font-semibold leading-tight tracking-normal">Cargando…</h1>
+        <p id="sintoma-practica" class="text-sm text-tinta-2"></p>
+      </div>
       <ol id="pasos" class="flex flex-wrap gap-1.5" aria-label="Pasos del escenario"></ol>
 
       <article id="paso" class="grid gap-4 border-2 border-tinta bg-white p-5" hidden aria-live="polite">
@@ -52,8 +66,8 @@
         <h2 class="text-2xl text-ok">Escenario completo</h2>
         <p id="final-texto"></p>
         <div class="flex flex-wrap gap-2">
-          <a id="enlace-evaluacion" href="{{#if siguienteMision}}{{siguienteMision.enlace}}{{else}}#{{/if}}" class="boton" {{#if siguienteMision}}data-mision="1"{{/if}}>{{#if siguienteMision}}Siguiente: {{siguienteMision.nombre}} →{{else}}Comprueba lo aprendido{{/if}}</a>
-          <a href="/tecnicos/{{tecnico.id}}/plan" class="boton-linea">Volver a Mi plan</a>
+          <a id="enlace-evaluacion" href="/tecnicos/{{tecnico.id}}/autobus" class="boton">Volver al autobús →</a>
+          <a href="/tecnicos/{{tecnico.id}}/autobus" class="boton-linea">Volver al autobús</a>
           <button id="boton-repetir" type="button" class="boton-linea">Repetir</button>
         </div>
       </article>
@@ -102,7 +116,6 @@
         <p id="ayuda-estado" class="font-semibold">Apunta con el cursor a la pieza y haz clic para usar la herramienta</p>
         <p class="text-tinta-2">Clic derecho sostenido: mirar · W A S D: caminar · Shift: agacharte · 1–9: herramienta · F11: pantalla completa</p>
       </div>
-      <button id="salir-inmersivo" type="button" class="boton-linea absolute right-3 top-14 bg-white px-3 py-2 text-sm" hidden>Salir del taller</button>
       <p id="etiqueta-pieza" class="pointer-events-none absolute left-3 top-3 border border-tinta bg-white px-2 py-1 text-sm font-semibold" hidden></p>
       <p id="ayuda-orbita" class="pointer-events-none absolute bottom-3 left-3 bg-white/90 px-2 py-1 text-xs text-tinta-3">Clic derecho y arrastrar: girar · rueda: acercar</p>
     </div>

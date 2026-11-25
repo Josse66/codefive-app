@@ -54,6 +54,9 @@ const escena = crearEscena($('lienzo'), {
   catalogo,
   enfoque: { objetivo: [0, 1.2, 0], distancia: 9 },
 });
+// Lo que tapan los paneles (px): la lista de sistemas a la izquierda y la tarjeta a la derecha.
+const MARGENES = [300, 412];
+escena.fijarMargenes(...MARGENES);
 let instancias = new Map(); // base → [ids de nodos]
 escena.lienzo.addEventListener('modelo-listo', () => {
   instancias = new Map();
@@ -154,6 +157,7 @@ let caminando = false;
 function caminar(encender) {
   caminando = encender;
   escena.activarInmersivo(encender);
+  escena.fijarMargenes(...MARGENES);
   marcarVista('vista-dentro', encender);
   marcarVista('vista-fuera', !encender);
   // Caminando, la lista de sistemas se esconde para ver el taller completo.

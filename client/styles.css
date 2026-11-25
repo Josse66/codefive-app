@@ -102,6 +102,25 @@
   #escenario.inmersivo #panel-escenario > :not(#pasos):not(#paso):not(#final) {
     display: none;
   }
+  /* Práctica de taller a pantalla completa: el autobús de fondo y los pasos flotando a la derecha. */
+  #escenario.practica {
+    @apply fixed inset-0 block bg-placa p-0;
+  }
+  #escenario.practica > :not(#area-trabajo):not(#bloqueo):not(#entrega):not(#barra-practica) {
+    display: none;
+  }
+  #escenario.practica #area-trabajo {
+    @apply block h-full pt-12;
+  }
+  #escenario.practica #visor {
+    @apply relative h-full border-0;
+  }
+  #escenario.practica #panel-escenario {
+    @apply absolute right-3 top-[60px] z-10 max-h-[calc(100vh-72px)] w-[400px] overflow-y-auto;
+  }
+  #escenario.practica #panel-escenario > :not(#practica-titulo):not(#pasos):not(#paso):not(#final):not(#mensaje-error) {
+    display: none;
+  }
   /* Quien pide menos movimiento no ve transiciones ni animaciones. */
   @media (prefers-reduced-motion: reduce) {
     *,
