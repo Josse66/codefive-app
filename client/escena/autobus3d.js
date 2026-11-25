@@ -1045,7 +1045,10 @@ export function crearEscena(
       return g;
     });
     escena.add(
-      new THREE.Mesh(mergeGeometries(caras), new THREE.MeshStandardMaterial({ color: 0xe0a800, roughness: 0.7 })),
+      new THREE.Mesh(
+        mergeGeometries(caras),
+        new THREE.MeshStandardMaterial({ color: 0xe0a800, roughness: 0.7 }),
+      ),
     );
     const lamparas = [];
     [-12, -4, 4, 12].forEach((x) =>
@@ -1252,6 +1255,49 @@ export function crearEscena(
   });
   rotularCalidad();
   contenedor.append(botonCalidad);
+
+  // Medidor de rendimiento (tecla F8 o ?medir=1 en la dirección): lo que de verdad pasa en el
+  // equipo de quien lo usa. Cuadros por segundo mientras algo se mueve, tiempo por cuadro, cuadros
+  // lentos (> 25 ms) en los últimos 2 s, llamadas de dibujo y resolución real del lienzo.
+  const medidor = {
+    visible: new URLSearchParams(window.location.search).has('medir'),
+    intervalos: [],
+    js: [],
+    llamadas: 0,
+  };
+  const panelMedidor = document.createElement('pre');
+  panelMedidor.className =
+    'pointer-events-none absolute bottom-10 right-2 z-20 whitespace-pre bg-tinta/85 px-2 py-1 font-mono text-[11px] leading-tight text-white';
+  panelMedidor.hidden = !medidor.visible;
+  contenedor.append(panelMedidor);
+  const alTeclaMedidor = (e) => {
+    if (e.key !== 'F8') return;
+    e.preventDefault();
+    medidor.visible = !medidor.visible;
+    panelMedidor.hidden = !medidor.visible;
+  };
+  window.addEventListener('keydown', alTeclaMedidor);
+  const relojMedidor = setInterval(() => {
+    if (!medidor.visible) return;
+    const ahora = performance.now();
+    medidor.intervalos = medidor.intervalos.filter(([t]) => ahora - t < 2000);
+    medidor.js = medidor.js.filter(([t]) => ahora - t < 2000);
+    const dt = medidor.intervalos.map(([, v]) => v);
+    const prom = dt.length ? dt.reduce((a, b) => a + b, 0) / dt.length : 0;
+    const peor = dt.length ? Math.max(...dt) : 0;
+    const lentos = dt.filter((v) => v > 25).length;
+    const js = medidor.js.map(([, v]) => v);
+    const jsProm = js.length ? js.reduce((a, b) => a + b, 0) / js.length : 0;
+    panelMedidor.textContent = [
+      `FPS      ${prom ? Math.round(1000 / prom) : '— (quieto)'}`,
+      `cuadro   ${prom.toFixed(1)} ms · peor ${peor.toFixed(0)} ms`,
+      `lentos   ${lentos} de ${dt.length} (2 s)`,
+      `cpu      ${jsProm.toFixed(1)} ms por cuadro`,
+      `dibujos  ${medidor.llamadas}`,
+      `lienzo   ${renderer.domElement.width}×${renderer.domElement.height} · dpr ${renderer.getPixelRatio().toFixed(2)}`,
+      `calidad  ${calidad} · ${integrada ? 'GPU integrada' : 'GPU dedicada'}`,
+    ].join('\n');
+  }, 500);
   aplicarCalidad();
 
   // Medición de la entrada de cámara: si va a menos de ~30 cuadros por segundo, pasa a ligero
@@ -1281,7 +1327,11 @@ export function crearEscena(
       return;
     }
     // Solo cuenta para la resolución dinámica si el cuadro anterior también se dibujó.
-    if (dibujoSeguido) vigilarCuadro(reloj.elapsedTime - ultimoDibujo);
+    if (dibujoSeguido) {
+      vigilarCuadro(reloj.elapsedTime - ultimoDibujo);
+      if (medidor.visible)
+        medidor.intervalos.push([performance.now(), (reloj.elapsedTime - ultimoDibujo) * 1000]);
+    }
     dibujoSeguido = true;
     ultimoDibujo = reloj.elapsedTime;
     pendiente = false;
@@ -1393,7 +1443,12 @@ export function crearEscena(
       controles.target.lerpVectors(llegada.miraDesde, llegada.miraHasta, k);
       controles.update();
     }
+    const antesDeDibujar = performance.now();
     renderer.render(escena, camara);
+    if (medidor.visible) {
+      medidor.js.push([performance.now(), performance.now() - antesDeDibujar]);
+      medidor.llamadas = renderer.info.render.calls;
+    }
   }
 
   // Paneles que tapan los lados del lienzo (px): el centro de la vista se corre al espacio libre.
@@ -1470,6 +1525,8 @@ export function crearEscena(
       activo = false;
       window.removeEventListener('keydown', alPresionar);
       window.removeEventListener('keyup', alSoltar);
+      window.removeEventListener('keydown', alTeclaMedidor);
+      clearInterval(relojMedidor);
       renderer.dispose();
     },
   };

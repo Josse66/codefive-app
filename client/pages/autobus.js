@@ -46,7 +46,95 @@ const progresoDe = (sistemaId) => {
   progreso[sistemaId] ??= { conoce: [], encuentra: false, comprueba: null };
   return progreso[sistemaId];
 };
-const guardar = () => localStorage.setItem(CLAVE, JSON.stringify(progreso));
+// El avance vive en el servidor (para el panel de Volvo); el navegador guarda una copia por si
+// se va la red. guardar() manda el sistema que se está trabajando.
+const API = `/api/tecnicos/${tecnicoId}/simulador`;
+const enviar = (url, metodo, cuerpo) =>
+  fetch(url, {
+    method: metodo,
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(cuerpo),
+  }).catch(() => null);
+const guardar = () => {
+  localStorage.setItem(CLAVE, JSON.stringify(progreso));
+  const id = estado?.sistema?.id;
+  if (id) enviar(`${API}/progreso/${id}`, 'PUT', { datos: progreso[id] });
+};
+
+// Sesión de práctica: cada 30 s, si hubo actividad en el último minuto y la pestaña se ve,
+// suma ese tiempo como práctica efectiva (horas del IEFI).
+const sesion = { id: null, ultimoMovimiento: Date.now() };
+['pointerdown', 'pointermove', 'keydown', 'wheel'].forEach((tipo) =>
+  window.addEventListener(tipo, () => {
+    sesion.ultimoMovimiento = Date.now();
+  }),
+);
+enviar(`${API}/sesiones`, 'POST', {})
+  .then((r) => r?.json())
+  .then((d) => {
+    sesion.id = d?.sesionId ?? null;
+  });
+setInterval(() => {
+  const activo = document.visibilityState === 'visible' && Date.now() - sesion.ultimoMovimiento < 60000;
+  if (sesion.id && activo) enviar(`${API}/sesiones/${sesion.id}/latido`, 'POST', { segundos: 30 });
+}, 30000);
+
+// Bitácora de acciones (lista de cotejo, Pareto de errores, precisión y autonomía del ICO).
+// Se manda en tandas; al cerrar la página, con sendBeacon.
+const colaAcciones = [];
+function registrar(
+  actividad,
+  {
+    resultado,
+    pieza = null,
+    herramienta = estado.herramienta,
+    paso = null,
+    conAyuda = false,
+    detalle = null,
+  },
+) {
+  if (!estado.sistema) return;
+  colaAcciones.push({
+    sistema: estado.sistema.id,
+    actividad,
+    intento: estado.intento ?? 1,
+    pieza,
+    herramienta,
+    paso,
+    resultado,
+    conAyuda,
+    detalle,
+  });
+}
+function vaciarCola(alCerrar = false) {
+  if (!colaAcciones.length) return;
+  const cuerpo = JSON.stringify({ sesionId: sesion.id, acciones: colaAcciones.splice(0) });
+  if (alCerrar) navigator.sendBeacon(`${API}/acciones`, new Blob([cuerpo], { type: 'application/json' }));
+  else
+    fetch(`${API}/acciones`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: cuerpo,
+    }).catch(() => null);
+}
+setInterval(() => vaciarCola(), 4000);
+// Al abrir, el avance del servidor manda sobre la copia del navegador.
+fetch(API)
+  .then((r) => (r.ok ? r.json() : null))
+  .then((d) => {
+    if (!d) return;
+    Object.assign(progreso, d.progreso);
+    localStorage.setItem(CLAVE, JSON.stringify(progreso));
+    pintar();
+  })
+  .catch(() => null);
+window.addEventListener('pagehide', () => vaciarCola(true));
+function evaluar(tipo, calificacion, detalle = null) {
+  vaciarCola();
+  return enviar(`${API}/evaluaciones`, 'POST', { sistema: estado.sistema.id, tipo, calificacion, detalle })
+    .then((r) => r?.json())
+    .catch(() => null);
+}
 
 // ---------- Escena ----------
 const escena = crearEscena($('lienzo'), {
@@ -397,6 +485,23 @@ function tarjetaSistema() {
     lista.append(li);
   });
   partes.push(lista);
+  // Demostración de la evaluación diferida: el reloj del técnico avanza 30 días y el siguiente
+  // Comprueba cuenta como diferida (retención del IEF).
+  if (p.comprueba != null) {
+    partes.push(
+      boton('Demo: simular 30 días y medir retención', 'w-fit text-sm text-tinta-2 underline', async () => {
+        await enviar(`/api/tecnicos/${tecnicoId}/simular-dias`, 'POST', { dias: 30 });
+        estado.retro = null;
+        $('tarjeta').prepend(
+          aviso(
+            'pista',
+            'Pasaron 30 días (simulados)',
+            'Haz Comprueba otra vez: así se mide cuánto recuerdas (retención).',
+          ),
+        );
+      }),
+    );
+  }
   if (sistema.orden_taller) {
     const o = sistema.orden_taller;
     const mejor = p.orden;
@@ -438,6 +543,7 @@ function tarjetaSistema() {
 
 // ---------- Vuelta 1: Conoce ----------
 function empezarConoce(desde = 0) {
+  estado.intento = Date.now();
   Object.assign(estado, {
     modo: 'conoce',
     i: desde,
@@ -580,9 +686,19 @@ function revisarConoce(baseTocada) {
       'Está en la lista de arriba (o usa las teclas 1 a 6).',
     );
   } else if (baseTocada !== base) {
+    registrar('conoce', {
+      resultado: 'error',
+      pieza: baseTocada,
+      detalle: `Señaló ${ficha(baseTocada).nombre} en vez de ${f.nombre}`,
+    });
     estado.retro = aviso('mal', `Esa es: ${ficha(baseTocada).nombre}`, 'Busca la pieza resaltada.');
   } else if (estado.herramienta !== f.hazlo.herramienta) {
     estado.errores += 1;
+    registrar('conoce', {
+      resultado: 'error',
+      pieza: base,
+      detalle: `Herramienta equivocada en ${f.nombre}`,
+    });
     const correcta = HERRAMIENTAS.find((h) => h.id === f.hazlo.herramienta);
     estado.retro =
       estado.errores >= 2
@@ -590,6 +706,7 @@ function revisarConoce(baseTocada) {
         : aviso('mal', 'Con esa herramienta no se revisa', f.revisa);
   } else {
     estado.hecho = true;
+    registrar('conoce', { resultado: 'correcta', pieza: base, conAyuda: true });
     estado.retro = aviso('ok', 'Hecho', f.hazlo.resultado);
     // La herramienta empuja hacia la pieza; con agua jabonosa salen burbujas.
     sonar(estado.herramienta);
@@ -603,6 +720,7 @@ function revisarConoce(baseTocada) {
 
 // ---------- Vuelta 2: Encuéntralo ----------
 function empezarEncuentra() {
+  estado.intento = Date.now();
   escena.elegirHerramienta(null);
   escena.resaltar(null);
   Object.assign(estado, {
@@ -645,6 +763,12 @@ function tarjetaEncuentra() {
 function revisarEncuentra(baseTocada) {
   const base = estado.cola[estado.i];
   if (baseTocada === base) {
+    registrar('encuentra', {
+      resultado: 'correcta',
+      pieza: base,
+      herramienta: null,
+      conAyuda: estado.errores >= 2,
+    });
     if (estado.errores === 0) estado.aciertos += 1;
     escena.marcarPieza(instancias.get(base)?.[0]);
     escena.resaltar(null);
@@ -655,6 +779,12 @@ function revisarEncuentra(baseTocada) {
     }
   } else {
     estado.errores += 1;
+    registrar('encuentra', {
+      resultado: 'error',
+      pieza: baseTocada,
+      herramienta: null,
+      detalle: `Confundió ${ficha(base).nombre} con ${ficha(baseTocada).nombre}`,
+    });
     if (estado.errores >= 2) {
       escena.resaltar(instancias.get(base)?.[0] ?? null);
       irA(estado.sistema, base);
@@ -672,6 +802,8 @@ function revisarEncuentra(baseTocada) {
 
 // ---------- Vuelta 3: Comprueba ----------
 function empezarComprueba() {
+  estado.intento = Date.now();
+  estado.evaluado = false;
   escena.elegirHerramienta(null);
   escena.resaltar(null);
   const cola = mezclar(estado.sistema.orden).slice(0, MAX_COMPRUEBA);
@@ -701,6 +833,11 @@ function tarjetaComprueba() {
     const p = progresoDe(sistema.id);
     p.comprueba = Math.max(p.comprueba ?? 0, calificacion);
     guardar();
+    // Final o diferida (a los 30 días) la decide el servidor.
+    if (!estado.evaluado) {
+      estado.evaluado = true;
+      evaluar('comprueba', calificacion, { fallos: [...new Set(estado.fallos)] });
+    }
     const aprobado = calificacion >= APROBACION;
     partes.push(
       aviso(
@@ -766,6 +903,11 @@ function tarjetaComprueba() {
 function revisarComprueba(baseTocada) {
   if (estado.paso !== 'senala') return;
   const base = estado.cola[estado.i];
+  registrar('comprueba', {
+    resultado: baseTocada === base ? 'correcta' : 'error',
+    pieza: base,
+    herramienta: null,
+  });
   if (baseTocada === base) {
     estado.aciertos += 1;
     estado.retro = null;
@@ -793,6 +935,7 @@ const pesos = (n) => `$${Number(n).toLocaleString('es-MX')}`;
 // por qué se hace cada paso. Sola: sin resaltados, con pista si se pide; esa es la calificada.
 function empezarOrden(guiada = !progresoDe(estado.sistema.id).ordenGuiada) {
   const o = estado.sistema.orden_taller;
+  estado.intento = Date.now();
   escena.reiniciarPiezas();
   escena.quitarMarcas();
   escena.resaltar(null);
@@ -963,6 +1106,11 @@ function tarjetaOrden() {
       partes.push(
         boton('Ver pista', 'boton-linea w-fit px-4 py-1.5 text-sm', () => {
           estado.pista = true;
+          registrar('orden', {
+            resultado: 'ayuda',
+            paso: 'inspeccion',
+            detalle: 'Pidió pista al diagnosticar',
+          });
           pintar();
         }),
       );
@@ -1026,6 +1174,11 @@ function tarjetaOrden() {
       partes.push(
         boton('Ver pista', 'boton-linea w-fit px-4 py-1.5 text-sm', () => {
           estado.pista = true;
+          registrar('orden', {
+            resultado: 'ayuda',
+            paso: `paso ${estado.i + 1}`,
+            detalle: 'Pidió pista al reparar',
+          });
           escena.resaltar(instancias.get(pieza)?.[0] ?? null);
           pintar();
         }),
@@ -1066,6 +1219,11 @@ function tarjetaOrden() {
     p.orden = Math.max(p.orden ?? 0, calificacion);
     guardar();
     estado.guardado = true;
+    evaluar('orden', calificacion, {
+      errores: estado.errores,
+      criticos: estado.criticos,
+      cambiosDeMas: estado.cambiosDeMas,
+    });
   }
   const aprobado = calificacion >= APROBACION;
   partes.push(
@@ -1112,6 +1270,14 @@ function elegirCausa(base) {
   const o = estado.orden;
   const costo = o.costos[base] ?? o.costo_otra;
   if (base !== o.causa) {
+    registrar('orden', {
+      resultado: 'error',
+      pieza: base,
+      herramienta: null,
+      paso: 'causa',
+      conAyuda: estado.guiada,
+      detalle: `Cambió ${ficha(base).nombre} sin necesidad`,
+    });
     estado.cambiosDeMas.push(base);
     estado.gasto += costo;
     estado.retro = aviso(
@@ -1146,8 +1312,21 @@ function revisarOrden(baseTocada) {
   if (estado.fase === 'inspeccion') {
     const f = ficha(baseTocada);
     if (estado.herramienta !== f.hazlo.herramienta) {
+      registrar('orden', {
+        resultado: 'error',
+        pieza: baseTocada,
+        paso: 'inspeccion',
+        conAyuda: estado.guiada,
+        detalle: `Revisó ${f.nombre} con la herramienta equivocada`,
+      });
       estado.retro = aviso('mal', `Con eso no se revisa: ${f.nombre}`, f.revisa);
     } else {
+      registrar('orden', {
+        resultado: 'correcta',
+        pieza: baseTocada,
+        paso: 'inspeccion',
+        conAyuda: estado.guiada,
+      });
       const { estado: e, hallazgo } = estadoDe(baseTocada);
       if (!estado.revisadas.has(baseTocada)) estado.revisadas.set(baseTocada, hallazgo);
       const id = instancias.get(baseTocada)?.[0];
@@ -1167,6 +1346,12 @@ function revisarOrden(baseTocada) {
   const paso = o.pasos[estado.i];
   const accion = `${estado.herramienta}>${baseTocada}`;
   if (accion === paso.correcta) {
+    registrar('orden', {
+      resultado: 'correcta',
+      pieza: baseTocada,
+      paso: `paso ${estado.i + 1}`,
+      conAyuda: estado.guiada || estado.pista,
+    });
     const id = instancias.get(baseTocada)?.[0];
     sonar(paso.sonido ?? paso.efecto ?? estado.herramienta);
     if (paso.efecto === 'retirar' || paso.efecto === 'montar') escena.efecto(paso.efecto, id);
@@ -1186,6 +1371,13 @@ function revisarOrden(baseTocada) {
     return;
   }
   const error = paso.errores?.[accion];
+  registrar('orden', {
+    resultado: error?.critico ? 'critico' : 'error',
+    pieza: baseTocada,
+    paso: `paso ${estado.i + 1}`,
+    conAyuda: estado.guiada || estado.pista,
+    detalle: error?.mensaje ?? `Fuera de orden en el paso ${estado.i + 1}: ${accion}`,
+  });
   if (error?.critico) {
     estado.criticos += 1;
     sonar('critico');

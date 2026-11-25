@@ -182,7 +182,11 @@ export function calcularIndices(tecnicoId) {
        FROM sim_acciones WHERE tecnico_id = ? ORDER BY id`,
     )
     .all(tecnicoId);
-  const intentos = acciones.filter((a) => a.resultado !== 'ayuda');
+  // Solo cuenta la práctica (Encuéntralo, órdenes de taller y práctica libre): Conoce es la fase
+  // guiada de aprendizaje y Comprueba ya es la evaluación del IEF.
+  const intentos = acciones.filter(
+    (a) => a.resultado !== 'ayuda' && ['encuentra', 'orden', 'libre'].includes(a.actividad),
+  );
   const correctas = intentos.filter((a) => a.resultado === 'correcta');
   const precision = intentos.length ? correctas.length / intentos.length : null;
   const autonomia = correctas.length ? correctas.filter((a) => !a.con_ayuda).length / correctas.length : null;
