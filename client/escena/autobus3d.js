@@ -254,11 +254,17 @@ const modeloDe = (biblioteca, nombre) =>
   biblioteca.getObjectByName(nombre) ?? PROCEDURALES[nombre]?.() ?? null;
 
 // Copia de un modelo con materiales propios (para poder resaltarla sin tocar las demás) y sombras.
-// Nombre de la tarjeta de video ("" si el navegador no lo da).
-function nombreGpu(renderer) {
-  const gl = renderer.getContext();
-  const info = gl.getExtension('WEBGL_debug_renderer_info');
-  return info ? String(gl.getParameter(info.UNMASKED_RENDERER_WEBGL)) : '';
+// ¿Tarjeta de video integrada (la de la mayoría de las laptops)? Se pregunta con un contexto de
+// prueba antes de crear el de la escena, porque el suavizado de bordes se decide al crearlo.
+let integradaCache = null;
+function gpuIntegrada() {
+  if (integradaCache !== null) return integradaCache;
+  const gl = document.createElement('canvas').getContext('webgl2');
+  const info = gl?.getExtension('WEBGL_debug_renderer_info');
+  const nombre = info ? String(gl.getParameter(info.UNMASKED_RENDERER_WEBGL)) : '';
+  gl?.getExtension('WEBGL_lose_context')?.loseContext();
+  integradaCache = /intel|integrated|radeon\(tm\) graphics|uhd|iris|mali|adreno/i.test(nombre);
+  return integradaCache;
 }
 
 function copiaDe(original) {
@@ -355,11 +361,16 @@ export function crearEscena(
   // Calidad: "normal" (sombras, resolución hasta 1.5) o "ligero" (sin sombras, resolución 1).
   // Se guarda en el navegador; si la computadora va lenta se cambia sola a ligero.
   let calidad = localStorage.getItem('calidad3d') ?? 'normal';
-  const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+  // En GPU integrada el suavizado de bordes (MSAA) cuesta mucho por píxel: se quita.
+  const integrada = gpuIntegrada();
+  const renderer = new THREE.WebGLRenderer({ antialias: !integrada, powerPreference: 'high-performance' });
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   // PCF simple: la sombra del autobús ya viene horneada; la suave costaba muchas lecturas por píxel.
   renderer.shadowMap.type = THREE.PCFShadowMap;
-  renderer.shadowMap.enabled = (localStorage.getItem('calidad3d') ?? 'normal') === 'normal';
+  // El autobús completo trae su sombra horneada: sin sombras en tiempo real (cada píxel del piso
+  // ya no lee el mapa de sombras).
+  const conSombras = () => !completo && calidad === 'normal';
+  renderer.shadowMap.enabled = conSombras();
   // Las sombras no cambian solas: se recalculan solo cuando algo se carga o se mueve.
   renderer.shadowMap.autoUpdate = false;
   contenedor.append(renderer.domElement);
@@ -432,7 +443,6 @@ export function crearEscena(
   // se limita el total de píxeles y, si los cuadros tardan, se baja la escala sola; si sobra
   // tiempo, se sube poco a poco. Así la pantalla completa no traba una GPU integrada.
   // Con GPU integrada (la de la mayoría de las laptops) el tope de píxeles es menor.
-  const integrada = /intel|integrated|radeon\(tm\) graphics|uhd|iris|mali|adreno/i.test(nombreGpu(renderer));
   const PIXELES_MAX = integrada ? { normal: 1.1e6, ligero: 0.8e6 } : { normal: 2.4e6, ligero: 1.2e6 };
   const resolucion = { escala: 1, promedio: 1 / 60, cuenta: 0, holgura: 0, bajadas: 0 };
   function ajustarResolucion() {
@@ -474,11 +484,10 @@ export function crearEscena(
 
   // Aplica la calidad: resolución y sombras. Cambiar las sombras obliga a recompilar materiales.
   function aplicarCalidad() {
-    const normal = calidad === 'normal';
     resolucion.escala = 1;
     ajustarResolucion();
-    if (renderer.shadowMap.enabled !== normal) {
-      renderer.shadowMap.enabled = normal;
+    if (renderer.shadowMap.enabled !== conSombras()) {
+      renderer.shadowMap.enabled = conSombras();
       escena.traverse((n) => {
         if (n.material) Object.assign(n.material, { needsUpdate: true });
       });
@@ -496,7 +505,7 @@ export function crearEscena(
   // El mismo vuelo sirve para enfocar una pieza después (mueve cámara y punto de mira).
   const llegada = {
     t: 0,
-    duracion: menosMovimiento ? 0.01 : 1.8,
+    duracion: menosMovimiento ? 0.01 : 1.2,
     desde: objetivo.clone().addScaledVector(new THREE.Vector3(1.1, 0.7, 0.9).normalize(), distancia * 3.2),
     hasta: camara.position.clone(),
     miraDesde: objetivo.clone(),
@@ -509,6 +518,8 @@ export function crearEscena(
   });
   controles.addEventListener('change', () => pedirCuadro());
   controles.enableDamping = true;
+  // Poca inercia: la vista se detiene casi al soltar el mouse (con mucha se siente "pesada").
+  controles.dampingFactor = 0.22;
   controles.target.copy(objetivo);
   // Clic izquierdo = usar la herramienta o elegir; derecho gira la vista; la rueda acerca.
   controles.mouseButtons = { LEFT: null, MIDDLE: THREE.MOUSE.DOLLY, RIGHT: THREE.MOUSE.ROTATE };
@@ -1181,7 +1192,7 @@ export function crearEscena(
     const desdeDonde = zona?.vista ? new THREE.Vector3(...zona.vista).normalize() : direccion;
     Object.assign(llegada, {
       t: 0,
-      duracion: menosMovimiento ? 0.01 : 0.9,
+      duracion: menosMovimiento ? 0.01 : 0.55,
       desde: camara.position.clone(),
       hasta: mira.clone().addScaledVector(desdeDonde, lejos),
       miraDesde: controles.target.clone(),
