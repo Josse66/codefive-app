@@ -377,6 +377,12 @@ function pintar() {
   leerTarjeta();
 }
 
+// Orden del día: la primera orden de taller que aún no se aprueba (o la primera, si ya todas).
+function ordenDelDia() {
+  const conOrden = SISTEMAS.filter((x) => x.orden_taller);
+  return conOrden.find((x) => !(progresoDe(x.id).orden >= APROBACION)) ?? conOrden[0];
+}
+
 function tarjetaLibreMayor() {
   const partes = [
     el(
@@ -388,7 +394,7 @@ function tarjetaLibreMayor() {
   const intro = el('p', '', 'Toca un sistema del autobús. Te llevo paso a paso, a tu ritmo.');
   intro.dataset.leer = '1';
   partes.push(intro);
-  const conOrden = SISTEMAS.find((x) => x.orden_taller);
+  const conOrden = ordenDelDia();
   if (conOrden) {
     partes.push(
       boton(`🔧 Orden del día: ${conOrden.orden_taller.titulo}`, 'boton w-full text-left', () => {
@@ -437,7 +443,7 @@ function tarjetaLibre() {
   });
   partes.push(lista);
   // Orden de taller del día: atajo directo a reparar.
-  const conOrden = SISTEMAS.find((x) => x.orden_taller);
+  const conOrden = ordenDelDia();
   if (conOrden) {
     const caja = el('div', 'grid gap-2 border-2 border-tinta bg-placa p-3');
     caja.append(
@@ -1400,9 +1406,7 @@ function tarjetaOrden() {
       if (estado.revisadas.size) partes.push(el('p', 'text-sm font-semibold', 'Bitácora'), bitacora());
       return partes;
     }
-    partes.push(
-      el('p', 'text-sm font-semibold', `Revisa piezas del motor (${estado.revisadas.size} revisadas)`),
-    );
+    partes.push(el('p', 'text-sm font-semibold', `Revisa las piezas (${estado.revisadas.size} revisadas)`));
     partes.push(bandeja());
     if (estado.retro) partes.push(estado.retro);
     if (estado.pista) {
@@ -1595,7 +1599,7 @@ function elegirCausa(base) {
     estado.retro = aviso(
       'mal',
       `Cambiaste: ${ficha(base).nombre} (${pesos(costo)})`,
-      'Probaste el autobús y sigue perdiendo fuerza. Esa pieza estaba bien: revisa más antes de cambiar.',
+      `${o.sigue ?? 'La falla sigue.'} Esa pieza estaba bien: revisa más antes de cambiar.`,
     );
     pintar();
     return;
