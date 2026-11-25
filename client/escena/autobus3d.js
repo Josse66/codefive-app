@@ -1203,6 +1203,29 @@ export function crearEscena(
     });
   }
 
+  // Mover la vista con botones (Experiencia Adulto Mayor): acercar o alejar hacia el punto que se
+  // mira y girar alrededor de él, con un vuelo corto en vez de arrastrar con el mouse.
+  function volarA(posicion) {
+    Object.assign(llegada, {
+      t: 0,
+      duracion: menosMovimiento ? 0.01 : 0.45,
+      desde: camara.position.clone(),
+      hasta: posicion,
+      miraDesde: controles.target.clone(),
+      miraHasta: controles.target.clone(),
+    });
+  }
+  function acercar(factor) {
+    const d = camara.position.clone().sub(controles.target);
+    d.setLength(THREE.MathUtils.clamp(d.length() * factor, controles.minDistance, controles.maxDistance));
+    volarA(controles.target.clone().add(d));
+  }
+  function girar(angulo) {
+    const d = camara.position.clone().sub(controles.target);
+    d.applyAxisAngle(new THREE.Vector3(0, 1, 0), angulo);
+    volarA(controles.target.clone().add(d));
+  }
+
   function marcarPieza(id, tipo = 'ok') {
     const malla = mallasPieza.get(id);
     if (!malla) return;
@@ -1495,6 +1518,8 @@ export function crearEscena(
     marcarGrupo: yRedibujar(marcarGrupo),
     marcarPieza: yRedibujar(marcarPieza),
     quitarMarcas: yRedibujar(quitarMarcas),
+    acercar: yRedibujar(acercar),
+    girar: yRedibujar(girar),
     reiniciarPiezas: yRedibujar(reiniciarPiezas, true),
     enfocar: yRedibujar(enfocar),
     activarInmersivo: yRedibujar(activarInmersivo),

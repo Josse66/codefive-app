@@ -134,6 +134,33 @@
 }
 
 @layer components {
+  /* Experiencia Adulto Mayor: letra y botones grandes, una tarjeta a la vez. */
+  .boton-grande {
+    @apply min-h-[64px] border-2 border-tinta bg-white px-4 text-lg font-semibold text-tinta shadow hover:bg-placa active:bg-placa-2;
+  }
+  #sim.mayor #tarjeta {
+    @apply w-[572px] gap-5 p-6 text-xl leading-snug;
+  }
+  #sim.mayor #tarjeta h1 {
+    @apply text-3xl;
+  }
+  #sim.mayor #tarjeta h2 {
+    @apply text-2xl;
+  }
+  #sim.mayor #tarjeta .text-xs,
+  #sim.mayor #tarjeta .text-sm,
+  #sim.mayor #tarjeta .text-[15px],
+  #sim.mayor #tarjeta .text-[16px] {
+    @apply text-lg;
+  }
+  #sim.mayor #tarjeta button {
+    @apply min-h-[56px] text-lg;
+  }
+  #sim.mayor #panel-sistemas,
+  #sim.mayor #vista-dentro,
+  #sim.mayor #ayuda {
+    display: none;
+  }
   /* Botones de vista del simulador (barra oscura de arriba). */
   .vista {
     @apply px-3 py-1.5 text-placa-linea hover:text-white;

@@ -10,11 +10,17 @@
 import { crearEscena } from '../escena/autobus3d.js';
 import { InputBus } from '../entradas/inputBus.js';
 import { alternarSonido, sonar, sonidoActivo } from '../escena/sonidos.js';
+import { hablar } from '../accesibilidad/voz.js';
 import DATOS from '../../data/autobus/piezas.json';
 import GRUPOS from '../../data/grupos.json';
 
 const raiz = document.getElementById('sim');
-const { tecnicoId } = raiz.dataset;
+const { tecnicoId, experiencia, nombre: nombreTecnico } = raiz.dataset;
+// Experiencia Adulto Mayor: una tarjeta grande a la vez, letra grande, la cámara se mueve sola
+// con botones grandes, la voz lee cada instrucción (con el mismo texto en pantalla) y hay
+// práctica libre sin calificación antes de Comprueba. El contenido y el 91 son los mismos.
+const MAYOR = experiencia === 'mayor';
+if (MAYOR) raiz.classList.add('mayor');
 const $ = (id) => document.getElementById(id);
 const APROBACION = 91;
 const MAX_COMPRUEBA = 8;
@@ -144,7 +150,7 @@ const escena = crearEscena($('lienzo'), {
   enfoque: { objetivo: [0, 1.2, 0], distancia: 9 },
 });
 // Lo que tapan los paneles (px): la lista de sistemas a la izquierda y la tarjeta a la derecha.
-const MARGENES = [300, 412];
+const MARGENES = MAYOR ? [0, 584] : [300, 412];
 escena.fijarMargenes(...MARGENES);
 let instancias = new Map(); // base → [ids de nodos]
 escena.lienzo.addEventListener('modelo-listo', () => {
@@ -208,6 +214,13 @@ function encabezado(sistema, texto) {
   return fila;
 }
 
+// Marca un elemento para que la voz lo lea en la Experiencia Adulto Mayor.
+const paraLeer = (nodo) => {
+  const n = nodo;
+  n.dataset.leer = '1';
+  return n;
+};
+
 function barra(actual, total) {
   const fondo = el('div', 'h-1.5 bg-placa-2');
   const relleno = el('div', 'h-1.5 bg-tinta transition-[width] duration-500');
@@ -226,6 +239,7 @@ function aviso(tipo, titulo, texto) {
     pista: 'border-med bg-med-suave',
   }[tipo];
   const caja = el('div', `grid gap-1 border p-3 text-[15px] ${clase}`);
+  caja.dataset.leer = '1';
   caja.append(el('p', 'font-semibold', titulo));
   if (texto) caja.append(el('p', '', texto));
   return caja;
@@ -262,6 +276,16 @@ $('vista-fuera').addEventListener('click', () => caminar(false));
 $('vista-dentro').addEventListener('click', () => caminar(true));
 $('vista-rayos').addEventListener('click', () => rayosX(!escena.rayosXActivo()));
 $('vista-tapa').addEventListener('click', () => tapa(!tapaAbierta));
+// Experiencia Adulto Mayor: botones grandes en lugar de arrastrar con el mouse o usar el teclado.
+if (MAYOR) {
+  $('controles-mayor').hidden = false;
+  $('ctrl-acercar').addEventListener('click', () => escena.acercar(0.7));
+  $('ctrl-alejar').addEventListener('click', () => escena.acercar(1.4));
+  $('ctrl-girar-izq').addEventListener('click', () => escena.girar(0.5));
+  $('ctrl-girar-der').addEventListener('click', () => escena.girar(-0.5));
+  $('ctrl-rayos').addEventListener('click', () => rayosX(!escena.rayosXActivo()));
+  $('ctrl-motor').addEventListener('click', () => tapa(!tapaAbierta));
+}
 marcarVista('vista-sonido', sonidoActivo());
 $('vista-sonido').addEventListener('click', () => marcarVista('vista-sonido', alternarSonido()));
 
@@ -311,6 +335,21 @@ function pintarSistemas() {
 }
 
 // ---------- Tarjeta ----------
+// En Adulto Mayor la voz lee lo principal de la tarjeta cada vez que cambia: títulos y lo marcado
+// con data-leer (instrucciones, avisos, fichas). Siempre es el mismo texto que está en pantalla.
+let ultimoLeido = '';
+function leerTarjeta(forzar = false) {
+  if (!MAYOR) return;
+  const texto = [...$('tarjeta').querySelectorAll('h1, h2, [data-leer]')]
+    .map((n) => n.innerText.trim())
+    .filter(Boolean)
+    .join('. ');
+  if (forzar || texto !== ultimoLeido) {
+    ultimoLeido = texto;
+    hablar(texto);
+  }
+}
+
 function pintar() {
   const t = $('tarjeta');
   t.replaceChildren(
@@ -323,10 +362,53 @@ function pintar() {
       orden: tarjetaOrden,
     }[estado.modo](),
   );
+  if (MAYOR) {
+    // Botón para volver a oír, siempre en el mismo lugar (arriba de la tarjeta).
+    t.prepend(boton('🔊 Repetir lo que dice', 'boton-linea w-full', () => leerTarjeta(true)));
+  }
   pintarSistemas();
+  leerTarjeta();
+}
+
+function tarjetaLibreMayor() {
+  const partes = [
+    el(
+      'h1',
+      'font-sans font-semibold leading-tight tracking-normal',
+      `Hola, ${nombreTecnico.split(' ')[0]}. ¿Qué quieres aprender hoy?`,
+    ),
+  ];
+  const intro = el('p', '', 'Toca un sistema del autobús. Te llevo paso a paso, a tu ritmo.');
+  intro.dataset.leer = '1';
+  partes.push(intro);
+  const conOrden = SISTEMAS.find((x) => x.orden_taller);
+  if (conOrden) {
+    partes.push(
+      boton(`🔧 Orden del día: ${conOrden.orden_taller.titulo}`, 'boton w-full text-left', () => {
+        abrirSistema(conOrden);
+        empezarOrden();
+      }),
+    );
+  }
+  const lista = el('div', 'grid gap-2');
+  SISTEMAS.forEach((sistema) => {
+    const { texto } = estadoSistema(sistema);
+    const b = boton(
+      '',
+      'flex w-full items-center gap-3 border-2 border-tinta bg-white px-4 py-3 text-left hover:bg-placa',
+      () => abrirSistema(sistema),
+    );
+    const info = el('span', 'grid');
+    info.append(el('span', 'font-semibold', sistema.nombre), el('span', 'text-tinta-3', texto));
+    b.append(el('span', 'recuadro h-9 w-9 shrink-0', String(sistema.grupo)), info);
+    lista.append(b);
+  });
+  partes.push(lista);
+  return partes;
 }
 
 function tarjetaLibre() {
+  if (MAYOR) return tarjetaLibreMayor();
   const partes = [
     el('p', 'font-narrow text-sm font-bold uppercase tracking-wider text-tinta-3', 'Tu taller'),
     el(
@@ -386,7 +468,7 @@ function fichaPieza(base, conBoton) {
     ['Cómo falla', f.falla],
     ['Cómo se revisa', f.revisa],
   ].forEach(([titulo, texto]) => {
-    const p = el('p', 'text-[15px]');
+    const p = paraLeer(el('p', 'text-[15px]'));
     p.append(el('strong', '', `${titulo}: `), texto);
     caja.append(p);
   });
@@ -435,7 +517,7 @@ function tarjetaSistema() {
       'text-xs text-tinta-3',
       GRUPOS[sistema.grupo]?.nombre ? `FG ${sistema.grupo} · ${GRUPOS[sistema.grupo].nombre}` : '',
     ),
-    el('p', 'text-tinta-2', sistema.resumen),
+    paraLeer(el('p', 'text-tinta-2', sistema.resumen)),
   ];
   const vueltas = [
     {
@@ -463,6 +545,17 @@ function tarjetaSistema() {
       texto: p.comprueba != null ? `Repetir (${p.comprueba})` : 'Empezar',
     },
   ];
+  // Adulto Mayor: antes de Comprueba hay una práctica libre que no cuenta, para quitar la presión.
+  if (MAYOR) {
+    vueltas.splice(2, 0, {
+      nombre: 'Práctica libre',
+      detalle: 'Como Comprueba, pero no cuenta y te muestra la respuesta',
+      hecho: Boolean(p.libre),
+      abierta: p.encuentra,
+      ir: () => empezarComprueba(true),
+      texto: p.libre ? 'Otra vez' : 'Practicar',
+    });
+  }
   // La vuelta que toca lleva el botón principal; las demás, uno secundario.
   const siguiente = vueltas.find((v) => v.abierta && !v.hecho);
   const lista = el('ol', 'grid gap-2');
@@ -626,7 +719,7 @@ function tarjetaConoce() {
 
   // Hazlo: elegir la herramienta y usarla sobre la pieza en el autobús.
   partes.push(el('h2', 'font-sans text-xl font-semibold tracking-normal', f.nombre));
-  partes.push(el('p', 'text-[16px]', f.hazlo.instruccion));
+  partes.push(paraLeer(el('p', 'text-[16px]', f.hazlo.instruccion)));
   if (!estado.hecho) {
     partes.push(
       el('p', 'text-sm text-tinta-3', 'Elige la herramienta y haz clic en la pieza resaltada del autobús.'),
@@ -749,7 +842,7 @@ function tarjetaEncuentra() {
     return partes;
   }
   const base = cola[i];
-  const objetivo = el('div', 'grid gap-1 border-2 border-tinta p-4');
+  const objetivo = paraLeer(el('div', 'grid gap-1 border-2 border-tinta p-4'));
   objetivo.append(
     el('p', 'text-sm text-tinta-3', 'Señala en el autobús:'),
     el('p', 'font-sans text-2xl font-semibold', ficha(base).nombre),
@@ -801,9 +894,11 @@ function revisarEncuentra(baseTocada) {
 }
 
 // ---------- Vuelta 3: Comprueba ----------
-function empezarComprueba() {
+// libre === true: práctica libre (no se califica ni se guarda como evaluación; muestra la respuesta).
+function empezarComprueba(libre = false) {
   estado.intento = Date.now();
   estado.evaluado = false;
+  estado.libre = libre === true;
   escena.elegirHerramienta(null);
   escena.resaltar(null);
   const cola = mezclar(estado.sistema.orden).slice(0, MAX_COMPRUEBA);
@@ -828,6 +923,21 @@ function tarjetaComprueba() {
     el('p', 'text-sm text-tinta-2', `${Math.min(i + 1, cola.length)} de ${cola.length} · sin pistas`),
     barra(i, cola.length),
   ];
+  if (i >= cola.length && estado.libre) {
+    const resultado = Math.round((estado.aciertos / estado.total) * 100);
+    progresoDe(sistema.id).libre = true;
+    guardar();
+    partes.push(
+      aviso(
+        'pista',
+        `Práctica terminada: ${resultado} de 100`,
+        'Esta no cuenta. Cuando te sientas listo, haz Comprueba.',
+      ),
+      boton('Ir a Comprueba →', 'boton w-fit px-6', () => empezarComprueba()),
+      boton('Practicar otra vez', 'boton-linea w-fit px-6', () => empezarComprueba(true)),
+    );
+    return partes;
+  }
   if (i >= cola.length) {
     const calificacion = Math.round((estado.aciertos / estado.total) * 100);
     const p = progresoDe(sistema.id);
@@ -864,7 +974,7 @@ function tarjetaComprueba() {
   }
   const base = cola[i];
   if (estado.paso === 'senala') {
-    const objetivo = el('div', 'grid gap-1 border-2 border-tinta p-4');
+    const objetivo = paraLeer(el('div', 'grid gap-1 border-2 border-tinta p-4'));
     objetivo.append(
       el('p', 'text-sm text-tinta-3', 'Señala en el autobús:'),
       el('p', 'font-sans text-2xl font-semibold', ficha(base).nombre),
@@ -903,7 +1013,12 @@ function tarjetaComprueba() {
 function revisarComprueba(baseTocada) {
   if (estado.paso !== 'senala') return;
   const base = estado.cola[estado.i];
-  registrar('comprueba', {
+  if (estado.libre && baseTocada !== base) {
+    // Práctica libre: el error se explica y se muestra la pieza correcta.
+    escena.resaltar(instancias.get(base)?.[0] ?? null);
+    irA(estado.sistema, base);
+  }
+  registrar(estado.libre ? 'libre' : 'comprueba', {
     resultado: baseTocada === base ? 'correcta' : 'error',
     pieza: base,
     herramienta: null,
@@ -913,11 +1028,13 @@ function revisarComprueba(baseTocada) {
     estado.retro = null;
   } else {
     estado.fallos.push(base);
-    estado.retro = aviso(
-      'mal',
-      `Eso era: ${ficha(baseTocada).nombre}`,
-      `${ficha(base).nombre} es otra pieza.`,
-    );
+    estado.retro = estado.libre
+      ? aviso(
+          'pista',
+          `Eso es: ${ficha(baseTocada).nombre}`,
+          `${ficha(base).nombre} es la que está resaltada. ${ficha(base).que}`,
+        )
+      : aviso('mal', `Eso era: ${ficha(baseTocada).nombre}`, `${ficha(base).nombre} es otra pieza.`);
   }
   estado.paso = 'herramienta';
   pintar();
@@ -979,7 +1096,7 @@ function nombreHerramienta(id) {
 }
 
 function cajaMaestro(titulo, texto) {
-  const caja = el('div', 'grid gap-1 border-l-4 border-med bg-med-suave p-3 text-[15px]');
+  const caja = paraLeer(el('div', 'grid gap-1 border-l-4 border-med bg-med-suave p-3 text-[15px]'));
   caja.append(el('p', 'font-semibold', titulo), el('p', '', texto));
   return caja;
 }
@@ -1009,7 +1126,7 @@ function tarjetaOrden() {
   hoja.append(
     el('p', 'text-xs text-tinta-3', o.cliente),
     el('p', 'font-sans text-lg font-semibold leading-snug', o.titulo),
-    el('p', 'text-sm text-tinta-2', o.sintoma),
+    paraLeer(el('p', 'text-sm text-tinta-2', o.sintoma)),
   );
   partes.push(hoja);
 

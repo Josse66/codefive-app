@@ -1,6 +1,6 @@
 {{!-- El simulador: un solo autobús completo (exterior, interior, motor y sistemas) y aprender sobre él.
      Izquierda: sistemas. Derecha: la tarjeta de enseñanza. El autobús ocupa toda la pantalla. --}}
-<main id="sim" class="fixed inset-0" data-tecnico-id="{{tecnico.id}}">
+<main id="sim" class="fixed inset-0" data-tecnico-id="{{tecnico.id}}" data-experiencia="{{tecnico.experiencia}}" data-nombre="{{tecnico.nombre}}">
   <div id="lienzo" class="absolute inset-0"></div>
 
   {{! Barra superior: vistas del autobús y salida. }}
@@ -32,5 +32,14 @@
 
   {{! Nombre de la pieza bajo el cursor (solo explorando libremente). }}
   <p id="etiqueta-pieza" class="pointer-events-none absolute bottom-16 left-1/2 z-10 -translate-x-1/2 border border-tinta bg-white px-3 py-1.5 text-sm font-semibold" hidden></p>
+  {{! Experiencia Adulto Mayor: botones grandes para mover la vista (sin teclado ni clic derecho). }}
+  <div id="controles-mayor" class="absolute bottom-4 left-4 z-10 grid grid-cols-3 gap-2" hidden>
+    <button id="ctrl-acercar" type="button" class="boton-grande">➕ Acercar</button>
+    <button id="ctrl-girar-izq" type="button" class="boton-grande">↺ Girar</button>
+    <button id="ctrl-rayos" type="button" class="boton-grande">👁 Ver por dentro</button>
+    <button id="ctrl-alejar" type="button" class="boton-grande">➖ Alejar</button>
+    <button id="ctrl-girar-der" type="button" class="boton-grande">↻ Girar</button>
+    <button id="ctrl-motor" type="button" class="boton-grande">🔧 Abrir motor</button>
+  </div>
   <p id="ayuda" class="pointer-events-none absolute bottom-3 left-1/2 z-10 -translate-x-1/2 bg-white/90 px-3 py-1.5 text-xs text-tinta-2">Clic derecho y arrastrar: girar · rueda: acercar · clic en una pieza: verla</p>
 </main>
