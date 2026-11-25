@@ -9,6 +9,7 @@ import { modeloDelTecnico } from '#services/modelos.service.js';
 import { competenciaDeLeccion, obtenerMision, pasoDespues } from '#services/mision.service.js';
 import { obtenerEscenario } from '#services/escenarios.js';
 import { obtenerDesempeno } from '#services/desempeno.service.js';
+import { obtenerCamino } from '#services/camino.service.js';
 
 // La misión de la página: la que viene en ?mision= o, si no, la de la competencia que se está trabajando.
 const misionDe = (req, tecnico, competenciaId) =>
@@ -284,6 +285,18 @@ export function mostrarDesempeno(req, res) {
       tecnico,
       seccion: 'competencias',
       d: obtenerDesempeno(tecnico.id),
+    }),
+  );
+}
+
+// Mi camino: la pantalla de inicio del técnico (puntos por sistema y un botón Continuar).
+export function mostrarCamino(req, res) {
+  conTecnico(req, res, (tecnico) =>
+    res.render('camino', {
+      titulo: `Mi camino · ${tecnico.nombre}`,
+      tecnico,
+      seccion: 'camino',
+      camino: obtenerCamino(tecnico.id),
     }),
   );
 }

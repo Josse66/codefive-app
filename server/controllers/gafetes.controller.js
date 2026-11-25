@@ -11,7 +11,7 @@ export function entrar(req, res) {
   try {
     const { token, segundos, tecnicoId } = entrarConGafete(req.body?.codigo, req.body?.pin);
     escribirCookie(res, token, segundos);
-    res.json({ destino: `/tecnicos/${tecnicoId}/autobus` });
+    res.json({ destino: `/tecnicos/${tecnicoId}/camino` });
   } catch (error) {
     if (error.status !== 401) throw error;
     res.status(401).json({ error: error.message, restantes: error.restantes });

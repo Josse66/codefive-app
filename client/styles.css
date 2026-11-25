@@ -161,6 +161,59 @@
   #sim.mayor #ayuda {
     display: none;
   }
+  /* Mi camino: los puntos de cada sistema en fila, unidos por una línea que se pinta al avanzar. */
+  .camino-puntos {
+    @apply flex items-start overflow-x-auto pb-1;
+  }
+  .camino-punto {
+    @apply relative grid min-w-[96px] flex-1 justify-items-center gap-1 text-center;
+  }
+  .camino-punto:not(:first-child)::before {
+    content: '';
+    @apply absolute right-1/2 top-6 h-[3px] w-full bg-placa-linea;
+  }
+  .camino-punto[data-estado='hecho']:not(:first-child)::before {
+    @apply bg-tinta;
+  }
+  .camino-circulo {
+    @apply relative z-10 flex h-12 w-12 items-center justify-center rounded-full border-2 border-tinta bg-white text-lg font-semibold text-tinta no-underline transition-transform duration-150 hover:scale-105;
+  }
+  .camino-punto[data-estado='hecho'] .camino-circulo {
+    @apply bg-tinta text-white;
+  }
+  .camino-punto[data-estado='bloqueado'] .camino-circulo {
+    @apply border-placa-linea bg-placa text-sm hover:scale-100;
+  }
+  .camino-punto[data-estado='omitido'] .camino-circulo {
+    @apply border-dashed border-placa-linea text-tinta-3;
+  }
+  .camino-punto[data-aqui] .camino-circulo {
+    @apply bg-tinta text-white shadow-[0_0_0_4px_#ffffff,0_0_0_7px_#141c24];
+  }
+  .camino-nombre {
+    @apply text-sm font-semibold leading-tight;
+  }
+  .camino-punto[data-estado='bloqueado'] .camino-nombre,
+  .camino-nota {
+    @apply text-xs text-tinta-3;
+  }
+  /* Paso a paso: todo más grande en Mi camino. */
+  .camino-grande {
+    @apply text-lg;
+  }
+  .camino-grande .camino-circulo {
+    @apply h-16 w-16 text-2xl;
+  }
+  .camino-grande .camino-punto:not(:first-child)::before {
+    @apply top-8;
+  }
+  .camino-grande .camino-nombre {
+    @apply text-base;
+  }
+  .camino-grande .camino-nota,
+  .camino-grande .text-sm {
+    @apply text-base;
+  }
   /* Botones de vista del simulador (barra oscura de arriba). */
   .vista {
     @apply px-3 py-1.5 text-placa-linea hover:text-white;

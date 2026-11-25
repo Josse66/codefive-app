@@ -5,6 +5,7 @@ import { mostrarReporte } from '#controllers/reporte.controller.js';
 import {
   empezarPrincipiante,
   mostrarAutobus,
+  mostrarCamino,
   mostrarDesempeno,
   mostrarDiagnostico,
   mostrarEmpezar,
@@ -55,6 +56,7 @@ router.get('/tecnicos/:id/desempeno', mostrarDesempeno);
 router.get('/tecnicos/:id/ruta', mostrarRuta);
 router.get('/tecnicos/:id/practica/:competenciaId', mostrarPractica);
 router.get('/tecnicos/:id/evaluacion/:competenciaId', mostrarEvaluacion);
+router.get('/tecnicos/:id/camino', mostrarCamino);
 router.get('/tecnicos/:id/autobus', mostrarAutobus);
 router.get('/tecnicos/:id/taller', mostrarTaller);
 router.get('/tecnicos/:id/aprender', mostrarTemario);

@@ -22,10 +22,10 @@ const TALLERES = [
   'Flota de cliente (otra)',
 ];
 
-/** A dónde va cada quien al entrar: Volvo al panel; el técnico directo al autobús, donde aprende. */
+/** A dónde va cada quien al entrar: Volvo al panel; el técnico a Mi camino. */
 function destino(cuenta) {
   if (cuenta.rol === 'volvo') return '/volvo';
-  return `/tecnicos/${cuenta.tecnicoId ?? cuenta.tecnico_id}/autobus`;
+  return `/tecnicos/${cuenta.tecnicoId ?? cuenta.tecnico_id}/camino`;
 }
 
 export function inicio(req, res) {
@@ -120,5 +120,5 @@ export function mostrarBienvenida(req, res) {
 export function guardarBienvenida(req, res) {
   const tecnico = obtenerTecnico(req.cuenta.tecnicoId);
   elegirModelo(tecnico.id, req.body.modelo);
-  res.redirect(`/tecnicos/${tecnico.id}/autobus`);
+  res.redirect(`/tecnicos/${tecnico.id}/camino`);
 }

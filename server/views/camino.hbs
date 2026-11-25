@@ -1,0 +1,63 @@
+{{!-- Mi camino: la pantalla de inicio del técnico. Arriba lo que lleva; luego un solo botón
+     Continuar al punto que toca; abajo cada sistema del autobús con sus puntos en orden. --}}
+<section class="grid gap-8 {{#if camino.pasoAPaso}}camino-grande{{/if}}">
+  <div class="grid gap-2">
+    <p class="font-narrow text-sm font-bold uppercase tracking-wider text-tinta-3">Mi camino · Autobús urbano diésel</p>
+    <h1 class="text-4xl leading-tight lg:text-5xl">Hola, {{camino.tecnico.nombre}}</h1>
+    <dl class="mt-2 grid max-w-2xl grid-cols-3 border border-tinta bg-white">
+      <div class="grid gap-0.5 border-r border-placa-linea p-4">
+        <dt class="text-sm text-tinta-3">Sesiones</dt>
+        <dd class="codigo text-3xl font-semibold">{{camino.resumen.sesiones}}</dd>
+      </div>
+      <div class="grid gap-0.5 border-r border-placa-linea p-4">
+        <dt class="text-sm text-tinta-3">Tiempo de práctica</dt>
+        <dd class="codigo text-3xl font-semibold">{{camino.resumen.tiempo}}</dd>
+      </div>
+      <div class="grid gap-0.5 p-4">
+        <dt class="text-sm text-tinta-3">Sistemas con {{camino.resumen.aprobacion}}</dt>
+        <dd class="codigo text-3xl font-semibold">{{camino.resumen.acreditados}} <span class="text-lg text-tinta-3">de {{camino.resumen.sistemas}}</span></dd>
+      </div>
+    </dl>
+  </div>
+
+  {{#if camino.siguiente}}
+    <article class="grid gap-4 border-2 border-tinta bg-white p-5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center lg:p-6">
+      <div class="grid gap-1">
+        <p class="font-narrow text-sm font-bold uppercase tracking-wider text-tinta-3">Te toca</p>
+        <h2 class="font-sans text-2xl font-semibold tracking-normal">{{camino.siguiente.punto}} · {{camino.siguiente.sistema}}</h2>
+        <p class="text-tinta-2">FG {{camino.siguiente.grupo}}. Se abre el autobús justo en ese punto.</p>
+      </div>
+      <a href="{{camino.siguiente.enlace}}" class="boton px-10 py-4 text-lg">Continuar →</a>
+    </article>
+  {{else}}
+    <article class="grid gap-1 border-2 border-ok bg-ok-suave p-5">
+      <h2 class="font-sans text-2xl font-semibold tracking-normal">Terminaste todo el autobús</h2>
+      <p>Aprobaste cada sistema con {{camino.resumen.aprobacion}} o más. Puedes repasar el que quieras.</p>
+    </article>
+  {{/if}}
+
+  <ol class="grid gap-4" aria-label="Sistemas del autobús">
+    {{#each camino.unidades}}
+      <li class="grid gap-4 border bg-white p-5 {{#if actual}}border-2 border-tinta{{else}}border-placa-linea{{/if}}" {{#if actual}}aria-current="step"{{/if}}>
+        <div class="flex flex-wrap items-center gap-3">
+          <span class="recuadro h-9 w-9 shrink-0 text-lg">{{grupo}}</span>
+          <h3 class="font-sans text-xl font-semibold tracking-normal">{{nombre}}</h3>
+          {{#if acreditado}}<span class="chip border-ok text-ok">Aprobado ✓</span>{{/if}}
+          {{#if actual}}<span class="chip border-tinta text-tinta">Aquí vas</span>{{/if}}
+          <span class="ml-auto text-sm text-tinta-3">{{hechos}} de {{total}} puntos</span>
+        </div>
+        <ol class="camino-puntos" aria-label="Puntos de {{nombre}}">
+          {{#each puntos}}
+            <li class="camino-punto" data-estado="{{estado}}" {{#if aqui}}data-aqui{{/if}}>
+              {{#if enlace}}<a href="{{enlace}}" class="camino-circulo" aria-label="{{nombre}}{{#if (igual estado 'hecho')}}, hecho{{/if}}">{{else}}<span class="camino-circulo" aria-label="{{nombre}}, bloqueado">{{/if}}
+                {{#if (igual estado 'hecho')}}✓{{else if (igual estado 'omitido')}}–{{else if (igual estado 'bloqueado')}}🔒{{else}}{{inc @index}}{{/if}}
+              {{#if enlace}}</a>{{else}}</span>{{/if}}
+              <span class="camino-nombre">{{nombre}}</span>
+              {{#if (igual estado 'omitido')}}<span class="camino-nota">sin hacer</span>{{else if nota}}<span class="camino-nota">{{nota}}</span>{{else if (igual id 'conoce')}}<span class="camino-nota">{{detalle}}</span>{{/if}}
+            </li>
+          {{/each}}
+        </ol>
+      </li>
+    {{/each}}
+  </ol>
+</section>

@@ -7,9 +7,8 @@
     {{#unless sinMenu}}
       {{#if tecnico}}
         <nav aria-label="Secciones del técnico" class="flex flex-wrap gap-1 text-[15px]">
-          <a href="/tecnicos/{{tecnico.id}}/plan" class="px-3 py-4 no-underline {{#if (igual seccion 'plan')}}text-white shadow-[inset_0_-3px_0_#ffffff]{{else}}text-placa-linea hover:text-white{{/if}}" {{#if (igual seccion 'plan')}}aria-current="page"{{/if}}>Mi plan</a>
-          <a href="/tecnicos/{{tecnico.id}}/taller" class="px-3 py-4 no-underline {{#if (igual seccion 'taller')}}text-white shadow-[inset_0_-3px_0_#ffffff]{{else}}text-placa-linea hover:text-white{{/if}}" {{#if (igual seccion 'taller')}}aria-current="page"{{/if}}>Taller</a>
-          <a href="/tecnicos/{{tecnico.id}}/desempeno" class="px-3 py-4 no-underline {{#if (igual seccion 'competencias')}}text-white shadow-[inset_0_-3px_0_#ffffff]{{else}}text-placa-linea hover:text-white{{/if}}" {{#if (igual seccion 'competencias')}}aria-current="page"{{/if}}>Mi desempeño</a>
+          <a href="/tecnicos/{{tecnico.id}}/camino" class="px-3 py-4 no-underline {{#if (igual seccion 'camino')}}text-white shadow-[inset_0_-3px_0_#ffffff]{{else}}text-placa-linea hover:text-white{{/if}}" {{#if (igual seccion 'camino')}}aria-current="page"{{/if}}>Mi camino</a>
+          <a href="/tecnicos/{{tecnico.id}}/autobus" class="px-3 py-4 text-placa-linea no-underline hover:text-white">Autobús 3D</a>
         </nav>
       {{else if esVolvo}}
         <nav aria-label="Capacitación Volvo" class="flex gap-1 text-[15px]">
