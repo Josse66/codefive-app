@@ -524,7 +524,7 @@ async function cargar() {
 
 // ---------- Índices de capacitación del simulador (IEF, ICO, IEFI) ----------
 
-const EXPERIENCIA = { general: 'General', mayor: 'Adulto Mayor' };
+const EXPERIENCIA = { general: 'Libre', mayor: 'Paso a paso' };
 const valor = (x, sufijo = '') => (x == null ? '—' : `${x}${sufijo}`);
 const celda = (texto, clase = '') => {
   const td = document.createElement('td');

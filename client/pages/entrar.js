@@ -2,7 +2,7 @@
 // Entrar con gafete (QR) + PIN.
 //   1. La cámara busca el QR del gafete (o se teclea su código si la cámara falla).
 //   2. El servidor dice quién es y su experiencia; el PIN se pide según esa experiencia:
-//      General: teclado normal. Adulto Mayor: teclado gigante, la voz guía con el mismo texto
+//      Libre: teclado normal. Paso a paso: teclado gigante, la voz guía con el mismo texto
 //      que está en pantalla y los errores se explican sin presión.
 import jsQR from 'jsqr';
 import { callar, hablar } from '../accesibilidad/voz.js';
@@ -227,7 +227,7 @@ function mostrarPin() {
   $('mensaje-pin').hidden = true;
   pintarPuntos();
   pintarTeclado();
-  // Adulto Mayor: la voz guía desde el primer momento, con el mismo texto de la pantalla.
+  // Paso a paso: la voz guía desde el primer momento, con el mismo texto de la pantalla.
   if (estado.mayor) hablar(textoPin());
 }
 

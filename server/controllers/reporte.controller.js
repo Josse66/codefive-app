@@ -3,7 +3,7 @@ import { obtenerTecnico } from '#services/tecnicos.service.js';
 
 // Reporte imprimible de un técnico (evidencias de IEF, ICO e IEFI): evaluaciones inicial, final y
 // diferida por sistema, matriz de sistemas, Pareto, bitácora y horas contra la línea base.
-const EXPERIENCIA = { general: 'General', mayor: 'Adulto Mayor' };
+const EXPERIENCIA = { general: 'Libre', mayor: 'Paso a paso' };
 const RESULTADO = { correcta: '✓ correcta', error: '✗ error', critico: '⚠ crítico', ayuda: '? pidió ayuda' };
 const ACTIVIDAD = {
   conoce: 'Conoce',

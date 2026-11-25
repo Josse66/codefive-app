@@ -2,7 +2,7 @@
 import QRCode from 'qrcode';
 
 const $ = (id) => document.getElementById(id);
-const EXPERIENCIA = { general: 'General', mayor: 'Adulto Mayor' };
+const EXPERIENCIA = { general: 'Libre', mayor: 'Paso a paso' };
 
 const el = (etiqueta, clase = '', texto = '') => {
   const nodo = document.createElement(etiqueta);

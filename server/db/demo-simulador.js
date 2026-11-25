@@ -1,7 +1,7 @@
 // Práctica sintética en el simulador del autobús para que el panel de Volvo muestre IEF, ICO e IEFI
 // con datos coherentes: sesiones con horas efectivas, bitácora de acciones, Comprueba final y
 // diferida a 30 días, y órdenes de taller con errores que bajan de un intento a otro.
-// También marca con Experiencia Adulto Mayor a los técnicos sintéticos con más años de oficio.
+// También marca con Experiencia Paso a paso a los técnicos sintéticos con más años de oficio.
 // Datos sintéticos (se declaran así en la memoria). Uso: npm run db:demo (lo corre al final).
 import fs from 'node:fs';
 import path from 'node:path';
@@ -54,14 +54,14 @@ if (!tecnicos.length) {
 
   db.exec('BEGIN');
   tecnicos.forEach((t, n) => {
-    // Los de más oficio usan la Experiencia Adulto Mayor; aprenden un poco más lento la
+    // Los de más oficio usan la Experiencia Paso a paso; aprenden un poco más lento la
     // interfaz, pero su dominio del oficio es alto (lo que dice la investigación del equipo).
     const mayor = t.anios >= 15;
     if (mayor) experiencia.run(t.id);
     const habilidad = Math.min(0.97, 0.62 + t.anios * 0.012 + entre(-0.06, 0.08));
     const dias = `-${(n % 5) + 1} days`;
 
-    // Sesiones: horas efectivas (los de Adulto Mayor practican sesiones más cortas y más seguidas).
+    // Sesiones: horas efectivas (los de Paso a paso practican sesiones más cortas y más seguidas).
     const numSesiones = mayor ? 6 + Math.floor(entre(0, 3)) : 3 + Math.floor(entre(0, 3));
     for (let s = 0; s < numSesiones; s += 1) {
       const minutos = mayor ? entre(10, 22) : entre(15, 35);

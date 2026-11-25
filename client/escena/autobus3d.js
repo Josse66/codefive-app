@@ -1203,7 +1203,7 @@ export function crearEscena(
     });
   }
 
-  // Mover la vista con botones (Experiencia Adulto Mayor): acercar o alejar hacia el punto que se
+  // Mover la vista con botones (Experiencia Paso a paso): acercar o alejar hacia el punto que se
   // mira y girar alrededor de él, con un vuelo corto en vez de arrastrar con el mouse.
   function volarA(posicion) {
     Object.assign(llegada, {

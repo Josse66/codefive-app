@@ -16,7 +16,7 @@ import GRUPOS from '../../data/grupos.json';
 
 const raiz = document.getElementById('sim');
 const { tecnicoId, experiencia, nombre: nombreTecnico } = raiz.dataset;
-// Experiencia Adulto Mayor: una tarjeta grande a la vez, letra grande, la cámara se mueve sola
+// Experiencia Paso a paso: una tarjeta grande a la vez, letra grande, la cámara se mueve sola
 // con botones grandes, la voz lee cada instrucción (con el mismo texto en pantalla) y hay
 // práctica libre sin calificación antes de Comprueba. El contenido y el 91 son los mismos.
 const MAYOR = experiencia === 'mayor';
@@ -214,7 +214,7 @@ function encabezado(sistema, texto) {
   return fila;
 }
 
-// Marca un elemento para que la voz lo lea en la Experiencia Adulto Mayor.
+// Marca un elemento para que la voz lo lea en la Experiencia Paso a paso.
 const paraLeer = (nodo) => {
   const n = nodo;
   n.dataset.leer = '1';
@@ -276,7 +276,7 @@ $('vista-fuera').addEventListener('click', () => caminar(false));
 $('vista-dentro').addEventListener('click', () => caminar(true));
 $('vista-rayos').addEventListener('click', () => rayosX(!escena.rayosXActivo()));
 $('vista-tapa').addEventListener('click', () => tapa(!tapaAbierta));
-// Experiencia Adulto Mayor: botones grandes en lugar de arrastrar con el mouse o usar el teclado.
+// Experiencia Paso a paso: botones grandes en lugar de arrastrar con el mouse o usar el teclado.
 if (MAYOR) {
   $('controles-mayor').hidden = false;
   $('ctrl-acercar').addEventListener('click', () => escena.acercar(0.7));
@@ -335,7 +335,7 @@ function pintarSistemas() {
 }
 
 // ---------- Tarjeta ----------
-// En Adulto Mayor la voz lee lo principal de la tarjeta cada vez que cambia: títulos y lo marcado
+// En Paso a paso la voz lee lo principal de la tarjeta cada vez que cambia: títulos y lo marcado
 // con data-leer (instrucciones, avisos, fichas). Siempre es el mismo texto que está en pantalla.
 let ultimoLeido = '';
 function leerTarjeta(forzar = false) {
@@ -545,7 +545,7 @@ function tarjetaSistema() {
       texto: p.comprueba != null ? `Repetir (${p.comprueba})` : 'Empezar',
     },
   ];
-  // Adulto Mayor: antes de Comprueba hay una práctica libre que no cuenta, para quitar la presión.
+  // Paso a paso: antes de Comprueba hay una práctica libre que no cuenta, para quitar la presión.
   if (MAYOR) {
     vueltas.splice(2, 0, {
       nombre: 'Práctica libre',
