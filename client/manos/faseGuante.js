@@ -56,7 +56,7 @@ export class FaseGuante {
       fallas: new Set(),
       ultimaFalla: null,
       rep: 0,
-      base: 0,
+      base: null,
       avance: 0,
       pasado: 0,
       tClic: 0,
@@ -243,20 +243,23 @@ export class FaseGuante {
     const reps = g.repeticiones ?? 1;
     const conClic = g.clic !== false;
     if (this.paso === 'listo') {
-      this.avance = 0;
-      led(false);
+      // Esperando: mientras la mano está quieta, el punto de partida la sigue (así no cuenta la
+      // deriva del sensor). La aguja ya se mueve con la mano para que se vea que el guante la lee.
+      const { eje } = AJUSTES.guanteEje;
+      if (this.base == null || guante.gmag < 20) this.base = guante[eje];
+      this.avance = this.giroActual();
+      led(guante.grip);
       this.dibujarTablero(ahora);
-      if (guante.grip) {
-        // Al apretar el mango empieza el jalón: el giro se mide desde aquí.
-        const { eje } = AJUSTES.guanteEje;
-        Object.assign(this, { paso: 'jala', base: guante[eje], pasado: 0, sueltoDesde: 0 });
+      // El jalón empieza al girar la mano (más de 4°) o al apretar el botón.
+      if (Math.abs(this.avance) > 4 || guante.grip) {
+        Object.assign(this, { paso: 'jala', pasado: 0, sueltoDesde: 0, tuvoAgarre: guante.grip });
         this.ui.sonar('mano');
         return null;
       }
       this.frase(
         g.estrella
-          ? `Tuerca ${this.rep + 1} de ${reps}: aprieta el mango (el botón) para empezar`
-          : 'Toma el mango: cierra la mano hasta apretar el botón del guante',
+          ? `Tuerca ${this.rep + 1} de ${reps}: cierra la mano y gira jalando hacia ti`
+          : 'Cierra la mano como si tomaras el mango y gira jalando hacia ti',
       );
       return null;
     }
@@ -275,13 +278,16 @@ export class FaseGuante {
         if (this.pasado > (g.pasarse ?? 7)) this.fallar('g-clic');
       }
       this.dibujarTablero(ahora);
-      if (!guante.grip || ahora - this.tClic > 1500) {
+      if ((ahora - this.tClic > 500 && guante.gmag < 15) || ahora - this.tClic > 1800) {
         this.rep += 1;
         if (this.rep >= reps) return this.terminar();
-        Object.assign(this, { paso: 'listo' });
+        Object.assign(this, { paso: 'listo', base: null });
         return null;
       }
-      this.frase(conClic ? '¡Clic! Suelta el mango' : (g.textoFin ?? '¡Se aflojó! Suelta el mango'), 'ok');
+      this.frase(
+        conClic ? '¡Clic! Para y quédate quieto' : (g.textoFin ?? '¡Se aflojó! Suelta el mango'),
+        'ok',
+      );
       return null;
     }
     // Jalando.
@@ -289,12 +295,10 @@ export class FaseGuante {
       this.fallar('g-sentido');
       if (guante.grip) this.fallar('g-puno');
     }
+    if (guante.grip) this.tuvoAgarre = true;
     if (!guante.grip) {
       this.sueltoDesde ||= ahora;
-      if (ahora - this.sueltoDesde > 450) {
-        this.fallar('g-agarre');
-        this.paso = 'listo';
-      }
+      if (ahora - this.sueltoDesde > 450) this.fallar('g-agarre');
     } else this.sueltoDesde = 0;
     if (this.avance >= this.u.objetivo) {
       Object.assign(this, { paso: 'clic', tClic: ahora });
