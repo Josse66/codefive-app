@@ -281,14 +281,16 @@ function pintarDominio(competencias) {
   });
 }
 
+let retencionActual = [];
 function pintarRetencion(retencion) {
+  retencionActual = retencion;
   $('retencion-vacia').hidden = retencion.length > 0;
   const datos = {
     labels: retencion.map((r) => r.id),
     datasets: [
       { label: 'Antes', data: retencion.map((r) => r.pre), backgroundColor: COLOR.nada },
       { label: 'Después', data: retencion.map((r) => r.post), backgroundColor: COLOR.tinta },
-      { label: 'Diferida (+7 días)', data: retencion.map((r) => r.diferida), backgroundColor: COLOR.ok },
+      { label: 'A 30 días', data: retencion.map((r) => r.diferida), backgroundColor: COLOR.ok },
     ],
   };
   if (graficaRetencion) {
@@ -313,6 +315,7 @@ function pintarRetencion(retencion) {
         legend: { position: 'bottom', labels: { boxWidth: 14, boxHeight: 14 } },
         tooltip: {
           callbacks: {
+            title: (items) => retencionActual[items[0].dataIndex]?.nombre ?? '',
             label: (item) => `${item.dataset.label}: ${item.raw == null ? 'sin medir' : `${item.raw} %`}`,
           },
         },
@@ -507,7 +510,6 @@ async function cargar() {
     pintarTecnicos(datos.tecnicos);
     pintarActividad(datos.actividad);
     pintarDominio(datos.competencias);
-    pintarRetencion(datos.retencion);
     pintarErrores(datos.errores);
     pintarMapa(datos.mapa);
     pintarCodigos(datos.erroresEscenarios);
@@ -565,6 +567,18 @@ function tarjetaIndice(sigla, nombre, valorIndice, meta, componentes, formula) {
 let graficaPareto = null;
 function pintarIndices(d) {
   const { red, metas } = d;
+  // Antes (diagnóstico), después (Comprueba) y a 30 días, por sistema del autobús.
+  pintarRetencion(
+    (d.porSistema ?? [])
+      .filter((s) => s.tecnicos > 0)
+      .map((s) => ({
+        id: `FG ${s.grupo} ${s.nombre.split(' ')[0]}`,
+        nombre: s.nombre,
+        pre: s.inicial,
+        post: s.final,
+        diferida: s.diferida,
+      })),
+  );
   $('indices-tarjetas').replaceChildren(
     tarjetaIndice(
       'IEF',

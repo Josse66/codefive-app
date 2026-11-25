@@ -330,10 +330,15 @@ export function indicesRed() {
       .all()
       .map((f) => f.id),
   );
+  // Antes (diagnóstico), después (Comprueba final) y a 30 días (diferida), promedio por sistema.
+  const momentos = new Map(SISTEMAS.map((s) => [s.id, { inicial: [], final: [], diferida: [] }]));
   const filas = tecnicos
     .filter((t) => conPractica.has(t.id))
     .map((t) => {
       const i = calcularIndices(t.id);
+      i.sistemas.forEach((s) =>
+        ['inicial', 'final', 'diferida'].forEach((m) => s[m] != null && momentos.get(s.id)[m].push(s[m])),
+      );
       return {
         ...t,
         ief: i.ief.valor,
@@ -375,6 +380,19 @@ export function indicesRed() {
     porExperiencia: agrupar('experiencia'),
     porTaller: agrupar('taller').sort((a, b) => (b.ief ?? 0) - (a.ief ?? 0)),
     tecnicos: filas,
+    porSistema: SISTEMAS.map(({ id, nombre, grupo }) => {
+      const m = momentos.get(id);
+      const media = (xs) => (xs.length ? Math.round(xs.reduce((a, b) => a + b, 0) / xs.length) : null);
+      return {
+        id,
+        nombre,
+        grupo,
+        inicial: media(m.inicial),
+        final: media(m.final),
+        diferida: media(m.diferida),
+        tecnicos: Math.max(m.inicial.length, m.final.length),
+      };
+    }),
     pareto,
     criticos,
     metas: { ief: 90, ico: 90, iefi: 100, aprobacion: APROBACION },
