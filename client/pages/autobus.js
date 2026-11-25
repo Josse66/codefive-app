@@ -547,15 +547,17 @@ function tarjetaConoce() {
   return partes;
 }
 
-function bandeja() {
+// sugerida: en lo guiado, la herramienta que toca se marca para que la persona la ubique.
+function bandeja(sugerida = null) {
   const caja = el('div', 'grid grid-cols-2 gap-2');
   HERRAMIENTAS.forEach((h, n) => {
     const b = boton(
-      `${n + 1} · ${h.nombre}`,
+      `${n + 1} · ${h.nombre}${h.id === sugerida && estado.herramienta !== h.id ? '  ← usa esta' : ''}`,
       'border px-3 py-2 text-left text-sm hover:border-tinta aria-[pressed=true]:border-2 aria-[pressed=true]:border-tinta aria-[pressed=true]:bg-placa-2 aria-[pressed=true]:font-semibold border-placa-linea',
       () => elegir(h.id),
     );
     b.title = h.uso;
+    if (h.id === sugerida) b.classList.add('ring-2', 'ring-med');
     b.setAttribute('aria-pressed', String(estado.herramienta === h.id));
     caja.append(b);
   });
@@ -787,7 +789,9 @@ const PENALIZACION = { error: 5, critico: 30, cambioDeMas: 15, inspeccionDeMas: 
 const INSPECCIONES_LIBRES = 8;
 const pesos = (n) => `$${Number(n).toLocaleString('es-MX')}`;
 
-function empezarOrden() {
+// guiada: la primera vez se hace "conmigo": se explica cómo se piensa la falla, qué revisar y
+// por qué se hace cada paso. Sola: sin resaltados, con pista si se pide; esa es la calificada.
+function empezarOrden(guiada = !progresoDe(estado.sistema.id).ordenGuiada) {
   const o = estado.sistema.orden_taller;
   escena.reiniciarPiezas();
   escena.quitarMarcas();
@@ -807,9 +811,34 @@ function empezarOrden() {
     inicio: Date.now(),
     orden: o,
     guardado: false,
+    guiada,
+    g: 0,
+    siguienteListo: false,
+    pista: false,
   });
   irA(estado.sistema);
   pintar();
+}
+
+// Lleva la guía a la pieza que toca revisar: la resalta y mueve la cámara ahí.
+function mostrarGuia() {
+  const paso = estado.orden.guia[estado.g];
+  if (!paso) {
+    escena.resaltar(null);
+    return;
+  }
+  escena.resaltar(instancias.get(paso.pieza)?.[0] ?? null);
+  irA(estado.sistema, paso.pieza);
+}
+
+function nombreHerramienta(id) {
+  return HERRAMIENTAS.find((h) => h.id === id)?.nombre ?? id;
+}
+
+function cajaMaestro(titulo, texto) {
+  const caja = el('div', 'grid gap-1 border-l-4 border-med bg-med-suave p-3 text-[15px]');
+  caja.append(el('p', 'font-semibold', titulo), el('p', '', texto));
+  return caja;
 }
 
 function estadoDe(base) {
@@ -842,41 +871,110 @@ function tarjetaOrden() {
   partes.push(hoja);
 
   if (estado.fase === 'sintoma') {
+    const yaGuiada = progresoDe(sistema.id).ordenGuiada;
     partes.push(
       el(
         'p',
         'text-[15px]',
-        'Antes de cambiar nada, encuentra la causa. Revisa las piezas que creas que tienen que ver, cada una con su herramienta: verás su estado real.',
+        'Un buen técnico no cambia piezas a ciegas: primero encuentra la causa revisando, y luego repara en orden y con seguridad.',
       ),
     );
+    const empezar = (guiada) => () => {
+      Object.assign(estado, { guiada, fase: 'inspeccion', g: 0, retro: null });
+      if (guiada) mostrarGuia();
+      pintar();
+    };
     partes.push(
-      boton('Empezar a revisar →', 'boton w-fit px-6', () => {
-        estado.fase = 'inspeccion';
-        pintar();
-      }),
+      boton(
+        'Hazla conmigo (te enseño paso a paso) →',
+        `${yaGuiada ? 'boton-linea' : 'boton'} w-fit px-5 py-2`,
+        empezar(true),
+      ),
+      boton(
+        'Hazla solo (calificada, con 91) →',
+        `${yaGuiada ? 'boton' : 'boton-linea'} w-fit px-5 py-2`,
+        empezar(false),
+      ),
     );
+    if (!yaGuiada)
+      partes.push(el('p', 'text-xs text-tinta-3', 'La primera vez te conviene hacerla conmigo.'));
     return partes;
   }
 
   if (estado.fase === 'inspeccion') {
+    const aCausa = boton('Ya sé la causa →', 'boton w-fit px-6', () => {
+      Object.assign(estado, { fase: 'causa', retro: null });
+      escena.resaltar(null);
+      pintar();
+    });
+    if (estado.guiada) {
+      const guia = o.guia[estado.g];
+      partes.push(
+        el(
+          'p',
+          'text-sm text-tinta-2',
+          `Diagnóstico guiado · ${Math.min(estado.g + 1, o.guia.length)} de ${o.guia.length}`,
+        ),
+      );
+      if (estado.g === 0 && !estado.siguienteListo)
+        partes.push(cajaMaestro('Cómo se piensa', o.razonamiento));
+      if (guia && !estado.siguienteListo) {
+        partes.push(cajaMaestro('Ahora', guia.texto));
+        partes.push(
+          el(
+            'p',
+            'text-sm text-tinta-3',
+            `Elige ${nombreHerramienta(guia.herramienta)} y haz clic en la pieza resaltada.`,
+          ),
+        );
+        partes.push(bandeja(guia.herramienta));
+      }
+      if (estado.retro) partes.push(estado.retro);
+      if (estado.siguienteListo) {
+        partes.push(cajaMaestro('Qué significa', guia.despues));
+        const ultimo = estado.g + 1 >= o.guia.length;
+        partes.push(
+          ultimo
+            ? aCausa
+            : boton('Siguiente →', 'boton w-fit px-6', () => {
+                Object.assign(estado, { g: estado.g + 1, siguienteListo: false, retro: null });
+                mostrarGuia();
+                pintar();
+              }),
+        );
+      }
+      if (estado.revisadas.size) partes.push(el('p', 'text-sm font-semibold', 'Bitácora'), bitacora());
+      return partes;
+    }
     partes.push(
       el('p', 'text-sm font-semibold', `Revisa piezas del motor (${estado.revisadas.size} revisadas)`),
     );
     partes.push(bandeja());
     if (estado.retro) partes.push(estado.retro);
+    if (estado.pista) {
+      const falta = o.guia.find((g) => !estado.revisadas.has(g.pieza));
+      partes.push(
+        cajaMaestro(
+          'Pista',
+          `${o.razonamiento}${falta ? ` Te falta revisar: ${ficha(falta.pieza).nombre} (con ${nombreHerramienta(falta.herramienta).toLowerCase()}).` : ''}`,
+        ),
+      );
+    } else {
+      partes.push(
+        boton('Ver pista', 'boton-linea w-fit px-4 py-1.5 text-sm', () => {
+          estado.pista = true;
+          pintar();
+        }),
+      );
+    }
     if (estado.revisadas.size) partes.push(el('p', 'text-sm font-semibold', 'Bitácora'), bitacora());
-    partes.push(
-      boton('Ya sé la causa →', `${estado.revisadas.size ? 'boton' : 'boton-linea'} w-fit px-6`, () => {
-        estado.fase = 'causa';
-        estado.retro = null;
-        pintar();
-      }),
-    );
+    if (estado.revisadas.size) partes.push(aCausa);
     return partes;
   }
 
   if (estado.fase === 'causa') {
     partes.push(el('h2', 'font-sans text-xl font-semibold tracking-normal', '¿Qué pieza cambias?'));
+    if (estado.guiada) partes.push(cajaMaestro('Pista', o.pista_causa));
     partes.push(
       el('p', 'text-sm text-tinta-3', 'Cambiar una pieza sana cuesta dinero al cliente y no arregla nada.'),
     );
@@ -911,12 +1009,48 @@ function tarjetaOrden() {
       barra(estado.i, o.pasos.length),
     );
     partes.push(el('h2', 'font-sans text-lg font-semibold leading-snug tracking-normal', paso.texto));
-    partes.push(bandeja());
+    const [herramienta, pieza] = paso.correcta.split('>');
+    const ayuda = estado.guiada || estado.pista;
+    if (estado.guiada) partes.push(cajaMaestro('Por qué', paso.porque));
+    if (ayuda)
+      partes.push(
+        el(
+          'p',
+          'text-sm text-tinta-3',
+          `Usa ${nombreHerramienta(herramienta).toLowerCase()} en: ${ficha(pieza).nombre}.`,
+        ),
+      );
+    partes.push(bandeja(ayuda ? herramienta : null));
     if (estado.retro) partes.push(estado.retro);
+    if (!ayuda)
+      partes.push(
+        boton('Ver pista', 'boton-linea w-fit px-4 py-1.5 text-sm', () => {
+          estado.pista = true;
+          escena.resaltar(instancias.get(pieza)?.[0] ?? null);
+          pintar();
+        }),
+      );
     return partes;
   }
 
   // Resultado
+  if (estado.guiada) {
+    if (!estado.guardado) {
+      progresoDe(sistema.id).ordenGuiada = true;
+      guardar();
+      estado.guardado = true;
+    }
+    partes.push(aviso('ok', 'Práctica guiada completa', o.pasos.at(-1).resultado));
+    partes.push(
+      el(
+        'p',
+        'text-[15px]',
+        'Ya viste cómo se diagnostica y se repara. Ahora hazla tú solo: esa es la que se califica con 91.',
+      ),
+      boton('Ahora hazla solo →', 'boton w-fit px-6', () => empezarOrden(false)),
+    );
+    return partes;
+  }
   const minutos = Math.max(1, Math.round((Date.now() - estado.inicio) / 60000));
   const inspeccionesDeMas = Math.max(0, estado.revisadas.size - INSPECCIONES_LIBRES);
   const calificacion = Math.max(
@@ -969,7 +1103,9 @@ function tarjetaOrden() {
 // La cámara va a donde se hace el paso que sigue (la orden enseña el procedimiento, no a buscar).
 function irPaso() {
   const base = estado.orden.pasos[estado.i]?.correcta.split('>')[1];
-  if (base) irA(estado.sistema, base);
+  if (!base) return;
+  irA(estado.sistema, base);
+  if (estado.guiada) escena.resaltar(instancias.get(base)?.[0] ?? null);
 }
 
 function elegirCausa(base) {
@@ -1019,6 +1155,10 @@ function revisarOrden(baseTocada) {
       escena.efecto(estado.herramienta === 'jabon' ? 'burbujas' : 'uso', id);
       escena.marcarPieza(id, { bien: 'ok', atencion: 'atencion', mal: 'mal' }[e]);
       estado.retro = aviso({ bien: 'ok', atencion: 'pista', mal: 'mal' }[e], f.nombre, hallazgo);
+      if (estado.guiada && o.guia[estado.g]?.pieza === baseTocada) {
+        estado.siguienteListo = true;
+        escena.resaltar(null);
+      }
     }
     pintar();
     return;
@@ -1036,7 +1176,10 @@ function revisarOrden(baseTocada) {
       escena.marcarPieza(id, 'ok');
     } else escena.efecto('uso', id);
     estado.i += 1;
-    estado.retro = aviso('ok', 'Bien', paso.resultado ?? '');
+    estado.pista = false;
+    // Sola: el porqué se enseña después de acertar.
+    estado.retro = aviso('ok', 'Bien', paso.resultado ?? (estado.guiada ? '' : paso.porque));
+    escena.resaltar(null);
     if (estado.i >= o.pasos.length) estado.fase = 'resultado';
     else irPaso();
     pintar();
@@ -1102,6 +1245,8 @@ function buscada() {
   if (estado.modo === 'conoce') return estado.sistema.orden[estado.i];
   if (estado.modo === 'orden' && estado.fase === 'reparar')
     return estado.orden.pasos[estado.i]?.correcta.split('>')[1];
+  if (estado.modo === 'orden' && estado.fase === 'inspeccion' && estado.guiada)
+    return estado.orden.guia[estado.g]?.pieza ?? null;
   if (estado.modo === 'encuentra' || estado.modo === 'comprueba') return estado.cola[estado.i];
   return null;
 }

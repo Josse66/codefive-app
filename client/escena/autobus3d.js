@@ -433,7 +433,7 @@ export function crearEscena(
   // tiempo, se sube poco a poco. Así la pantalla completa no traba una GPU integrada.
   // Con GPU integrada (la de la mayoría de las laptops) el tope de píxeles es menor.
   const integrada = /intel|integrated|radeon\(tm\) graphics|uhd|iris|mali|adreno/i.test(nombreGpu(renderer));
-  const PIXELES_MAX = integrada ? { normal: 1.5e6, ligero: 1e6 } : { normal: 2.4e6, ligero: 1.2e6 };
+  const PIXELES_MAX = integrada ? { normal: 1.1e6, ligero: 0.8e6 } : { normal: 2.4e6, ligero: 1.2e6 };
   const resolucion = { escala: 1, promedio: 1 / 60, cuenta: 0, holgura: 0, bajadas: 0 };
   function ajustarResolucion() {
     const { clientWidth: ancho, clientHeight: alto } = contenedor;

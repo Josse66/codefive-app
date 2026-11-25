@@ -125,12 +125,14 @@
                 "critico": true,
                 "mensaje": "Abriste el sistema de combustible con el motor encendido: el diésel sale a presión sobre el motor caliente y puede incendiarse."
               }
-            }
+            },
+            "porque": "Con el motor encendido el combustible está a presión y el motor está caliente: si abres el sistema, el diésel puede rociarse y prenderse."
           },
           {
             "texto": "Retira el filtro de combustible con la llave. Pon una charola: escurre diésel.",
             "correcta": "llave>filtro_combustible",
-            "efecto": "retirar"
+            "efecto": "retirar",
+            "porque": "El filtro saturado es la causa. Siempre escurre diésel: por eso va la charola."
           },
           {
             "texto": "Pon el filtro nuevo: lubrica el empaque con diésel limpio y apriétalo a mano.",
@@ -141,23 +143,55 @@
                 "critico": false,
                 "mensaje": "El filtro nuevo se aprieta a mano: con la llave se daña el empaque y luego fuga."
               }
-            }
+            },
+            "porque": "El empaque lubricado sella sin romperse. A mano, porque con llave se aplasta el empaque y luego fuga."
           },
           {
             "texto": "Purga el agua del separador y saca el aire del sistema con su bomba manual.",
-            "correcta": "mano>separador_agua"
+            "correcta": "mano>separador_agua",
+            "porque": "Al cambiar el filtro entra aire a la línea; con aire el motor no arranca o se apaga. De paso sacas el agua que viste."
           },
           {
             "texto": "Enciende el interruptor maestro y arranca el motor.",
             "correcta": "mano>interruptor_maestro",
-            "sonido": "arranque"
+            "sonido": "arranque",
+            "porque": "Con todo cerrado ya es seguro volver a dar corriente y arrancar."
           },
           {
             "texto": "Comprueba con el escáner: presión de combustible y códigos de falla.",
             "correcta": "escaner>inyectores",
-            "resultado": "Presión de combustible normal al acelerar y sin códigos. El autobús recuperó la fuerza."
+            "resultado": "Presión de combustible normal al acelerar y sin códigos. El autobús recuperó la fuerza.",
+            "porque": "Nunca se entrega sin comprobar: el escáner confirma que la presión ya no cae."
           }
-        ]
+        ],
+        "razonamiento": "Si el motor pierde fuerza y no echa humo negro, le falta aire o le falta combustible. Se revisa en ese orden: primero lo que es fácil de descartar.",
+        "guia": [
+          {
+            "pieza": "turbo",
+            "herramienta": "mano",
+            "texto": "Empieza por el aire. Revisa el turbo con la mano: si tiene juego o roza, no mete suficiente aire.",
+            "despues": "El turbo gira libre: el aire sí entra. Descartamos el aire; ahora el combustible."
+          },
+          {
+            "pieza": "inyectores",
+            "herramienta": "escaner",
+            "texto": "Para saber si llega combustible, lee la presión con el escáner en los inyectores.",
+            "despues": "La presión cae al acelerar: el diésel no llega completo. El problema está ANTES de los inyectores: en el separador o en el filtro."
+          },
+          {
+            "pieza": "separador_agua",
+            "herramienta": "mano",
+            "texto": "Revisa el separador de agua con la mano: mira el vaso.",
+            "despues": "Tiene un poco de agua: hay que purgarla, pero tan poca agua no frena el combustible. Sigue buscando."
+          },
+          {
+            "pieza": "filtro_combustible",
+            "herramienta": "linterna",
+            "texto": "Revisa el filtro de combustible con la linterna.",
+            "despues": "¡Aquí está! El filtro está saturado y casi no deja pasar el diésel. Por eso pierde fuerza al pedirle más."
+          }
+        ],
+        "pista_causa": "Cambia solo lo que encontraste mal en tu bitácora (la marca ✗)."
       }
     },
     {
