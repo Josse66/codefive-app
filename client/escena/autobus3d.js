@@ -552,7 +552,7 @@ export function crearEscena(
   controles.mouseButtons = { LEFT: null, MIDDLE: THREE.MOUSE.DOLLY, RIGHT: THREE.MOUSE.ROTATE };
   controles.enablePan = false;
   controles.minDistance = 3;
-  controles.maxDistance = completo ? 16 : 34;
+  controles.maxDistance = completo ? 22 : 34;
   controles.maxPolarAngle = Math.PI * 0.49;
   controles.update();
 

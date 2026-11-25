@@ -11,7 +11,22 @@
   <div class="grid gap-5 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start">
     <div class="relative mx-auto w-full max-w-[calc(68vh*4/3)] overflow-hidden border-2 border-tinta bg-tinta">
       <canvas id="lienzo-manos" class="block aspect-[4/3] w-full" width="960" height="720" aria-label="Tu mano con la herramienta dibujada encima"></canvas>
-      <div id="arranque" class="absolute inset-0 grid place-content-center gap-3 bg-tinta/90 p-6 text-center text-white">
+      <div id="arranque" class="absolute inset-0 grid place-content-center gap-5 bg-tinta/95 p-6 text-center text-white">
+        {{! Las dos partes del ejercicio y qué revisa cada una: lo que se ve y lo que se siente. }}
+        <ol class="mx-auto grid max-w-2xl gap-3 text-left sm:grid-cols-2">
+          <li class="grid gap-1 border border-white/20 bg-white/[0.06] p-4">
+            <span class="font-narrow text-sm font-bold uppercase tracking-wider text-[#7dff9a]">Parte 1 · Cámaras</span>
+            <span class="font-narrow text-2xl font-bold leading-tight">Lo que se ve</span>
+            <span class="text-white/75">Dónde pones la mano, en qué orden y cuántas manos usas.</span>
+          </li>
+          {{#if ejercicio.guante}}
+            <li class="grid gap-1 border border-white/20 bg-white/[0.06] p-4">
+              <span class="font-narrow text-sm font-bold uppercase tracking-wider text-[#7dff9a]">Parte 2 · Guante</span>
+              <span class="font-narrow text-2xl font-bold leading-tight">Lo que se siente</span>
+              <span class="text-white/75">El giro de tu muñeca, si aprietas firme y si vas parejo.</span>
+            </li>
+          {{/if}}
+        </ol>
         <p class="text-lg">Usa las dos cámaras USB (arriba y abajo). Solo ven tus manos; no se graba ni se manda nada.</p>
         <button id="encender" type="button" class="boton mx-auto bg-white px-8 py-4 text-lg text-tinta hover:bg-placa">Encender la cámara</button>
         <p id="error-camara" class="text-sm text-mal-suave" hidden></p>

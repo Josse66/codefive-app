@@ -147,7 +147,7 @@ const escena = crearEscena($('lienzo'), {
   autobus: 'diesel',
   completo: true,
   catalogo,
-  enfoque: { objetivo: [0, 1.2, 0], distancia: 9 },
+  enfoque: { objetivo: [0, 1.2, 0], distancia: 13 },
 });
 // Lo que tapan los paneles (px): la lista de sistemas a la izquierda y la tarjeta a la derecha.
 const MARGENES = MAYOR ? [0, 584] : [300, 412];
