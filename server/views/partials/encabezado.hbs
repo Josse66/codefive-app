@@ -14,6 +14,7 @@
       {{else if esVolvo}}
         <nav aria-label="Capacitación Volvo" class="flex gap-1 text-[15px]">
           <a href="/volvo" class="px-3 py-4 no-underline {{#if (igual seccion 'tablero')}}text-white shadow-[inset_0_-3px_0_#ffffff]{{else}}text-placa-linea hover:text-white{{/if}}" {{#if (igual seccion 'tablero')}}aria-current="page"{{/if}}>Panel</a>
+          <a href="/volvo/gafetes" class="px-3 py-4 no-underline {{#if (igual seccion 'gafetes')}}text-white shadow-[inset_0_-3px_0_#ffffff]{{else}}text-placa-linea hover:text-white{{/if}}" {{#if (igual seccion 'gafetes')}}aria-current="page"{{/if}}>Gafetes</a>
           <a href="/tecnicos" class="px-3 py-4 no-underline {{#if (igual seccion 'red')}}text-white shadow-[inset_0_-3px_0_#ffffff]{{else}}text-placa-linea hover:text-white{{/if}}" {{#if (igual seccion 'red')}}aria-current="page"{{/if}}>Red de técnicos</a>
         </nav>
       {{/if}}

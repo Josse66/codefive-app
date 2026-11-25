@@ -1,0 +1,12 @@
+{{!-- Responsable del taller: gafetes imprimibles (QR + código), PIN y experiencia de cada técnico. --}}
+<section id="gafetes" class="grid gap-6">
+  <div class="flex flex-wrap items-end justify-between gap-4 print:hidden">
+    <div class="grid gap-2">
+      <h1 class="text-4xl leading-tight">Gafetes de capacitación</h1>
+      <p class="max-w-3xl text-tinta-2">Cada técnico entra acercando su gafete a la cámara y escribiendo su PIN de 4 números. Aquí lo imprimes, le das un PIN nuevo si lo olvida y eliges su experiencia: <strong>General</strong> o <strong>Adulto Mayor</strong> (letra grande, la cámara se mueve sola y la voz lo guía). Elígela junto con el técnico; se puede cambiar cuando quiera.</p>
+    </div>
+    <button id="imprimir" type="button" class="boton px-6">Imprimir gafetes</button>
+  </div>
+  <p id="mensaje" class="border border-ok bg-ok-suave p-3 print:hidden" role="status" hidden></p>
+  <ul id="lista" class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 print:grid-cols-2 print:gap-3"></ul>
+</section>

@@ -26,6 +26,8 @@ export default defineConfig(({ command }) => ({
         aprender: ruta('./client/pages/aprender.js'),
         leccion: ruta('./client/pages/leccion.js'),
         recorrido: ruta('./client/pages/recorrido.js'),
+        entrar: ruta('./client/pages/entrar.js'),
+        gafetes: ruta('./client/pages/gafetes.js'),
       },
     },
   },

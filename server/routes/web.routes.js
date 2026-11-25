@@ -36,6 +36,9 @@ router.post('/bienvenida', exigirSesion, cuentas.guardarBienvenida);
 
 // Capacitación Volvo: panel y red de técnicos
 router.get('/volvo', exigirVolvo, mostrarTablero);
+router.get('/volvo/gafetes', exigirVolvo, (_req, res) =>
+  res.render('gafetes', { titulo: 'Gafetes', seccion: 'gafetes', scriptPagina: 'pages/gafetes.js' }),
+);
 router.get('/tecnicos', exigirVolvo, mostrarInicio);
 
 // Páginas del técnico: cada quien solo las suyas (Volvo puede ver todas)

@@ -41,7 +41,7 @@ export function mostrarEntrar(req, res) {
     res.redirect(destino(req.cuenta));
     return;
   }
-  res.render('entrar', { titulo: 'Entrar', sinMenu: true });
+  res.render('entrar', { titulo: 'Entrar', sinMenu: true, scriptPagina: 'pages/entrar.js' });
 }
 
 export function entrar(req, res) {
@@ -54,6 +54,7 @@ export function entrar(req, res) {
     res.status(error.status ?? 500).render('entrar', {
       titulo: 'Entrar',
       sinMenu: true,
+      scriptPagina: 'pages/entrar.js',
       error: error.status === 401 ? error.message : 'No pudimos iniciar tu sesión',
       correo: req.body.correo,
     });

@@ -1,26 +1,66 @@
-<section class="mx-auto grid w-full max-w-5xl gap-8 lg:grid-cols-[minmax(0,1fr)_420px] lg:items-center">
-  <div class="grid gap-4">
-    <h1 class="text-5xl leading-none lg:text-6xl">Tu plan de formación técnica</h1>
-    <p class="max-w-xl text-lg text-tinta-2">Entra con la cuenta que te dio tu empresa. Verás solo tu avance: tu autobús, tus módulos, lo que te toca aprender y tus órdenes en el taller.</p>
-    <ul class="grid max-w-xl gap-2 text-[15px] text-tinta-2">
-      <li class="flex gap-3"><span class="recuadro h-6 w-6 text-sm">1</span>Un diagnóstico ubica lo que ya dominas.</li>
-      <li class="flex gap-3"><span class="recuadro h-6 w-6 text-sm">2</span>Aprendes con lecciones sobre el autobús que atiendes.</li>
-      <li class="flex gap-3"><span class="recuadro h-6 w-6 text-sm">3</span>Practicas en el taller y subes de nivel.</li>
-    </ul>
+{{!-- Entrar con gafete (QR) + PIN, como en planta y en los hospitales: equipos compartidos, muchos
+     trabajadores y nada de contraseñas largas. Correo y contraseña quedan para Volvo y responsables. --}}
+<section id="entrar" class="mx-auto grid w-full max-w-3xl gap-6">
+
+  {{! Paso 1: acercar el gafete a la cámara. }}
+  <div id="paso-gafete" class="grid gap-5 border-2 border-tinta bg-white p-6 lg:p-8">
+    <div class="flex flex-wrap items-start justify-between gap-3">
+      <div class="grid gap-1">
+        <p class="font-narrow text-sm font-bold uppercase tracking-wider text-tinta-3">Capacitación de técnicos</p>
+        <h1 class="font-sans text-4xl font-semibold leading-tight tracking-normal">Acerca tu gafete a la cámara</h1>
+        <p class="text-lg text-tinta-2">Pon el código de tu gafete dentro del cuadro, como en el reloj checador.</p>
+      </div>
+      <button id="escuchar-gafete" type="button" class="boton-linea px-4 py-3 text-base">🔊 Escuchar</button>
+    </div>
+    <div class="relative mx-auto aspect-[4/3] w-full max-w-md overflow-hidden border-2 border-tinta bg-tinta">
+      <video id="camara" class="h-full w-full -scale-x-100 object-cover" playsinline muted></video>
+      <div class="pointer-events-none absolute inset-[18%] border-4 border-dashed border-white/90" aria-hidden="true"></div>
+      <p id="camara-estado" class="absolute inset-x-0 bottom-0 bg-tinta/80 px-3 py-2 text-center text-white">Encendiendo la cámara…</p>
+    </div>
+    <details class="text-[15px]">
+      <summary class="cursor-pointer font-semibold">¿No funciona la cámara? Escribe el código de tu gafete</summary>
+      <form id="form-codigo" class="mt-3 flex flex-wrap gap-2">
+        <input id="codigo" name="codigo" autocomplete="off" placeholder="CF-XXXXXX" class="min-w-0 flex-1 border border-tinta-3 px-3 py-3 font-mono text-lg uppercase tracking-widest">
+        <button type="submit" class="boton px-6">Continuar</button>
+      </form>
+    </details>
+    <p id="error-gafete" class="aviso-critico" role="alert" hidden></p>
   </div>
 
-  <form method="post" action="/entrar" class="grid gap-4 border-2 border-tinta bg-white p-6 lg:p-8">
-    <h2 class="text-3xl">Entrar</h2>
-    {{#if error}}<p class="aviso-critico" role="alert">{{error}}</p>{{/if}}
-    <label class="grid gap-1.5">
-      <span class="font-semibold">Correo</span>
-      <input name="correo" type="email" autocomplete="username" required value="{{correo}}" class="border border-tinta-3 px-3 py-3 text-base focus:border-tinta">
-    </label>
-    <label class="grid gap-1.5">
-      <span class="font-semibold">Contraseña</span>
-      <input name="contrasena" type="password" autocomplete="current-password" required class="border border-tinta-3 px-3 py-3 text-base focus:border-tinta">
-    </label>
-    <button type="submit" class="boton py-4 text-base">Entrar</button>
-    <p class="border-t border-placa-linea pt-4 text-[15px]">¿Eres nuevo? <a href="/registro" class="font-semibold underline">Regístrate con el código de tu empresa</a></p>
-  </form>
+  {{! Paso 2: el PIN. Se ve distinto según la experiencia del técnico (General o Adulto Mayor). }}
+  <div id="paso-pin" class="grid gap-5 border-2 border-tinta bg-white p-6 lg:p-8" hidden>
+    <div class="flex flex-wrap items-start justify-between gap-3">
+      <div class="grid gap-1">
+        <h2 id="saludo" class="font-sans text-4xl font-semibold leading-tight tracking-normal"></h2>
+        <p id="taller" class="text-tinta-2"></p>
+      </div>
+      <button id="escuchar-pin" type="button" class="boton-linea px-4 py-3 text-base">🔊 Escuchar</button>
+    </div>
+    <p id="instruccion-pin" class="text-xl">Escribe tus 4 números.</p>
+    <div id="puntos" class="flex justify-center gap-4" aria-live="polite"></div>
+    <div id="teclado" class="mx-auto grid w-full max-w-sm grid-cols-3 gap-3"></div>
+    <div class="flex flex-wrap items-center justify-center gap-3">
+      <button id="ver-numeros" type="button" class="boton-linea px-4 py-2">👁 Ver mis números</button>
+      <button id="no-soy-yo" type="button" class="px-4 py-2 text-tinta-2 underline">No soy yo</button>
+      <button id="olvide" type="button" class="px-4 py-2 text-tinta-2 underline">Olvidé mi PIN</button>
+    </div>
+    <div id="mensaje-pin" class="grid gap-1 border p-3 text-lg" role="alert" hidden></div>
+  </div>
+
+  {{! Volvo y responsables del taller entran con correo. }}
+  <details id="con-correo" class="border border-placa-linea bg-white p-4" {{#if error}}open{{/if}}>
+    <summary class="cursor-pointer font-semibold">Entrar con correo (Volvo y responsables de taller)</summary>
+    <form method="post" action="/entrar" class="mt-4 grid gap-4">
+      {{#if error}}<p class="aviso-critico" role="alert">{{error}}</p>{{/if}}
+      <label class="grid gap-1.5">
+        <span class="font-semibold">Correo</span>
+        <input name="correo" type="email" autocomplete="username" required value="{{correo}}" class="border border-tinta-3 px-3 py-3 text-base focus:border-tinta">
+      </label>
+      <label class="grid gap-1.5">
+        <span class="font-semibold">Contraseña</span>
+        <input name="contrasena" type="password" autocomplete="current-password" required class="border border-tinta-3 px-3 py-3 text-base focus:border-tinta">
+      </label>
+      <button type="submit" class="boton py-3 text-base">Entrar</button>
+    </form>
+  </details>
 </section>
