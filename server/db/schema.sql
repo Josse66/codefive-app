@@ -145,3 +145,58 @@ CREATE TABLE IF NOT EXISTS codigos_registro (
   organizacion  TEXT NOT NULL,
   activo        INTEGER NOT NULL DEFAULT 1
 );
+
+-- ---------- Simulador del autobús completo ----------
+-- Datos de los índices del panel de Volvo: IEF (dominio y retención), ICO (precisión y
+-- autonomía en la práctica) e IEFI (avance y horas efectivas contra una línea base).
+
+-- Sesiones de práctica: el navegador manda un latido con los segundos de actividad real.
+CREATE TABLE IF NOT EXISTS sim_sesiones (
+  id          INTEGER PRIMARY KEY AUTOINCREMENT,
+  tecnico_id  TEXT NOT NULL REFERENCES tecnicos (id),
+  inicio      TEXT NOT NULL DEFAULT (datetime('now')),
+  ultimo      TEXT NOT NULL DEFAULT (datetime('now')),
+  segundos    INTEGER NOT NULL DEFAULT 0
+);
+CREATE INDEX IF NOT EXISTS idx_sim_sesiones_tecnico ON sim_sesiones (tecnico_id);
+
+-- Bitácora de cada acción en el simulador (lista de cotejo, Pareto de errores, autonomía).
+CREATE TABLE IF NOT EXISTS sim_acciones (
+  id           INTEGER PRIMARY KEY AUTOINCREMENT,
+  tecnico_id   TEXT NOT NULL REFERENCES tecnicos (id),
+  sesion_id    INTEGER REFERENCES sim_sesiones (id),
+  sistema      TEXT NOT NULL,
+  actividad    TEXT NOT NULL CHECK (actividad IN ('conoce', 'encuentra', 'comprueba', 'orden', 'libre')),
+  intento      INTEGER NOT NULL DEFAULT 1,
+  pieza        TEXT,
+  herramienta  TEXT,
+  paso         TEXT,
+  resultado    TEXT NOT NULL CHECK (resultado IN ('correcta', 'error', 'critico', 'ayuda')),
+  con_ayuda    INTEGER NOT NULL DEFAULT 0,
+  detalle      TEXT,
+  creado_en    TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_sim_acciones_tecnico ON sim_acciones (tecnico_id, creado_en);
+
+-- Evaluaciones por sistema: inicial (diagnóstico), final (Comprueba), diferida (Comprueba a
+-- los 30 días simulados) y orden (orden de taller sola).
+CREATE TABLE IF NOT EXISTS sim_evaluaciones (
+  id            INTEGER PRIMARY KEY AUTOINCREMENT,
+  tecnico_id    TEXT NOT NULL REFERENCES tecnicos (id),
+  sistema       TEXT NOT NULL,
+  momento       TEXT NOT NULL CHECK (momento IN ('inicial', 'final', 'diferida', 'orden')),
+  calificacion  INTEGER NOT NULL CHECK (calificacion BETWEEN 0 AND 100),
+  dia           INTEGER NOT NULL DEFAULT 0,
+  detalle       TEXT,
+  creado_en     TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_sim_eval_tecnico ON sim_evaluaciones (tecnico_id, sistema);
+
+-- Avance de las vueltas por sistema (lo que antes vivía solo en el navegador).
+CREATE TABLE IF NOT EXISTS sim_progreso (
+  tecnico_id   TEXT NOT NULL REFERENCES tecnicos (id),
+  sistema      TEXT NOT NULL,
+  datos        TEXT NOT NULL,
+  actualizado  TEXT NOT NULL DEFAULT (datetime('now')),
+  PRIMARY KEY (tecnico_id, sistema)
+);

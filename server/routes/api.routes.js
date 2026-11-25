@@ -6,6 +6,7 @@ import * as evaluacion from '#controllers/evaluacion.controller.js';
 import * as escenarios from '#controllers/escenarios.controller.js';
 import * as taller from '#controllers/taller.controller.js';
 import * as aprender from '#controllers/aprender.controller.js';
+import * as simulador from '#controllers/simulador.controller.js';
 import { obtenerTablero } from '#services/tablero.service.js';
 import { exigirSesion, exigirTecnico, exigirVolvo } from '#helpers/sesion.js';
 
@@ -29,6 +30,15 @@ router.post('/tecnicos/:id/practica/respuestas', practica.responder);
 router.get('/tecnicos/:id/evaluacion/:competenciaId', evaluacion.obtener);
 router.post('/tecnicos/:id/evaluacion/:competenciaId', evaluacion.responder);
 router.post('/tecnicos/:id/simular-dias', evaluacion.simular);
+
+// Simulador del autobús completo: avance, sesiones con tiempo efectivo, bitácora y evaluaciones.
+router.get('/tecnicos/:id/simulador', simulador.obtener);
+router.post('/tecnicos/:id/simulador/sesiones', simulador.sesion);
+router.post('/tecnicos/:id/simulador/sesiones/:sesionId/latido', simulador.pulso);
+router.post('/tecnicos/:id/simulador/acciones', simulador.acciones);
+router.post('/tecnicos/:id/simulador/evaluaciones', simulador.evaluacion);
+router.put('/tecnicos/:id/simulador/progreso/:sistema', simulador.progreso);
+router.get('/tecnicos/:id/simulador/bitacora', simulador.verBitacora);
 
 router.get('/escenarios', escenarios.listar);
 router.get('/tecnicos/:id/escenarios', escenarios.delTecnico);
