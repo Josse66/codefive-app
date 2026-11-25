@@ -4,6 +4,10 @@ import { sembrar, sembrarCuentas, sembrarEvaluacion, sembrarGafetes } from '#db/
 import logger from '#config/logger.js';
 
 db.exec(`
+  DELETE FROM sim_acciones;
+  DELETE FROM sim_evaluaciones;
+  DELETE FROM sim_sesiones;
+  DELETE FROM sim_progreso;
   DELETE FROM sesiones;
   DELETE FROM cuentas;
   DELETE FROM lecciones_vistas;

@@ -72,6 +72,9 @@ if (!tecnicos.length) {
     const cuantos = 3 + Math.floor(entre(0, 4));
     const practicados = [...SISTEMAS].sort(() => azar() - 0.5).slice(0, cuantos);
     practicados.forEach((sis) => {
+      // Diagnóstico de antes (8 preguntas, en múltiplos de 12.5): los de más oficio saben más.
+      const inicial = Math.round(Math.round(Math.min(8, Math.max(1, habilidad * 8 - entre(1.5, 4)))) * 12.5);
+      evaluacion.run(t.id, sis.id, 'inicial', inicial, 0);
       sis.orden.forEach((base) => {
         const acierta = azar() < habilidad;
         accion.run(

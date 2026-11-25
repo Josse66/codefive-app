@@ -75,8 +75,10 @@ export function sembrarGafetes(db) {
   const { pinDemo } = leerJson('cuentas.json');
   const experiencias = Object.fromEntries(leerJson('tecnicos.json').map((t) => [t.id, t.experiencia]));
   const sinGafete = db.prepare('SELECT id FROM tecnicos WHERE credencial IS NULL').all();
-  const poner = db.prepare('UPDATE tecnicos SET credencial = ?, pin_hash = ?, experiencia = ? WHERE id = ?');
-  sinGafete.forEach(({ id }) => poner.run(nuevaCredencial(), cifrar(pinDemo), experiencias[id] ?? 'general', id));
+  const poner = db.prepare(
+    'UPDATE tecnicos SET credencial = ?, pin_hash = ?, experiencia = COALESCE(?, experiencia) WHERE id = ?',
+  );
+  sinGafete.forEach(({ id }) => poner.run(nuevaCredencial(), cifrar(pinDemo), experiencias[id] ?? null, id));
 }
 
 export function baseVacia(db) {

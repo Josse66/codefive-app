@@ -273,7 +273,15 @@ if (yaHay) {
       const [orden] = obtenerTaller(tecnico.id).bahia;
       if (!orden) break;
       atenderOrden(tecnico, orden);
-      if (i === 0) evaluar(tecnico, orden.escenario.competencia);
+      // La evaluación del flujo anterior (por competencia) puede pedir más práctica de la que
+      // simula la demo: si no toca, se salta ese técnico en vez de detener toda la flota.
+      if (i === 0) {
+        try {
+          evaluar(tecnico, orden.escenario.competencia);
+        } catch (error) {
+          if (error.status !== 409) throw error;
+        }
+      }
     }
   });
   const totales = db
