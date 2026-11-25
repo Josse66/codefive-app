@@ -296,26 +296,17 @@ export function dibujarPrincipal(ctx, ancho, alto) {
   ctx.fillRect(0, 0, ancho, alto);
 }
 
-/** Recuadro con la vista de abajo (la palma), para ver que el agarre se lee bien. */
+/** Etiqueta chica con lo que lee la cámara de abajo (sin video: no tapa la herramienta). */
 export function dibujarRecuadro(ctx, ancho, alto, cerrada) {
   const cam = camAgarre();
   if (!cam || cam === camPosicion()) return;
-  const w = ancho * 0.26;
-  const h = (w * 3) / 4;
-  const x = ancho - w - 12;
-  const y = 12;
-  const v = volteo(cam);
-  ctx.save();
-  ctx.translate(x + (v.x ? 0 : w), y + (v.y ? h : 0));
-  ctx.scale(v.x ? 1 : -1, v.y ? -1 : 1);
-  ctx.drawImage(cam.video, 0, 0, w, h);
-  ctx.restore();
-  ctx.strokeStyle = cerrada ? '#2f7d43' : '#ffffff';
-  ctx.lineWidth = 4;
-  ctx.strokeRect(x, y, w, h);
+  const ve = Boolean(cam.r?.landmarks?.length);
+  let texto = 'Abajo: no ve la mano';
+  if (ve) texto = cerrada ? 'Abajo: mano cerrada' : 'Abajo: mano abierta';
+  ctx.font = '600 16px Archivo, sans-serif';
+  const w = ctx.measureText(texto).width + 24;
   ctx.fillStyle = 'rgba(20,28,36,.8)';
-  ctx.fillRect(x, y + h - 26, w, 26);
-  ctx.fillStyle = '#ffffff';
-  ctx.font = '600 15px Archivo, sans-serif';
-  ctx.fillText(`Abajo · agarre: ${cerrada ? 'cerrada' : 'abierta'}`, x + 8, y + h - 8);
+  ctx.fillRect(ancho - w - 12, 12, w, 30);
+  ctx.fillStyle = ve && cerrada ? '#7dff9a' : '#ffffff';
+  ctx.fillText(texto, ancho - w, 33);
 }

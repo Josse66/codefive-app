@@ -202,9 +202,9 @@
         "La otra mano, fuera del circuito: atrás o abajo."
       ],
       "parametros": {
-        "zonaCircuito": [0.42, 0.2, 0.98, 0.85],
-        "positivo": [0.62, 0.36],
-        "negativo": [0.84, 0.36],
+        "zonaCircuito": [0.34, 0.22, 0.86, 0.8],
+        "positivo": [0.5, 0.4],
+        "negativo": [0.7, 0.4],
         "radio": 0.05,
         "sostener": 1.5,
         "lectura": "24.6 V"

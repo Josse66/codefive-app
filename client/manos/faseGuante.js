@@ -66,7 +66,30 @@ export class FaseGuante {
       giro: null,
       terminado: false,
       calibrando: false,
+      ruido: [],
+      boton: { visto: false, desde: 0 },
     });
+    this.ajustarUmbrales();
+  }
+
+  /**
+   * Umbrales a la medida: el temblor de la mano quieta (medido con la mano recta) sube los límites
+   * de "tirón" y de "punta quieta" si el guante o la persona tiemblan más; y el clic se pone al
+   * alcance del giro cómodo de la persona (medido al aprender el giro), sin pasar del objetivo.
+   */
+  ajustarUmbrales() {
+    const { g } = this;
+    const cal = AJUSTES.guanteCal ?? {};
+    const ruido = cal.ruido ?? 5;
+    const rango = AJUSTES.guanteEje?.rango;
+    this.u = {
+      objetivo: g.objetivo
+        ? Math.round(rango ? Math.max(12, Math.min(g.objetivo, rango * 0.75)) : g.objetivo)
+        : 0,
+      tiron: Math.max(g.tiron ?? 220, ruido * 8 + 60),
+      movimiento: Math.max(g.movimiento ?? 35, ruido * 3 + 10),
+      muneca: Math.max(g.muneca ?? 20, 22),
+    };
   }
 
   fallar(id) {
@@ -106,6 +129,7 @@ export class FaseGuante {
     }
     if (this.paso === 'conectar') Object.assign(this, { paso: 'recta', desde: ahora });
     if (this.paso === 'recta') return this.pasoRecta(ahora);
+    if (this.paso === 'boton') return this.pasoBoton(ahora);
     if (this.paso === 'giro') return this.pasoGiro(ahora);
     if (this.g.tipo === 'firme') return this.pasoFirme(ahora);
     return this.pasoJalon(ahora);
@@ -121,17 +145,61 @@ export class FaseGuante {
     }
     if (!this.calibrando) {
       this.calibrando = true;
+      this.ruido = [];
       calibrarMuneca().then(() => {
         this.calibrando = false;
+        // Temblor en reposo: la mediana de lo medido mientras la mano estaba recta y quieta.
+        const r = [...this.ruido].sort((a, b) => a - b);
+        if (r.length) {
+          AJUSTES.guanteCal = { ...AJUSTES.guanteCal, ruido: r[Math.floor(r.length / 2)] };
+          guardarAjustes();
+        }
+        this.ajustarUmbrales();
+        let paso = 'listo';
+        if (!AJUSTES.guanteCal?.boton) paso = 'boton';
+        else if (!AJUSTES.guanteEje) paso = 'giro';
         Object.assign(this, {
-          paso: AJUSTES.guanteEje ? 'listo' : 'giro',
+          paso,
           desde: performance.now(),
           giro: null,
+          boton: { visto: false, desde: 0 },
         });
       });
     }
+    this.ruido.push(guante.gmag);
     this.dibujarCentro('…', 'Midiendo la mano recta: no te muevas');
     this.ui.decir('Midiendo la mano recta: no te muevas');
+    return null;
+  }
+
+  // Prueba del botón de la palma: que se apriete al cerrar la mano y se suelte al abrirla.
+  pasoBoton(ahora) {
+    const b = this.boton;
+    b.desde ||= ahora;
+    if (guante.grip) b.visto = true;
+    if (b.visto && !guante.grip) {
+      AJUSTES.guanteCal = { ...AJUSTES.guanteCal, boton: true };
+      guardarAjustes();
+      this.ui.sonar('bien');
+      Object.assign(this, { paso: AJUSTES.guanteEje ? 'listo' : 'giro', desde: ahora, giro: null });
+      return null;
+    }
+    if (ahora - b.desde > 10000) {
+      // No se sintió: se sigue, pero se avisa (el agarre no se podrá medir bien).
+      this.ui.decir(
+        'No sentí el botón: revisa que esté en la palma y que se apriete al cerrar la mano',
+        'mal',
+      );
+      Object.assign(this, { paso: AJUSTES.guanteEje ? 'listo' : 'giro', desde: ahora, giro: null });
+      return null;
+    }
+    this.dibujarCentro(
+      b.visto ? 'Ahora ábrela' : 'Cierra la mano',
+      b.visto
+        ? 'Suelta: el botón debe dejar de estar apretado'
+        : 'Cierra la mano como si tomaras el mango: el botón de la palma debe apretarse',
+    );
+    this.ui.decir(b.visto ? 'Bien. Ahora abre la mano' : 'Cierra la mano como si tomaras el mango');
     return null;
   }
 
@@ -160,8 +228,10 @@ export class FaseGuante {
       this.ui.decir('No sentí el giro: otra vez, gira más la mano');
       return null;
     }
-    AJUSTES.guanteEje = { eje, signo: Math.sign(this.giro.max[eje]) };
+    // También cuánto gira cómodo la persona: el clic se pone a su alcance.
+    AJUSTES.guanteEje = { eje, signo: Math.sign(this.giro.max[eje]), rango: Math.abs(this.giro.max[eje]) };
     guardarAjustes();
+    this.ajustarUmbrales();
     Object.assign(this, { paso: 'listo', desde: ahora });
     this.ui.sonar('bien');
     return null;
@@ -193,15 +263,15 @@ export class FaseGuante {
     this.avance = this.giroActual();
     led(guante.grip);
     // Muñeca (medio segundo seguido fuera de la recta).
-    if (desviacionMuneca() > (g.muneca ?? 20)) {
+    if (desviacionMuneca() > this.u.muneca) {
       this.munecaDesde ||= ahora;
       if (ahora - this.munecaDesde > 500) this.fallar('g-muneca');
     } else this.munecaDesde = 0;
-    if (guante.gmag > (g.tiron ?? 220)) this.fallar('g-parejo');
+    if (guante.gmag > this.u.tiron) this.fallar('g-parejo');
 
     if (this.paso === 'clic') {
       if (conClic) {
-        this.pasado = Math.max(this.pasado, this.avance - g.objetivo);
+        this.pasado = Math.max(this.pasado, this.avance - this.u.objetivo);
         if (this.pasado > (g.pasarse ?? 7)) this.fallar('g-clic');
       }
       this.dibujarTablero(ahora);
@@ -221,12 +291,12 @@ export class FaseGuante {
     }
     if (!guante.grip) {
       this.sueltoDesde ||= ahora;
-      if (ahora - this.sueltoDesde > 300) {
+      if (ahora - this.sueltoDesde > 450) {
         this.fallar('g-agarre');
         this.paso = 'listo';
       }
     } else this.sueltoDesde = 0;
-    if (this.avance >= g.objetivo) {
+    if (this.avance >= this.u.objetivo) {
       Object.assign(this, { paso: 'clic', tClic: ahora });
       this.ui.sonar(conClic ? 'clic' : 'llave');
       pitar();
@@ -236,7 +306,7 @@ export class FaseGuante {
       this.frase(
         this.avance < 2
           ? 'Jala hacia ti, parejo, con la muñeca recta'
-          : `Sigue parejo… ${Math.round((Math.max(0, this.avance) / g.objetivo) * 100)} %`,
+          : `Sigue parejo… ${Math.round((Math.max(0, this.avance) / this.u.objetivo) * 100)} %`,
       );
     return null;
   }
@@ -256,13 +326,13 @@ export class FaseGuante {
     }
     const dt = ahora - (this.ultimo ?? ahora);
     this.ultimo = ahora;
-    if (guante.gmag > (g.movimiento ?? 35)) this.inestable += dt;
+    if (guante.gmag > this.u.movimiento) this.inestable += dt;
     if (this.inestable > 300) this.fallar('g-firme');
-    if (desviacionMuneca() > (g.muneca ?? 25)) {
+    if (desviacionMuneca() > this.u.muneca) {
       this.munecaDesde ||= ahora;
       if (ahora - this.munecaDesde > 500) this.fallar('g-muneca');
     } else this.munecaDesde = 0;
-    led(guante.gmag <= (g.movimiento ?? 35));
+    led(guante.gmag <= this.u.movimiento);
     this.dibujarTablero(ahora);
     const t = (ahora - this.desde) / 1000;
     if (t >= (g.segundos ?? 3)) {
@@ -327,7 +397,7 @@ export class FaseGuante {
     const cy = H * 0.55;
     const R = H * 0.3;
     if (g.tipo === 'firme') {
-      const quieto = guante.gmag <= (g.movimiento ?? 35);
+      const quieto = guante.gmag <= this.u.movimiento;
       ctx.beginPath();
       ctx.arc(cx, cy, R * 0.6, 0, Math.PI * 2);
       ctx.fillStyle = quieto ? 'rgba(47,125,67,.35)' : 'rgba(180,35,24,.35)';
@@ -346,18 +416,18 @@ export class FaseGuante {
       // Carátula: arco de 0 al objetivo; aguja con el giro del guante.
       const a0 = Math.PI * 0.8;
       const a1 = Math.PI * 2.2;
-      const ang = (v) => a0 + (a1 - a0) * Math.max(0, Math.min(1.25, v / g.objetivo)) * 0.8;
+      const ang = (v) => a0 + (a1 - a0) * Math.max(0, Math.min(1.25, v / this.u.objetivo)) * 0.8;
       ctx.lineWidth = 18;
       ctx.strokeStyle = 'rgba(255,255,255,.15)';
       ctx.beginPath();
-      ctx.arc(cx, cy, R, a0, ang(g.objetivo * 1.25));
+      ctx.arc(cx, cy, R, a0, ang(this.u.objetivo * 1.25));
       ctx.stroke();
       ctx.strokeStyle = COLOR.marca;
       ctx.beginPath();
-      ctx.arc(cx, cy, R, a0, ang(Math.max(0.01, Math.min(this.avance, g.objetivo))));
+      ctx.arc(cx, cy, R, a0, ang(Math.max(0.01, Math.min(this.avance, this.u.objetivo))));
       ctx.stroke();
       // Marca del clic.
-      const ac = ang(g.objetivo);
+      const ac = ang(this.u.objetivo);
       ctx.strokeStyle = COLOR.ok;
       ctx.lineWidth = 6;
       ctx.beginPath();
@@ -375,7 +445,7 @@ export class FaseGuante {
       ctx.fillStyle = COLOR.blanco;
       ctx.textAlign = 'center';
       ctx.font = '800 40px Archivo, sans-serif';
-      ctx.fillText(`${Math.round(Math.max(0, (this.avance / g.objetivo) * 100))} %`, cx, cy + 14);
+      ctx.fillText(`${Math.round(Math.max(0, (this.avance / this.u.objetivo) * 100))} %`, cx, cy + 14);
       ctx.font = '600 18px Archivo, sans-serif';
       ctx.fillText(g.clic === false ? 'hasta que se afloje' : 'hasta el clic', cx, cy + 42);
       if (g.estrella) {
@@ -434,13 +504,12 @@ export class FaseGuante {
       'Muñeca',
       muneca,
       45,
-      g.muneca ?? 20,
+      this.u.muneca,
       guante.neutro ? `${Math.round(muneca)}° de la recta` : 'sin calibrar',
     );
     if (g.tipo === 'firme')
       barra('Movimiento', guante.gmag, 120, g.movimiento ?? 35, `${Math.round(guante.gmag)} °/s`);
-    else
-      barra('Jalón', guante.gmag, 300, g.tiron ?? 220, guante.gmag > (g.tiron ?? 220) ? '¡tirón!' : 'parejo');
+    else barra('Jalón', guante.gmag, 300, g.tiron ?? 220, guante.gmag > this.u.tiron ? '¡tirón!' : 'parejo');
     // Agarre.
     ctx.fillStyle = COLOR.blanco;
     ctx.font = '700 20px Archivo, sans-serif';

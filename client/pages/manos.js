@@ -195,6 +195,10 @@ $('guante').addEventListener('click', async () => {
   }
 });
 $('muneca-recta').addEventListener('click', async () => {
+  // Además se olvida el giro y el botón: la parte del guante los vuelve a medir.
+  delete AJUSTES.guanteEje;
+  delete AJUSTES.guanteCal;
+  guardarAjustes();
   $('estado-guante').textContent = 'Deja la mano recta, en línea con el brazo, y quieta…';
   await calibrarMuneca();
   pintarGuante();
@@ -620,29 +624,78 @@ const entre = (v, a, b) => Math.min(b, Math.max(a, v));
 // la palma y dónde descansa. El torquímetro mide unas 4 palmas (≈ 45 cm contra ≈ 10 cm de palma)
 // y se dibuja con la marca del mango justo donde descansa la mano. Sin calibrar, la del archivo.
 const G = { pivote: null, largoU: 0, ancho: 0, centro: null, radio: 0, radioTuerca: 0 };
+// Zona segura de la imagen (0 a 1): todo lo que la mano debe alcanzar queda aquí dentro, lejos de
+// las orillas, donde la cámara pierde la mano. Abajo queda la barra de mensajes.
+const SEGURA = { x0: 0.08, x1: 0.92, y0: 0.12, y1: 0.82 };
+
+/**
+ * Encaja una figura en la zona segura: la achica si no cabe y la recorre si se sale.
+ * caja(escala) da sus límites relativos a su centro (unidades de alto); centroU es dónde se quiere.
+ */
+function encajar(caja, centroU) {
+  const anchoDisp = (SEGURA.x1 - SEGURA.x0) * ASPECTO;
+  const altoDisp = SEGURA.y1 - SEGURA.y0;
+  const b0 = caja(1);
+  const escala = Math.min(1, anchoDisp / (b0.maxX - b0.minX), altoDisp / (b0.maxY - b0.minY));
+  const b = caja(escala);
+  return {
+    escala,
+    centro: {
+      x: entre(centroU.x, SEGURA.x0 * ASPECTO - b.minX, SEGURA.x1 * ASPECTO - b.maxX) / ASPECTO,
+      y: entre(centroU.y, SEGURA.y0 - b.minY, SEGURA.y1 - b.maxY),
+    },
+  };
+}
+
 function ajustarGeometria() {
   const m = AJUSTES.mano?.[camPosicion()?.id];
   if (EJ.tipo === 'giro') {
     const medida = Boolean(m && P.largoPalmas);
-    G.largoU = medida ? Math.min(P.largoPalmas * m.palma, 0.8 * ASPECTO) : (P.largo ?? 0) * ASPECTO;
-    G.ancho = medida ? Math.max(0.05, 0.9 * m.palma) : P.ancho;
+    const largo = medida ? P.largoPalmas * m.palma : (P.largo ?? 0) * ASPECTO;
+    const ini0 = P.inicial ?? 0;
+    const sen = P.sentido ?? 1;
+    // Todo el recorrido del mango (hasta pasarse un poco del clic) y la rueda deben caber.
+    const caja = (escala) => {
+      const L = largo * escala;
+      const b = { minX: -0.22 * L, maxX: 0.22 * L, minY: -0.22 * L, maxY: 0.22 * L };
+      for (let g = -10; g <= P.objetivo + 12; g += 4) {
+        const a = ((ini0 + sen * g) * Math.PI) / 180;
+        const x = Math.cos(a) * L * 1.08;
+        const y = Math.sin(a) * L * 1.08;
+        Object.assign(b, {
+          minX: Math.min(b.minX, x),
+          maxX: Math.max(b.maxX, x),
+          minY: Math.min(b.minY, y),
+          maxY: Math.max(b.maxY, y),
+        });
+      }
+      return b;
+    };
+    // Pivote deseado: la marca del mango donde descansa la mano (o el del archivo).
+    let pivU = U(punto(P.pivote));
     if (medida) {
-      const a = ((P.inicial ?? 0) * Math.PI) / 180;
+      const a = (ini0 * Math.PI) / 180;
       const enMarca = (P.zona[0] + P.zona[1]) / 2;
       const c = U(m.centro);
-      G.pivote = {
-        x: entre((c.x - Math.cos(a) * G.largoU * enMarca) / ASPECTO, 0.1, 0.9),
-        y: entre(c.y - Math.sin(a) * G.largoU * enMarca, 0.15, 0.85),
-      };
-    } else G.pivote = punto(P.pivote);
+      pivU = { x: c.x - Math.cos(a) * largo * enMarca, y: c.y - Math.sin(a) * largo * enMarca };
+    }
+    const { escala, centro } = encajar(caja, pivU);
+    G.largoU = largo * escala;
+    G.ancho = medida ? Math.max(0.05, 0.9 * m.palma) : P.ancho;
+    G.pivote = centro;
   }
   if (EJ.tipo === 'secuencia') {
     const medida = Boolean(m && P.radioPalmas);
-    G.radio = medida ? entre(P.radioPalmas * m.palma, 0.18, 0.36) : P.radio;
-    G.radioTuerca = medida ? entre(P.tuercaPalmas * m.palma, 0.035, 0.08) : G.radioTuerca;
-    G.centro = medida
-      ? { x: entre(m.centro.x, 0.3, 0.7), y: entre(m.centro.y, G.radio * 1.4, 1 - G.radio * 1.4) }
-      : punto(P.centro);
+    const radio = medida ? P.radioPalmas * m.palma : P.radio;
+    const tuerca = medida ? entre(P.tuercaPalmas * m.palma, 0.035, 0.08) : P.radioTuerca;
+    const caja = (escala) => {
+      const r = (radio + tuerca * 1.6) * escala;
+      return { minX: -r, maxX: r, minY: -r, maxY: r };
+    };
+    const { escala, centro } = encajar(caja, U(medida ? m.centro : punto(P.centro)));
+    G.radio = radio * escala;
+    G.radioTuerca = tuerca;
+    G.centro = centro;
   }
 }
 ajustarGeometria();
