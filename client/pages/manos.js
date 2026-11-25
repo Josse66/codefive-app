@@ -35,7 +35,6 @@ const API = `/api/tecnicos/${tecnicoId}/simulador`;
 
 const lienzo = $('lienzo-manos');
 const ctx = lienzo.getContext('2d');
-const video = $('video-manos');
 const ASPECTO = lienzo.width / lienzo.height;
 const aPx = (p) => ({ x: p.x * lienzo.width, y: p.y * lienzo.height });
 const U = (p) => enUnidades(p, ASPECTO);
@@ -150,30 +149,93 @@ const desviacionGuante = () =>
     ? Math.max(Math.abs(guante.roll - guante.neutro.roll), Math.abs(guante.pitch - guante.neutro.pitch))
     : 0;
 
-// ---------- Cámara y MediaPipe (modelo y wasm locales: funciona sin internet) ----------
-let detector = null;
-const suaves = [0, 1].map(() => Array.from({ length: 42 }, () => new OneEuro({ minCutoff: 1.2, beta: 6 })));
+// ---------- Cámaras y MediaPipe (modelo y wasm locales: funciona sin internet) ----------
+// Como en hand-lab: hasta dos cámaras USB (una arriba y otra abajo) en lugar de la de la laptop.
+// Cada una tiene su detector; se usa la vista que mejor ve la mano y, a medio jalón o mientras se
+// sostiene la punta, no se cambia de vista (las coordenadas de cada cámara son distintas).
+const CAMBIO_MARGEN = 0.1; // la otra vista debe superar a la actual por este margen de confianza
+const AJUSTES = JSON.parse(localStorage.getItem('manosCamaras') ?? '{}'); // { ids: [], voltear: { id: { x, y } } }
+const DE_LAPTOP = /integrated|integrada|hd webcam|facetime|ir camera|infrarroj|front|frontal/i;
+const PREFERIDAS = /general|usb/i;
+const camaras = []; // { id, etiqueta, video, detector, ultimo, r, score, suaves }
+let activa = 0;
 const pinzas = [0, 1].map(() => new Histeresis(0.35, 0.5));
 const puños = [0, 1].map(() => new Histeresis(1.35, 1.6));
+const nuevosSuaves = () =>
+  [0, 1].map(() => Array.from({ length: 42 }, () => new OneEuro({ minCutoff: 1.2, beta: 6 })));
+
+/** Cuáles abrir: las elegidas en Ajustes; si no, las USB ("GENERAL", "USB"); si no, cualquiera. */
+async function elegirCamaras() {
+  const lista = async () =>
+    (await navigator.mediaDevices.enumerateDevices()).filter((d) => d.kind === 'videoinput');
+  let dispositivos = await lista();
+  if (dispositivos.some((d) => !d.label)) {
+    // Sin permiso todavía no hay nombres: se pide una vez y se vuelve a listar.
+    const prueba = await navigator.mediaDevices.getUserMedia({ video: true });
+    prueba.getTracks().forEach((t) => t.stop());
+    dispositivos = await lista();
+  }
+  const guardadas = (AJUSTES.ids ?? [])
+    .map((id) => dispositivos.find((d) => d.deviceId === id))
+    .filter(Boolean);
+  if (guardadas.length) return { elegidas: guardadas, dispositivos };
+  const externas = dispositivos.filter((d) => !DE_LAPTOP.test(d.label));
+  const ordenadas = [
+    ...externas.filter((d) => PREFERIDAS.test(d.label)),
+    ...externas.filter((d) => !PREFERIDAS.test(d.label)),
+  ];
+  return { elegidas: (ordenadas.length ? ordenadas : dispositivos).slice(0, 2), dispositivos };
+}
+
+async function abrir(dispositivo, vision) {
+  let stream;
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({
+      video: { deviceId: { exact: dispositivo.deviceId }, width: 640, height: 480, frameRate: 30 },
+    });
+  } catch {
+    // Si el USB no da para 640×480 en las dos, se pide menos.
+    stream = await navigator.mediaDevices.getUserMedia({
+      video: { deviceId: { exact: dispositivo.deviceId }, width: 320, height: 240 },
+    });
+  }
+  const v = document.createElement('video');
+  Object.assign(v, { srcObject: stream, muted: true, playsInline: true });
+  await v.play();
+  const crear = (delegate) =>
+    HandLandmarker.createFromOptions(vision, {
+      baseOptions: { modelAssetPath: '/mediapipe/hand_landmarker.task', delegate },
+      runningMode: 'VIDEO',
+      numHands: 2,
+      minHandDetectionConfidence: 0.4,
+      minHandPresenceConfidence: 0.4,
+      minTrackingConfidence: 0.4,
+    });
+  const detector = await crear('GPU').catch(() => crear('CPU'));
+  return {
+    id: dispositivo.deviceId,
+    etiqueta: dispositivo.label || 'Cámara',
+    video: v,
+    detector,
+    ultimo: -1,
+    r: null,
+    score: 0,
+    suaves: nuevosSuaves(),
+  };
+}
+
+const volteo = (cam) => AJUSTES.voltear?.[cam.id] ?? { x: false, y: false };
 
 async function encender() {
   $('encender').disabled = true;
-  $('encender').textContent = 'Encendiendo…';
+  $('encender').textContent = 'Encendiendo cámaras…';
   try {
-    const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 960, height: 720 } });
-    video.srcObject = stream;
-    await video.play();
+    const { elegidas, dispositivos } = await elegirCamaras();
     const vision = await FilesetResolver.forVisionTasks('/mediapipe/wasm');
-    const crear = (delegate) =>
-      HandLandmarker.createFromOptions(vision, {
-        baseOptions: { modelAssetPath: '/mediapipe/hand_landmarker.task', delegate },
-        runningMode: 'VIDEO',
-        numHands: 2,
-        minHandDetectionConfidence: 0.5,
-        minHandPresenceConfidence: 0.5,
-        minTrackingConfidence: 0.5,
-      });
-    detector = await crear('GPU').catch(() => crear('CPU'));
+    const abiertas = await Promise.allSettled(elegidas.map((d) => abrir(d, vision)));
+    abiertas.forEach((a) => a.status === 'fulfilled' && camaras.push(a.value));
+    if (!camaras.length) throw new Error('ninguna cámara respondió');
+    pintarAjustes(dispositivos);
     $('arranque').hidden = true;
     reiniciar();
     requestAnimationFrame(ciclo);
@@ -190,34 +252,120 @@ async function encender() {
 $('encender').addEventListener('click', encender);
 $('otra-vez').addEventListener('click', reiniciar);
 
-let ultimoVideo = -1;
-function ciclo() {
-  requestAnimationFrame(ciclo);
-  if (video.currentTime === ultimoVideo || video.readyState < 2) return;
-  ultimoVideo = video.currentTime;
-  const ahora = performance.now();
-  const r = detector.detectForVideo(video, ahora);
-  // En espejo (como verse en un espejo) y sin temblor.
-  const manos = (r.landmarks ?? []).map((m, k) =>
+// Ajustes: qué cámaras usar y si alguna se ve volteada (la de abajo suele verse de cabeza).
+function pintarAjustes(dispositivos) {
+  const caja = $('ajustes-camaras');
+  caja.replaceChildren();
+  [0, 1].forEach((n) => {
+    const fila = document.createElement('label');
+    fila.className = 'grid gap-1 text-sm';
+    fila.textContent = `Cámara ${n + 1}`;
+    const sel = document.createElement('select');
+    sel.className = 'border border-tinta bg-white px-2 py-1.5';
+    sel.dataset.n = String(n);
+    sel.append(new Option('(ninguna)', ''));
+    dispositivos.forEach((d) => sel.append(new Option(d.label || d.deviceId.slice(0, 8), d.deviceId)));
+    sel.value = camaras[n]?.id ?? '';
+    fila.append(sel);
+    caja.append(fila);
+  });
+  camaras.forEach((cam) => {
+    const fila = document.createElement('div');
+    fila.className = 'flex flex-wrap items-center gap-3 text-sm';
+    fila.append(
+      Object.assign(document.createElement('span'), {
+        className: 'font-semibold',
+        textContent: cam.etiqueta,
+      }),
+    );
+    ['x', 'y'].forEach((eje) => {
+      const etiqueta = document.createElement('label');
+      etiqueta.className = 'flex items-center gap-1';
+      const caja2 = Object.assign(document.createElement('input'), {
+        type: 'checkbox',
+        checked: volteo(cam)[eje],
+      });
+      caja2.addEventListener('change', () => {
+        AJUSTES.voltear = { ...AJUSTES.voltear, [cam.id]: { ...volteo(cam), [eje]: caja2.checked } };
+        localStorage.setItem('manosCamaras', JSON.stringify(AJUSTES));
+        Object.assign(cam, { suaves: nuevosSuaves() });
+      });
+      etiqueta.append(caja2, eje === 'x' ? 'Voltear de lado' : 'Voltear de cabeza');
+      fila.append(etiqueta);
+    });
+    caja.append(fila);
+  });
+  const usar = Object.assign(document.createElement('button'), {
+    type: 'button',
+    className: 'boton-linea w-fit px-4 py-2 text-sm',
+    textContent: 'Usar estas cámaras',
+  });
+  usar.addEventListener('click', () => {
+    AJUSTES.ids = [...caja.querySelectorAll('select')].map((s) => s.value).filter(Boolean);
+    localStorage.setItem('manosCamaras', JSON.stringify(AJUSTES));
+    window.location.reload();
+  });
+  caja.append(usar);
+}
+
+// Puntos de una cámara con su volteo (por defecto en espejo, como verse en un espejo) y sin temblor.
+function manosDe(cam, ahora) {
+  const v = volteo(cam);
+  return (cam.r?.landmarks ?? []).map((m, k) =>
     m.map((p, i) => ({
-      x: suaves[k][i * 2].filter(1 - p.x, ahora / 1000),
-      y: suaves[k][i * 2 + 1].filter(p.y, ahora / 1000),
+      x: cam.suaves[k][i * 2].filter(v.x ? p.x : 1 - p.x, ahora / 1000),
+      y: cam.suaves[k][i * 2 + 1].filter(v.y ? 1 - p.y : p.y, ahora / 1000),
     })),
   );
-  if (!manos.length) suaves.flat().forEach((f) => f.reset());
-  dibujarVideo();
-  const mundo = r.worldLandmarks ?? [];
+}
+
+let vuelta = 0;
+function ciclo() {
+  requestAnimationFrame(ciclo);
+  const ahora = performance.now();
+  vuelta += 1;
+  const sinManoActiva = !camaras[activa]?.r?.landmarks?.length;
+  let nuevo = false;
+  camaras.forEach((cam, i) => {
+    // La vista secundaria se revisa cada 3 vueltas, salvo que la activa no vea la mano.
+    if (i !== activa && !sinManoActiva && vuelta % 3) return;
+    if (cam.video.currentTime === cam.ultimo || cam.video.readyState < 2) return;
+    const r = cam.detector.detectForVideo(cam.video, ahora);
+    Object.assign(cam, { ultimo: cam.video.currentTime, r, score: r.handedness?.[0]?.[0]?.score ?? 0 });
+    if (!cam.r.landmarks?.length) cam.suaves.flat().forEach((f) => f.reset());
+    if (i === activa) nuevo = true;
+  });
+  // Cambiar de vista solo si la otra ve claramente mejor y no se está a medio movimiento.
+  const bloqueada = ['jala', 'clic'].includes(estado.fase) || estado.sosteniendo;
+  if (!bloqueada && camaras.length > 1) {
+    const mejor = camaras.reduce((m, c, i) => (c.score > camaras[m].score ? i : m), activa);
+    if (camaras[mejor].score > camaras[activa].score + CAMBIO_MARGEN) activa = mejor;
+  }
+  if (!nuevo) return;
+  const cam = camaras[activa];
+  const manos = manosDe(cam, ahora);
+  dibujarVideo(cam);
+  const mundo = cam.r?.worldLandmarks ?? [];
   if (EJ.tipo === 'giro') pasoGiro(manos, mundo, ahora);
   else pasoPunta(manos, mundo, ahora);
   manos.forEach(dibujarMano);
+  if (camaras.length > 1) {
+    ctx.fillStyle = 'rgba(20,28,36,.75)';
+    ctx.fillRect(10, 10, 300, 30);
+    ctx.fillStyle = COLOR.blanco;
+    ctx.font = '600 16px Archivo, sans-serif';
+    ctx.fillText(`Viendo: cámara ${activa + 1} · ${cam.etiqueta.slice(0, 24)}`, 18, 31);
+  }
 }
 
 // ---------- Dibujo ----------
-function dibujarVideo() {
+function dibujarVideo(cam) {
+  const v = volteo(cam);
   ctx.save();
-  ctx.translate(lienzo.width, 0);
-  ctx.scale(-1, 1);
-  ctx.drawImage(video, 0, 0, lienzo.width, lienzo.height);
+  // Espejo por defecto; "voltear de lado" lo quita y "de cabeza" invierte arriba y abajo.
+  ctx.translate(v.x ? 0 : lienzo.width, v.y ? lienzo.height : 0);
+  ctx.scale(v.x ? 1 : -1, v.y ? -1 : 1);
+  ctx.drawImage(cam.video, 0, 0, lienzo.width, lienzo.height);
   ctx.restore();
   ctx.fillStyle = 'rgba(20,28,36,.25)';
   ctx.fillRect(0, 0, lienzo.width, lienzo.height);
