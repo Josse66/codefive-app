@@ -85,7 +85,7 @@ export class FaseGuante {
     const rango = AJUSTES.guanteEje?.rango;
     this.u = {
       objetivo: g.objetivo
-        ? Math.round(rango ? Math.max(12, Math.min(g.objetivo, rango * 0.75)) : g.objetivo)
+        ? Math.round(rango ? Math.max(12, Math.min(g.objetivo, rango * 0.7)) : g.objetivo)
         : 0,
       tiron: Math.max(g.tiron ?? 220, ruido * 8 + 60),
       movimiento: Math.max(g.movimiento ?? 35, ruido * 3 + 10),
@@ -161,7 +161,7 @@ export class FaseGuante {
         this.ajustarUmbrales();
         let paso = 'listo';
         if (!AJUSTES.guanteCal?.boton) paso = 'boton';
-        else if (!AJUSTES.guanteEje?.v) paso = 'giro';
+        else if (AJUSTES.guanteEje?.version !== 2) paso = 'giro';
         Object.assign(this, {
           paso,
           desde: performance.now(),
@@ -185,7 +185,11 @@ export class FaseGuante {
       AJUSTES.guanteCal = { ...AJUSTES.guanteCal, boton: true };
       guardarAjustes();
       this.ui.sonar('bien');
-      Object.assign(this, { paso: AJUSTES.guanteEje?.v ? 'listo' : 'giro', desde: ahora, giro: null });
+      Object.assign(this, {
+        paso: AJUSTES.guanteEje?.version === 2 ? 'listo' : 'giro',
+        desde: ahora,
+        giro: null,
+      });
       return null;
     }
     if (ahora - b.desde > 10000) {
@@ -194,7 +198,11 @@ export class FaseGuante {
         'No sentí el botón: revisa que esté en la palma y que se apriete al cerrar la mano',
         'mal',
       );
-      Object.assign(this, { paso: AJUSTES.guanteEje?.v ? 'listo' : 'giro', desde: ahora, giro: null });
+      Object.assign(this, {
+        paso: AJUSTES.guanteEje?.version === 2 ? 'listo' : 'giro',
+        desde: ahora,
+        giro: null,
+      });
       return null;
     }
     this.dibujarCentro(
@@ -212,21 +220,24 @@ export class FaseGuante {
     if (!this.giro) this.giro = { inicio: { ...guante }, mejor: [0, 0, 0], norma: 0, desde: ahora };
     // Se guarda el momento de mayor giro con sus TRES componentes: la dirección completa del
     // gesto de apretar (un jalón real mezcla los ejes; medir uno solo pierde parte del giro).
-    const d = EJES.map((k) => diferencia(guante[k], this.giro.inicio[k]));
+    // Solo lado y adelante: el eje de giro (yaw) se desvía solo con el tiempo, así que no se usa.
+    const d = EJES.map((k) => (k === 'yaw' ? 0 : diferencia(guante[k], this.giro.inicio[k])));
     const norma = Math.hypot(...d);
     if (norma > this.giro.norma) Object.assign(this.giro, { mejor: d, norma });
     const t = ahora - this.giro.desde;
     if (t < 4000) {
       this.dibujarCentro(
         `${Math.ceil((4000 - t) / 1000)}`,
-        'Toma un mango imaginario y gira la mano como si APRETARAS (jalando hacia ti); regresa',
+        'Cierra la mano y GIRA la muñeca como si apretaras con la llave (como girar una perilla); regresa',
       );
-      this.ui.decir('Toma un mango imaginario y gira la mano como si apretaras, jalando hacia ti, y regresa');
+      this.ui.decir(
+        'Cierra la mano y gira la muñeca como si apretaras con la llave, como girar una perilla, y regresa',
+      );
       this.dibujarDiagnostico();
       return null;
     }
     const { mejor, norma: rango } = this.giro;
-    if (rango < 15) {
+    if (rango < 12) {
       this.giro = null; // no se movió lo suficiente: otra vez
       this.ui.decir('No sentí el giro: otra vez, gira más la mano');
       return null;
@@ -234,6 +245,7 @@ export class FaseGuante {
     // Dirección del gesto (vector unitario) y cuánto gira cómodo la persona (el clic queda a su alcance).
     const k = mejor.reduce((a, x, i) => (Math.abs(x) > Math.abs(mejor[a]) ? i : a), 0);
     AJUSTES.guanteEje = {
+      version: 2, // solo lado y adelante
       v: mejor.map((x) => x / rango),
       rango,
       eje: EJES[k],
@@ -256,7 +268,7 @@ export class FaseGuante {
       // deriva del sensor). La aguja ya se mueve con la mano para que se vea que el guante la lee.
       if (this.base == null) this.base = { ...guante };
       const casiCero = Math.abs(this.giroActual()) < 3;
-      if (guante.gmag < 4 && casiCero) {
+      if (guante.gmag < (AJUSTES.guanteCal?.ruido ?? 5) * 1.5 + 4 && casiCero) {
         this.quietoDesde ||= ahora;
         if (ahora - this.quietoDesde > 1000) this.base = { ...guante }; // corrige la deriva del sensor
       } else this.quietoDesde = 0;
@@ -271,8 +283,8 @@ export class FaseGuante {
       }
       this.frase(
         g.estrella
-          ? `Tuerca ${this.rep + 1} de ${reps}: cierra la mano y gira jalando hacia ti`
-          : 'Cierra la mano como si tomaras el mango y gira jalando hacia ti',
+          ? `Tuerca ${this.rep + 1} de ${reps}: cierra la mano y gira la muñeca como con la llave`
+          : 'Cierra la mano y gira la muñeca como si apretaras con la llave',
       );
       return null;
     }
@@ -322,7 +334,7 @@ export class FaseGuante {
     if (this.paso === 'jala')
       this.frase(
         this.avance < 2
-          ? 'Jala hacia ti, parejo, con la muñeca recta'
+          ? 'Gira la muñeca como con la llave, parejo y sin tirones'
           : `Sigue parejo… ${Math.round((Math.max(0, this.avance) / this.u.objetivo) * 100)} %`,
       );
     return null;
