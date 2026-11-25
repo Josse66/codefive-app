@@ -62,7 +62,7 @@ export function montarVitrina(caja, op = {}) {
             depthWrite: false,
           }),
         });
-        parte.position.y += 0.006;
+        parte.position.setY(parte.position.y + 0.006);
         return;
       }
       b.expandByObject(parte);
@@ -80,7 +80,7 @@ export function montarVitrina(caja, op = {}) {
     sol.shadow.camera.top = largo;
     sol.shadow.camera.bottom = -largo;
     sol.shadow.camera.updateProjectionMatrix();
-    caja.dataset.listo = '1';
+    caja.setAttribute('data-listo', '1');
   });
 
   function medir() {
