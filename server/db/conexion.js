@@ -55,6 +55,17 @@ if (
 ) {
   db.exec('ALTER TABLE tecnicos ADD COLUMN inicio TEXT');
 }
+// Entrar con gafete: código del gafete (QR), PIN cifrado y experiencia ('general' o 'mayor').
+const columnasTecnico = db
+  .prepare('PRAGMA table_info(tecnicos)')
+  .all()
+  .map((c) => c.name);
+if (!columnasTecnico.includes('credencial')) db.exec('ALTER TABLE tecnicos ADD COLUMN credencial TEXT');
+if (!columnasTecnico.includes('pin_hash')) db.exec('ALTER TABLE tecnicos ADD COLUMN pin_hash TEXT');
+if (!columnasTecnico.includes('experiencia')) {
+  db.exec("ALTER TABLE tecnicos ADD COLUMN experiencia TEXT NOT NULL DEFAULT 'general'");
+}
+db.exec('CREATE UNIQUE INDEX IF NOT EXISTS idx_tecnicos_credencial ON tecnicos (credencial)');
 logger.debug(`Base de datos lista en ${rutaBaseDatos}`);
 
 // Ejecuta varias operaciones como una sola: si algo falla, no se guarda nada.

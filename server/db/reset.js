@@ -1,6 +1,6 @@
 // Borra todos los datos y vuelve a cargar la semilla. Uso: npm run db:reset
 import db from '#db/conexion.js';
-import { sembrar, sembrarCuentas, sembrarEvaluacion } from '#db/semilla.js';
+import { sembrar, sembrarCuentas, sembrarEvaluacion, sembrarGafetes } from '#db/semilla.js';
 import logger from '#config/logger.js';
 
 db.exec(`
@@ -19,5 +19,6 @@ db.exec(`
 sembrar(db);
 sembrarEvaluacion(db);
 sembrarCuentas(db);
+sembrarGafetes(db);
 db.close();
 logger.info('Base de datos reiniciada');

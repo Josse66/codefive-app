@@ -1,8 +1,9 @@
+import { randomInt } from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import logger from '#config/logger.js';
 import { transaccion } from '#db/conexion.js';
-import { crearCuenta } from '#services/cuentas.service.js';
+import { cifrar, crearCuenta } from '#services/cuentas.service.js';
 
 // Dificultad inicial (escala Elo) según el nivel Volvo de la competencia.
 const DIFICULTAD_POR_NIVEL = { 1: -1, 2: 0, 3: 1 };
@@ -59,6 +60,23 @@ export function sembrarCuentas(db) {
         contrasena: contrasenaDemo,
       }),
     );
+}
+
+// Código legible del gafete (también se puede teclear si la cámara falla): CF- + 6 caracteres sin
+// letras que se confunden (sin O, 0, I, 1).
+const ALFABETO = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+export function nuevaCredencial() {
+  return `CF-${Array.from({ length: 6 }, () => ALFABETO[randomInt(ALFABETO.length)]).join('')}`;
+}
+
+// Gafetes de demostración: a cada técnico sin gafete se le da código, el PIN de prueba de
+// data/cuentas.json y la experiencia de data/tecnicos.json. No toca los que ya tienen.
+export function sembrarGafetes(db) {
+  const { pinDemo } = leerJson('cuentas.json');
+  const experiencias = Object.fromEntries(leerJson('tecnicos.json').map((t) => [t.id, t.experiencia]));
+  const sinGafete = db.prepare('SELECT id FROM tecnicos WHERE credencial IS NULL').all();
+  const poner = db.prepare('UPDATE tecnicos SET credencial = ?, pin_hash = ?, experiencia = ? WHERE id = ?');
+  sinGafete.forEach(({ id }) => poner.run(nuevaCredencial(), cifrar(pinDemo), experiencias[id] ?? 'general', id));
 }
 
 export function baseVacia(db) {

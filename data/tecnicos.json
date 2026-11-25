@@ -6,7 +6,8 @@
     "anios_experiencia": 0,
     "tecnologia": "electrica",
     "perfil": "recien_egresada",
-    "modelo_id": "luminus"
+    "modelo_id": "luminus",
+    "experiencia": "general"
   },
   {
     "id": "T-02",
@@ -15,7 +16,8 @@
     "anios_experiencia": 12,
     "tecnologia": "diesel",
     "perfil": "experto_diesel",
-    "modelo_id": "9800"
+    "modelo_id": "9800",
+    "experiencia": "general"
   },
   {
     "id": "T-03",
@@ -24,7 +26,8 @@
     "anios_experiencia": 8,
     "tecnologia": "diesel",
     "perfil": "veterano_errores",
-    "modelo_id": "9700"
+    "modelo_id": "9700",
+    "experiencia": "general"
   },
   {
     "id": "T-04",
@@ -33,6 +36,17 @@
     "anios_experiencia": 3,
     "tecnologia": "electrica",
     "perfil": "tecnica_flota",
-    "modelo_id": "7800-electric"
+    "modelo_id": "7800-electric",
+    "experiencia": "general"
+  },
+  {
+    "id": "T-20",
+    "nombre": "Ramiro Ortega",
+    "taller": "PSV Querétaro",
+    "anios_experiencia": 34,
+    "tecnologia": "diesel",
+    "perfil": "experto_diesel",
+    "modelo_id": "9800",
+    "experiencia": "mayor"
   }
 ]

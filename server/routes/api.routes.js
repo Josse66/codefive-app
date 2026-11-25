@@ -7,12 +7,19 @@ import * as escenarios from '#controllers/escenarios.controller.js';
 import * as taller from '#controllers/taller.controller.js';
 import * as aprender from '#controllers/aprender.controller.js';
 import * as simulador from '#controllers/simulador.controller.js';
+import * as gafetes from '#controllers/gafetes.controller.js';
 import { obtenerTablero } from '#services/tablero.service.js';
 import { exigirSesion, exigirTecnico, exigirVolvo } from '#helpers/sesion.js';
 
 const router = Router();
 
 router.get('/salud', (_req, res) => res.json({ ok: true, servicio: 'codefive-app' }));
+
+// Entrar con gafete (QR) + PIN: no pide sesión. El responsable administra los gafetes.
+router.post('/gafete', gafetes.leer);
+router.post('/gafete/entrar', gafetes.entrar);
+router.get('/gafetes', exigirVolvo, gafetes.listar);
+router.put('/gafetes/:tecnicoId', exigirVolvo, gafetes.actualizar);
 
 // Todo lo de un técnico pide sesión y que sea el mismo técnico (o Volvo).
 router.use('/tecnicos/:id', exigirTecnico);
