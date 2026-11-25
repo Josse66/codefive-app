@@ -1,6 +1,6 @@
 {
-  "autobus": "Autobús urbano diésel de piso bajo (modelo genérico de demostración, sin marcas)",
-  "fuente": "Conocimiento público de servicio de autobuses diésel (motor de 6 cilindros en línea con turbo, frenos de aire, suspensión neumática). Valores de demostración.",
+  "autobus": "Volvo Access sobre chasis Volvo B8R LE: autobús urbano diésel de entrada baja con rampa (catálogo de Volvo Buses México)",
+  "fuente": "Fichas públicas de volvobuses.com/mx (Access y especificaciones del B8R LE, consultadas el 25 nov 2026): motor diésel Volvo de 8 litros, 6 cilindros en línea con riel común, Euro 6 (330 hp en el Access); transmisión automática (I-Shift, ZF o Voith) con retardador hidráulico integrado; frenos EBS con ABS, ESP y ASR; suspensión neumática controlada electrónicamente con arrodillamiento y estabilizadores; rampa para silla de ruedas. Lo que las fichas no dicen (frenos de disco, sistema de 24 V, SCR con urea, supresión de incendios, posición del motor) es configuración típica de un urbano diésel Euro 6 y se declara como de demostración. Valores de medición de demostración.",
   "herramientas": [
     {
       "id": "mano",
@@ -38,19 +38,11 @@
       "id": "motor",
       "grupo": 2,
       "nombre": "Motor diésel",
-      "resumen": "Seis cilindros en línea, atrás y de lado. Quema diésel con aire comprimido por el turbo; el radiador le quita el calor.",
+      "resumen": "Volvo de 8 litros, seis cilindros en línea con riel común y norma Euro 6 (330 hp en el Access). Va atrás. Quema diésel con aire comprimido por el turbo; el radiador le quita el calor.",
       "zona": {
-        "objetivo": [
-          -5.1,
-          1.1,
-          -0.2
-        ],
+        "objetivo": [-5.1, 1.1, -0.2],
         "distancia": 4.2,
-        "vista": [
-          -1,
-          0.55,
-          -0.45
-        ]
+        "vista": [-1, 0.55, -0.45]
       },
       "rayosX": true,
       "tapa": true,
@@ -191,26 +183,19 @@
             "despues": "¡Aquí está! El filtro está saturado y casi no deja pasar el diésel. Por eso pierde fuerza al pedirle más."
           }
         ],
-        "pista_causa": "Cambia solo lo que encontraste mal en tu bitácora (la marca ✗)."
+        "pista_causa": "Cambia solo lo que encontraste mal en tu bitácora (la marca ✗).",
+        "sigue": "Probaste el autobús y sigue perdiendo fuerza."
       }
     },
     {
       "id": "combustible",
       "grupo": 2,
       "nombre": "Combustible y emisiones",
-      "resumen": "El diésel viaja del tanque al motor; los gases salen limpios gracias al filtro de partículas y a la urea.",
+      "resumen": "El diésel viaja del tanque al motor. Para cumplir Euro 6, los gases pasan por el filtro de partículas y el catalizador SCR, donde la urea quita los NOx.",
       "zona": {
-        "objetivo": [
-          -1.5,
-          0.8,
-          -0.4
-        ],
+        "objetivo": [-1.5, 0.8, -0.4],
         "distancia": 9,
-        "vista": [
-          0.15,
-          0.35,
-          -1
-        ]
+        "vista": [0.15, 0.35, -1]
       },
       "rayosX": true,
       "orden": [
@@ -218,6 +203,9 @@
         "linea_combustible",
         "filtro_particulas",
         "tanque_urea",
+        "dosificador_urea",
+        "catalizador_scr",
+        "sensor_nox",
         "tubo_escape"
       ]
     },
@@ -225,25 +213,19 @@
       "id": "transmision",
       "grupo": 4,
       "nombre": "Transmisión",
-      "resumen": "La fuerza del motor pasa por la caja, gira 90° en la transmisión en ángulo y llega por la flecha al diferencial y a las ruedas traseras.",
+      "resumen": "Caja automática (I-Shift, ZF o Voith según el pedido) con retardador hidráulico integrado. La fuerza gira 90° en la transmisión en ángulo y llega por la flecha al diferencial y a las ruedas traseras.",
       "zona": {
-        "objetivo": [
-          -4.4,
-          0.8,
-          0.4
-        ],
+        "objetivo": [-4.4, 0.8, 0.4],
         "distancia": 4.5,
-        "vista": [
-          -0.7,
-          0.35,
-          1
-        ]
+        "vista": [-0.7, 0.35, 1]
       },
       "rayosX": true,
       "tapa": true,
       "orden": [
         "caja_cambios",
         "modulo_caja",
+        "retardador",
+        "enfriador_aceite_caja",
         "transmision_angulo",
         "flecha_cardan",
         "diferencial",
@@ -254,34 +236,138 @@
       "id": "frenos",
       "grupo": 5,
       "nombre": "Frenos de aire",
-      "resumen": "El compresor llena los depósitos de aire; al pisar el pedal, el aire empuja las cámaras de freno y éstas abren las balatas contra el tambor.",
+      "resumen": "El compresor llena los depósitos de aire. Al pisar el pedal, el EBS reparte el aire a las cámaras y éstas aprietan los discos; el ABS evita que las ruedas se bloqueen.",
       "zona": {
-        "objetivo": [
-          -1.2,
-          0.6,
-          0.6
-        ],
+        "objetivo": [-1.2, 0.6, 0.6],
         "distancia": 8.5,
-        "vista": [
-          0.1,
-          0.3,
-          1
-        ]
+        "vista": [0.1, 0.3, 1]
       },
       "rayosX": true,
-      "practica": {
-        "escenario": "frenos-balatas",
-        "texto": "Cambia las balatas de la rueda trasera"
-      },
       "orden": [
         "compresor_aire",
         "secador_aire",
         "deposito_aire",
         "valvula_purga",
         "lineas_aire",
+        "valvula_pedal",
+        "modulo_ebs",
         "camara_freno",
-        "tambor"
-      ]
+        "disco_freno",
+        "sensor_abs"
+      ],
+      "orden_taller": {
+        "id": "frenos-fuga-aire",
+        "titulo": "Tarda en cargar aire y pierde presión",
+        "cliente": "Ruta 12 · unidad 207 (datos de demostración)",
+        "sintoma": "El operador reporta que en las mañanas tarda mucho en cargar aire para poder salir y que, con el motor apagado, la presión baja rápido. Se oye un siseo cerca de la rueda trasera.",
+        "causa": "lineas_aire",
+        "sigue": "Probaste el autobús y la presión sigue bajando.",
+        "estados": {
+          "lineas_aire": {
+            "estado": "mal",
+            "hallazgo": "Burbujas en una conexión de la línea trasera: es una fuga de aire. Por ahí se va la presión con el motor apagado."
+          },
+          "compresor_aire": {
+            "estado": "bien",
+            "hallazgo": "El compresor sí produce aire: llena de 85 a 100 psi en 50 s. Tarda un poco porque el aire se escapa por algún lado."
+          },
+          "secador_aire": {
+            "estado": "atencion",
+            "hallazgo": "El cartucho ya tiene humedad: toca cambiarlo en el próximo servicio, pero no explica la caída de presión."
+          },
+          "valvula_purga": {
+            "estado": "bien",
+            "hallazgo": "Cierra bien: no se escapa aire por la purga."
+          },
+          "camara_freno": {
+            "estado": "bien",
+            "hallazgo": "Sin burbujas: las cámaras sellan."
+          },
+          "valvula_pedal": {
+            "estado": "bien",
+            "hallazgo": "Sin burbujas con el pedal pisado: la válvula sella."
+          },
+          "deposito_aire": {
+            "estado": "bien",
+            "hallazgo": "Sin burbujas en las conexiones del depósito."
+          }
+        },
+        "costos": {
+          "lineas_aire": 450,
+          "compresor_aire": 28000,
+          "secador_aire": 4500,
+          "camara_freno": 3800,
+          "valvula_pedal": 6500,
+          "deposito_aire": 5200,
+          "valvula_purga": 600,
+          "modulo_ebs": 35000
+        },
+        "costo_otra": 3000,
+        "razonamiento": "Si la presión baja con el motor apagado, el aire se está escapando. Primero confirma que el compresor sí produce aire; luego busca la fuga del depósito hacia las ruedas, con agua jabonosa.",
+        "guia": [
+          {
+            "pieza": "compresor_aire",
+            "herramienta": "escaner",
+            "texto": "Primero: ¿el compresor produce aire? Lee el tiempo de llenado con el escáner.",
+            "despues": "Sí llena, pero la presión cae al apagar el motor: el aire se está escapando. Hay que buscar la fuga."
+          },
+          {
+            "pieza": "valvula_purga",
+            "herramienta": "mano",
+            "texto": "Revisa que la válvula de purga cierre: si se queda abierta, por ahí se va el aire.",
+            "despues": "Cierra bien. La fuga está más adelante, en el camino del aire hacia las ruedas."
+          },
+          {
+            "pieza": "camara_freno",
+            "herramienta": "jabon",
+            "texto": "Con agua jabonosa revisa las cámaras de freno.",
+            "despues": "Sin burbujas: las cámaras sellan. Falta revisar las líneas."
+          },
+          {
+            "pieza": "lineas_aire",
+            "herramienta": "jabon",
+            "texto": "Revisa las conexiones de las líneas de aire con agua jabonosa.",
+            "despues": "¡Aquí está! Burbujas en una conexión de la línea trasera: por ahí se va el aire. Por eso tarda en cargar y pierde presión."
+          }
+        ],
+        "pista_causa": "Cambia solo lo que encontraste mal en tu bitácora (la marca ✗).",
+        "pasos": [
+          {
+            "texto": "Por seguridad, descarga el aire: abre la purga de los depósitos antes de aflojar cualquier línea.",
+            "correcta": "mano>valvula_purga",
+            "errores": {
+              "llave>lineas_aire": {
+                "critico": true,
+                "mensaje": "Aflojaste una línea con el sistema a presión: el aire a más de 100 psi avienta la conexión y puede lastimarte la cara o los ojos."
+              }
+            },
+            "porque": "El sistema guarda aire a más de 100 psi aunque el motor esté apagado. Si aflojas una línea con presión, la conexión sale disparada."
+          },
+          {
+            "texto": "Con la llave, quita la conexión dañada y pon una nueva; apriétala firme.",
+            "correcta": "llave>lineas_aire",
+            "porque": "La fuga estaba en la conexión. Una conexión nueva bien apretada sella el aire."
+          },
+          {
+            "texto": "Cierra la purga.",
+            "correcta": "mano>valvula_purga",
+            "porque": "Si la dejas abierta, el aire se escapa por ahí y los depósitos nunca se llenan."
+          },
+          {
+            "texto": "Arranca el motor y revisa con el escáner que la presión suba.",
+            "correcta": "escaner>compresor_aire",
+            "sonido": "arranque",
+            "resultado": "Llena de 85 a 100 psi en 38 s. Ya carga rápido.",
+            "porque": "Sin la fuga, el compresor llena más rápido: así confirmas la reparación."
+          },
+          {
+            "texto": "Con el motor apagado y el sistema lleno, comprueba con agua jabonosa que ya no haya fuga.",
+            "correcta": "jabon>lineas_aire",
+            "resultado": "Sin burbujas y la presión baja menos de 2 psi por minuto. Listo para entregar.",
+            "porque": "Nunca se entrega sin comprobar: el agua jabonosa y la presión estable confirman que ya no fuga."
+          }
+        ]
+      }
     },
     {
       "id": "direccion",
@@ -289,17 +375,9 @@
       "nombre": "Dirección",
       "resumen": "El volante mueve la caja de dirección; el brazo pitman y la barra de dirección giran las ruedas delanteras.",
       "zona": {
-        "objetivo": [
-          4.4,
-          0.8,
-          0
-        ],
+        "objetivo": [4.4, 0.8, 0],
         "distancia": 4.5,
-        "vista": [
-          0.6,
-          0.35,
-          -1
-        ]
+        "vista": [0.6, 0.35, -1]
       },
       "rayosX": true,
       "orden": [
@@ -307,33 +385,30 @@
         "caja_direccion",
         "brazo_pitman",
         "barra_direccion",
-        "eje_delantero"
+        "eje_delantero",
+        "bomba_direccion",
+        "deposito_direccion"
       ]
     },
     {
       "id": "suspension",
       "grupo": 7,
       "nombre": "Bastidor y suspensión de aire",
-      "resumen": "El autobús va sobre bolsas de aire; la válvula niveladora mantiene la altura y los amortiguadores frenan el rebote.",
+      "resumen": "El autobús va sobre bolsas de aire controladas por un módulo electrónico: lee los sensores de nivel, mantiene la altura y lo baja en las paradas. Las barras estabilizadoras lo enderezan en las curvas.",
       "zona": {
-        "objetivo": [
-          -3.9,
-          0.7,
-          0.3
-        ],
+        "objetivo": [-3.9, 0.7, 0.3],
         "distancia": 5,
-        "vista": [
-          0.25,
-          0.3,
-          1
-        ]
+        "vista": [0.25, 0.3, 1]
       },
       "rayosX": true,
       "orden": [
         "bastidor",
         "bolsa_aire",
-        "valvula_niveladora",
-        "amortiguador"
+        "sensor_nivel",
+        "modulo_suspension",
+        "amortiguador",
+        "barra_estabilizadora",
+        "brazo_reaccion"
       ]
     },
     {
@@ -342,17 +417,9 @@
       "nombre": "Sistema eléctrico 24 V",
       "resumen": "Dos baterías de 12 V en serie dan 24 V; el alternador las recarga y la central eléctrica reparte la corriente con fusibles y relevadores.",
       "zona": {
-        "objetivo": [
-          4.5,
-          0.9,
-          -0.9
-        ],
+        "objetivo": [4.5, 0.9, -0.9],
         "distancia": 4.5,
-        "vista": [
-          0.3,
-          0.35,
-          -1
-        ]
+        "vista": [0.3, 0.35, -1]
       },
       "rayosX": true,
       "orden": [
@@ -362,26 +429,132 @@
         "alternador",
         "central_electrica",
         "arnes_principal",
-        "conector_diagnostico"
-      ]
+        "conector_diagnostico",
+        "ecu_motor",
+        "faro"
+      ],
+      "orden_taller": {
+        "id": "electrico-no-arranca",
+        "titulo": "No arranca en las mañanas",
+        "cliente": "Ruta 7 · unidad 045 (datos de demostración)",
+        "sintoma": "El operador reporta que en las mañanas la marcha gira lento o solo hace clic. Con corriente de otro autobús sí arranca.",
+        "causa": "bateria",
+        "sigue": "Probaste y el autobús sigue sin arrancar.",
+        "estados": {
+          "bateria": {
+            "estado": "mal",
+            "hallazgo": "La terminal positiva está sulfatada y floja. Al dar marcha, por ahí se pierde la corriente que necesita la marcha."
+          },
+          "motor_arranque": {
+            "estado": "atencion",
+            "hallazgo": "Al dar marcha solo le llegan 17 V (debería ser más de 19 V). La marcha está bien: lo que falta es corriente."
+          },
+          "alternador": {
+            "estado": "bien",
+            "hallazgo": "Con el motor encendido carga 27.6 V: el alternador está bien."
+          },
+          "interruptor_maestro": {
+            "estado": "bien",
+            "hallazgo": "Casi no hay caída de voltaje en el interruptor: está bien."
+          },
+          "arnes_principal": {
+            "estado": "bien",
+            "hallazgo": "Cables sin rozaduras y conectores firmes."
+          },
+          "central_electrica": {
+            "estado": "bien",
+            "hallazgo": "Fusibles y relevadores de arranque bien."
+          }
+        },
+        "costos": {
+          "bateria": 450,
+          "motor_arranque": 18000,
+          "alternador": 22000,
+          "interruptor_maestro": 2500,
+          "central_electrica": 15000,
+          "arnes_principal": 12000,
+          "ecu_motor": 45000
+        },
+        "costo_otra": 3000,
+        "razonamiento": "Si con corriente de otro autobús sí arranca, la marcha está bien: lo que falla es que no le llega corriente suficiente. Mide desde la marcha hacia la batería hasta encontrar dónde se pierde.",
+        "guia": [
+          {
+            "pieza": "motor_arranque",
+            "herramienta": "multimetro",
+            "texto": "Mide el voltaje en la marcha mientras dan marcha.",
+            "despues": "Solo llegan 17 V: algo se come la corriente antes de la marcha."
+          },
+          {
+            "pieza": "alternador",
+            "herramienta": "multimetro",
+            "texto": "¿Se descargan porque no cargan? Mide el voltaje de carga con el motor encendido.",
+            "despues": "27.6 V: el alternador sí carga. El problema no es la carga."
+          },
+          {
+            "pieza": "interruptor_maestro",
+            "herramienta": "multimetro",
+            "texto": "Mide la caída de voltaje en el interruptor maestro.",
+            "despues": "Casi no hay caída: el interruptor está bien. Sigue hacia la batería."
+          },
+          {
+            "pieza": "bateria",
+            "herramienta": "linterna",
+            "texto": "Revisa las terminales de la batería con la linterna.",
+            "despues": "¡Aquí está! La terminal positiva está sulfatada y floja: por ahí se pierde la corriente al arrancar."
+          }
+        ],
+        "pista_causa": "Atiende solo lo que encontraste mal en tu bitácora (la marca ✗).",
+        "pasos": [
+          {
+            "texto": "Por seguridad, apaga el interruptor maestro antes de tocar las terminales.",
+            "correcta": "mano>interruptor_maestro",
+            "errores": {
+              "llave>bateria": {
+                "critico": true,
+                "mensaje": "Aflojaste la terminal con la corriente conectada: si la llave toca el chasis hace corto, salta un arco y la batería puede explotar."
+              }
+            },
+            "porque": "Con la corriente conectada, una llave que toque el chasis hace corto: chispa, quemaduras y riesgo de explosión."
+          },
+          {
+            "texto": "Con la llave, quita las terminales: primero la negativa y luego la positiva.",
+            "correcta": "llave>bateria",
+            "porque": "Primero la negativa: así, si la llave toca el chasis, ya no hay corto."
+          },
+          {
+            "texto": "Limpia el sulfato de los postes y las terminales, y ponles grasa dieléctrica.",
+            "correcta": "mano>bateria",
+            "porque": "El sulfato no deja pasar la corriente. La grasa evita que vuelva a salir."
+          },
+          {
+            "texto": "Pon las terminales (primero la positiva) y apriétalas firme con la llave.",
+            "correcta": "llave>bateria",
+            "porque": "Una terminal floja calienta y pierde corriente igual que una sulfatada."
+          },
+          {
+            "texto": "Enciende el interruptor maestro y da marcha.",
+            "correcta": "mano>interruptor_maestro",
+            "sonido": "arranque",
+            "porque": "Con todo apretado ya es seguro volver a dar corriente."
+          },
+          {
+            "texto": "Comprueba: mide el voltaje en la marcha al arrancar.",
+            "correcta": "multimetro>motor_arranque",
+            "resultado": "21.5 V al dar marcha y arranca a la primera. Listo para entregar.",
+            "porque": "Nunca se entrega sin comprobar: ahora sí le llega la corriente a la marcha."
+          }
+        ]
+      }
     },
     {
       "id": "interior",
       "grupo": 8,
       "nombre": "Puesto del conductor e interior",
-      "resumen": "Lo que usa el operador y los pasajeros: tablero, pedales, puertas, pasamanos y clima.",
+      "resumen": "Lo que usan el operador y los pasajeros: tablero, pedales, puertas, rampa para silla de ruedas, pasamanos con botón de parada y clima.",
       "zona": {
-        "objetivo": [
-          5.2,
-          1.3,
-          -0.6
-        ],
+        "objetivo": [5.2, 1.3, -0.6],
         "distancia": 3.2,
-        "vista": [
-          -1,
-          0.3,
-          0.15
-        ]
+        "vista": [-1, 0.3, 0.15]
       },
       "rayosX": true,
       "orden": [
@@ -390,34 +563,24 @@
         "pedales",
         "mecanismo_puerta",
         "pasamanos",
-        "unidad_clima"
+        "unidad_clima",
+        "rampa_accesible",
+        "boton_parada"
       ]
     },
     {
       "id": "incendios",
       "grupo": 9,
       "nombre": "Detección y supresión de incendios",
-      "resumen": "Un detector vigila el compartimiento del motor; si hay fuego, el tanque descarga el agente extintor y el tablero avisa al operador.",
+      "resumen": "Un detector vigila el compartimiento del motor; si hay fuego, el tanque descarga el agente por las boquillas y el tablero avisa al operador. En la cabina hay un extintor portátil.",
       "zona": {
-        "objetivo": [
-          -4.9,
-          1.5,
-          0.3
-        ],
+        "objetivo": [-4.9, 1.5, 0.3],
         "distancia": 4,
-        "vista": [
-          -1,
-          0.6,
-          0.35
-        ]
+        "vista": [-1, 0.6, 0.35]
       },
       "rayosX": true,
       "tapa": true,
-      "orden": [
-        "detector_incendio",
-        "tanque_supresion",
-        "panel_supresion"
-      ]
+      "orden": ["detector_incendio", "tanque_supresion", "panel_supresion", "boquillas_descarga", "extintor"]
     }
   ],
   "piezas": {
@@ -808,24 +971,13 @@
     },
     "camara_freno": {
       "nombre": "Cámara de freno",
-      "que": "El aire empuja su diafragma y la varilla gira la leva que abre las balatas. Atrás también tiene un resorte de estacionamiento.",
-      "falla": "Diafragma roto (fuga de aire) o carrera de la varilla fuera de límite: frena poco.",
-      "revisa": "Mide la carrera de la varilla con el freno aplicado y busca fugas con agua jabonosa.",
+      "que": "El aire empuja su diafragma y éste acciona el caliper que aprieta las balatas contra el disco. Atrás también tiene un resorte de estacionamiento.",
+      "falla": "Diafragma roto (fuga de aire): frena poco o no suelta el freno de estacionamiento.",
+      "revisa": "Con el freno aplicado busca fugas con agua jabonosa en la cámara y sus conexiones.",
       "hazlo": {
         "herramienta": "jabon",
         "instruccion": "Con el freno aplicado, busca fugas en la cámara.",
         "resultado": "Sin burbujas. Diafragma sano."
-      }
-    },
-    "tambor": {
-      "nombre": "Tambor de freno",
-      "que": "Gira con la rueda; las balatas se abren y rozan contra él para frenar.",
-      "falla": "Se raya, se calienta de más o se agrieta; las balatas se gastan.",
-      "revisa": "Mira el espesor de las balatas por la ventana del tambor y busca grietas.",
-      "hazlo": {
-        "herramienta": "linterna",
-        "instruccion": "Revisa por la ventana el espesor de las balatas.",
-        "resultado": "Balatas con 4 mm: abajo del mínimo de 6 mm. Hay que cambiarlas."
       }
     },
     "eje_delantero": {
@@ -903,17 +1055,6 @@
         "herramienta": "jabon",
         "instruccion": "Busca fugas en la bolsa con agua jabonosa.",
         "resultado": "Sin burbujas. La bolsa está bien."
-      }
-    },
-    "valvula_niveladora": {
-      "nombre": "Válvula niveladora",
-      "que": "Mete o saca aire de las bolsas para que el autobús siempre quede a la misma altura.",
-      "falla": "Varilla desajustada o rota: el autobús queda muy alto o muy bajo.",
-      "revisa": "Mide la altura de manejo y revisa la varilla de la válvula.",
-      "hazlo": {
-        "herramienta": "mano",
-        "instruccion": "Revisa la varilla de la válvula.",
-        "resultado": "La varilla está firme y en su posición."
       }
     },
     "amortiguador": {
@@ -1101,6 +1242,237 @@
         "herramienta": "mano",
         "instruccion": "Da contacto y observa la autoprueba.",
         "resultado": "Autoprueba correcta: luz verde."
+      }
+    },
+    "disco_freno": {
+      "nombre": "Disco y caliper de freno",
+      "que": "El disco gira con la rueda; al frenar, la cámara de aire empuja el caliper y las balatas aprietan el disco.",
+      "falla": "Balatas gastadas, disco rayado o con grietas por calor, o un caliper que se pega y frena de un lado.",
+      "revisa": "Mide el espesor de las balatas y revisa la cara del disco con la linterna: sin grietas ni escalón.",
+      "hazlo": {
+        "herramienta": "linterna",
+        "instruccion": "Revisa el espesor de las balatas y la cara del disco.",
+        "resultado": "Balatas con 9 mm y disco sin grietas. Está bien."
+      }
+    },
+    "sensor_nivel": {
+      "nombre": "Sensor de nivel",
+      "que": "Un brazo que sigue al eje y le dice al módulo de la suspensión a qué altura va el autobús; con eso mete o saca aire de las bolsas.",
+      "falla": "Brazo doblado o sensor dañado: el autobús queda chueco, muy alto o muy bajo.",
+      "revisa": "Mide la altura de manejo y revisa que el brazo esté firme y derecho; los códigos se leen con el escáner.",
+      "hazlo": {
+        "herramienta": "mano",
+        "instruccion": "Revisa que el brazo del sensor esté firme.",
+        "resultado": "El brazo está firme y en su posición."
+      }
+    },
+    "sensor_abs": {
+      "nombre": "Sensor ABS de rueda",
+      "que": "Lee qué tan rápido gira cada rueda. Si una se va a bloquear, el EBS le suelta el freno a esa rueda.",
+      "falla": "Cable roto o sensor lejos de la rueda dentada: se prende el testigo de ABS.",
+      "revisa": "Lee los códigos con el escáner y mide la resistencia del sensor con el multímetro.",
+      "hazlo": {
+        "herramienta": "multimetro",
+        "instruccion": "Mide la resistencia del sensor ABS.",
+        "resultado": "1.2 kΩ: dentro de rango. El sensor está bien."
+      }
+    },
+    "modulo_ebs": {
+      "nombre": "Módulo EBS (freno electrónico)",
+      "que": "Recibe la orden del pedal y de los sensores y reparte el aire a cada rueda. Incluye el ABS y el control de estabilidad.",
+      "falla": "Falla eléctrica o de una válvula: se prende el testigo y el autobús frena solo con el respaldo neumático.",
+      "revisa": "Con el escáner lee los códigos del EBS y prueba cada modulador.",
+      "hazlo": {
+        "herramienta": "escaner",
+        "instruccion": "Lee los códigos de falla del EBS.",
+        "resultado": "Sin códigos activos. El EBS funciona."
+      }
+    },
+    "valvula_pedal": {
+      "nombre": "Válvula del pedal de freno",
+      "que": "Bajo el pedal: manda la señal eléctrica al EBS y, de respaldo, el aire directo a los frenos.",
+      "falla": "Fuga de aire por la válvula o pedal que no regresa: frena de más o de menos.",
+      "revisa": "Con el pedal pisado busca fugas con agua jabonosa en sus conexiones.",
+      "hazlo": {
+        "herramienta": "jabon",
+        "instruccion": "Pisa el pedal y busca fugas en la válvula.",
+        "resultado": "Sin burbujas. La válvula sella."
+      }
+    },
+    "barra_estabilizadora": {
+      "nombre": "Barra estabilizadora",
+      "que": "Une los dos lados del eje: cuando el autobús se inclina en una curva, la barra lo endereza. Lleva una adelante y otra atrás.",
+      "falla": "Bujes gastados: golpeteo en baches y el autobús se ladea en las curvas.",
+      "revisa": "Revisa los bujes y que los tornillos de los soportes estén firmes.",
+      "hazlo": {
+        "herramienta": "llave",
+        "instruccion": "Comprueba que los soportes de la barra estén firmes.",
+        "resultado": "Tornillos con su apriete y bujes sin grietas."
+      }
+    },
+    "brazo_reaccion": {
+      "nombre": "Brazos de reacción",
+      "que": "Mantienen el eje trasero en su lugar: que no se mueva hacia adelante, atrás ni de lado al acelerar y frenar.",
+      "falla": "Bujes gastados: el eje se mueve, la llanta se gasta de un lado y se siente un golpe al arrancar.",
+      "revisa": "Con la linterna busca grietas en los bujes; con una barra revisa que no haya juego.",
+      "hazlo": {
+        "herramienta": "linterna",
+        "instruccion": "Revisa los bujes de los brazos.",
+        "resultado": "Bujes sin grietas ni juego."
+      }
+    },
+    "modulo_suspension": {
+      "nombre": "Módulo de la suspensión",
+      "que": "Controla la altura: lee los sensores de nivel y abre o cierra el aire de las bolsas. También baja el autobús en las paradas (arrodillamiento).",
+      "falla": "Sin señal de un sensor o con una válvula pegada: no nivela o no baja en las paradas.",
+      "revisa": "Lee los códigos con el escáner y prueba subir y bajar la suspensión.",
+      "hazlo": {
+        "herramienta": "escaner",
+        "instruccion": "Lee los códigos del módulo de la suspensión.",
+        "resultado": "Sin códigos. Sube, baja y nivela bien."
+      }
+    },
+    "ecu_motor": {
+      "nombre": "Módulo de control del motor",
+      "que": "La computadora del motor: lee los sensores y decide cuánto diésel inyectar y cuándo.",
+      "falla": "Conectores flojos o sulfatados: el motor pierde fuerza, entra en modo de protección o no arranca.",
+      "revisa": "Conecta el escáner para leer códigos y datos en vivo; revisa que los conectores estén secos y firmes.",
+      "hazlo": {
+        "herramienta": "escaner",
+        "instruccion": "Lee los códigos de falla del motor.",
+        "resultado": "Sin códigos activos. Datos en vivo normales."
+      }
+    },
+    "faro": {
+      "nombre": "Faros",
+      "que": "Las luces delanteras para ver y ser visto de noche.",
+      "falla": "Foco fundido, conector sulfatado o mica opaca: alumbran poco o no prenden.",
+      "revisa": "Préndelos y revisa altas y bajas; si uno no prende, mide el voltaje en su conector.",
+      "hazlo": {
+        "herramienta": "multimetro",
+        "instruccion": "Mide el voltaje en el conector del faro.",
+        "resultado": "24.6 V en el conector: sí llega la corriente. Si no prende, es el foco."
+      }
+    },
+    "catalizador_scr": {
+      "nombre": "Catalizador SCR",
+      "que": "Va después del filtro de partículas: con la urea convierte los gases NOx en nitrógeno y agua. Es parte de la norma Euro 6.",
+      "falla": "Se tapa o pierde eficiencia: se prende el testigo de emisiones y el motor baja su potencia para protegerse.",
+      "revisa": "Con el escáner revisa la eficiencia del SCR y la lectura del sensor NOx.",
+      "hazlo": {
+        "herramienta": "escaner",
+        "instruccion": "Revisa la eficiencia del catalizador.",
+        "resultado": "Eficiencia normal y sin códigos."
+      }
+    },
+    "dosificador_urea": {
+      "nombre": "Dosificador de urea",
+      "que": "Rocía urea (AdBlue) en el escape antes del catalizador, en la cantidad que pide el módulo.",
+      "falla": "La urea se cristaliza y lo tapa: no dosifica y suben los NOx.",
+      "revisa": "Busca cristales blancos en la punta y en las conexiones.",
+      "hazlo": {
+        "herramienta": "linterna",
+        "instruccion": "Revisa la punta del dosificador.",
+        "resultado": "Limpio, sin cristales de urea."
+      }
+    },
+    "sensor_nox": {
+      "nombre": "Sensor NOx",
+      "que": "Mide los gases NOx a la salida del escape para saber si el catalizador está trabajando.",
+      "falla": "Lectura falsa o sin señal: se prende el testigo de emisiones.",
+      "revisa": "Con el escáner revisa su lectura con el motor encendido.",
+      "hazlo": {
+        "herramienta": "escaner",
+        "instruccion": "Lee el valor del sensor NOx.",
+        "resultado": "Lectura baja y estable: el SCR trabaja."
+      }
+    },
+    "retardador": {
+      "nombre": "Retardador hidráulico",
+      "que": "Frena el autobús con aceite dentro de la caja, sin gastar las balatas. Ayuda en las bajadas y en el alto y siga de la ciudad.",
+      "falla": "Aceite bajo o caliente: frena poco y se prende el testigo de temperatura.",
+      "revisa": "Revisa el nivel de aceite de la caja y busca fugas en el retardador.",
+      "hazlo": {
+        "herramienta": "linterna",
+        "instruccion": "Busca fugas de aceite en el retardador.",
+        "resultado": "Seco, sin fugas."
+      }
+    },
+    "enfriador_aceite_caja": {
+      "nombre": "Enfriador de aceite de la caja",
+      "que": "Un radiador pequeño que enfría el aceite de la caja y del retardador.",
+      "falla": "Panal tapado o fuga: la caja se calienta y cambia mal.",
+      "revisa": "Revisa que el panal esté limpio y las mangueras sin fugas.",
+      "hazlo": {
+        "herramienta": "linterna",
+        "instruccion": "Revisa el panal y las mangueras.",
+        "resultado": "Panal limpio, mangueras sin fugas."
+      }
+    },
+    "bomba_direccion": {
+      "nombre": "Bomba de la dirección",
+      "que": "La mueve el motor y le da presión al aceite para que el volante gire ligero.",
+      "falla": "Chilla o el volante se pone duro: aceite bajo o bomba gastada.",
+      "revisa": "Revisa el nivel de aceite y escucha la bomba con el motor encendido.",
+      "hazlo": {
+        "herramienta": "mano",
+        "instruccion": "Revisa que las mangueras de la bomba estén firmes y secas.",
+        "resultado": "Mangueras firmes, sin fugas."
+      }
+    },
+    "deposito_direccion": {
+      "nombre": "Depósito de aceite de la dirección",
+      "que": "Guarda el aceite de la dirección; tiene marcas de nivel y su filtro.",
+      "falla": "Nivel bajo por una fuga: entra aire, la dirección se pone dura y la bomba chilla.",
+      "revisa": "Con el motor frío revisa que el nivel esté entre las marcas.",
+      "hazlo": {
+        "herramienta": "mano",
+        "instruccion": "Revisa el nivel del depósito.",
+        "resultado": "Nivel entre las marcas. Correcto."
+      }
+    },
+    "rampa_accesible": {
+      "nombre": "Rampa para silla de ruedas",
+      "que": "Rampa abatible en la puerta para que suban pasajeros en silla de ruedas. En la parada el autobús además baja su altura.",
+      "falla": "Bisagra dura o sucia: no abre completa o se traba.",
+      "revisa": "Ábrela y ciérrala completa; limpia y lubrica la bisagra.",
+      "hazlo": {
+        "herramienta": "mano",
+        "instruccion": "Abre la rampa y ciérrala.",
+        "resultado": "Abre y cierra completa, sin trabarse."
+      }
+    },
+    "boton_parada": {
+      "nombre": "Botón de parada",
+      "que": "El pasajero lo toca para pedir la parada: suena el timbre y se prende el aviso para el operador.",
+      "falla": "Contacto sucio o cable flojo: no suena o suena solo.",
+      "revisa": "Prueba cada botón; si uno no responde, mide continuidad.",
+      "hazlo": {
+        "herramienta": "multimetro",
+        "instruccion": "Mide continuidad del botón al presionarlo.",
+        "resultado": "Hay continuidad al presionar. Funciona."
+      }
+    },
+    "boquillas_descarga": {
+      "nombre": "Boquillas de descarga",
+      "que": "Reparten el agente extintor sobre el motor cuando el sistema detecta fuego.",
+      "falla": "Tapadas con grasa o tierra, o mal dirigidas: el agente no llega al fuego.",
+      "revisa": "Revisa que estén limpias, con su tapa y apuntando al motor.",
+      "hazlo": {
+        "herramienta": "linterna",
+        "instruccion": "Revisa las boquillas.",
+        "resultado": "Limpias, con tapa y bien dirigidas."
+      }
+    },
+    "extintor": {
+      "nombre": "Extintor portátil",
+      "que": "Para un conato de fuego en la cabina o el pasillo; lo usa el operador.",
+      "falla": "Descargado, vencido o con el seguro roto.",
+      "revisa": "Revisa que la aguja del manómetro esté en verde, el seguro puesto y la fecha de recarga.",
+      "hazlo": {
+        "herramienta": "mano",
+        "instruccion": "Revisa el manómetro y el seguro.",
+        "resultado": "Aguja en verde y seguro puesto."
       }
     }
   }

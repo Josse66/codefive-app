@@ -109,7 +109,7 @@ function etiqueta(texto, { fondo = '#141c24', tinta = '#ffffff', tamano = 0.42 }
 }
 
 // Modelo realista del autobús (GLB hecho en Blender, 12 m de largo, frente hacia +x, puerta en +z).
-// Es el autobús urbano diésel completo: carrocería, interior, motor, transmisión, frenos,
+// Es el autobús urbano diésel completo (Volvo Access sobre chasis B8R LE): carrocería, interior, motor, transmisión, frenos,
 // suspensión, sistema eléctrico. Cada pieza que se aprende es un nodo "p_<id>".
 // Se descarga una sola vez y cada escena usa una copia.
 const RUTA_MODELO = '/modelos/autobus_diesel.glb';
