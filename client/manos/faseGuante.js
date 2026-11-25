@@ -27,11 +27,12 @@ const COLOR = {
 // (girar para apretar es lo que se pide; doblar la muñeca hacia otro lado, no).
 function desviacionMuneca() {
   if (!guante.neutro) return 0;
-  const eje = AJUSTES.guanteEje?.eje;
-  return Math.max(
-    0,
-    ...['roll', 'pitch'].filter((k) => k !== eje).map((k) => Math.abs(guante[k] - guante.neutro[k])),
-  );
+  const d = [guante.roll - guante.neutro.roll, guante.pitch - guante.neutro.pitch, 0];
+  const v = AJUSTES.guanteEje?.v;
+  if (!v) return Math.max(Math.abs(d[0]), Math.abs(d[1]));
+  // Se quita lo que va en la dirección del gesto de apretar (girar para apretar es lo que se pide).
+  const enGesto = d[0] * v[0] + d[1] * v[1];
+  return Math.max(Math.abs(d[0] - enGesto * v[0]), Math.abs(d[1] - enGesto * v[1]));
 }
 
 export class FaseGuante {
@@ -110,8 +111,11 @@ export class FaseGuante {
   }
 
   giroActual() {
-    const { eje, signo } = AJUSTES.guanteEje;
-    return signo * (this.g.sentido ?? 1) * diferencia(guante[eje], this.base);
+    // Cuánto se ha movido la mano a lo largo de la dirección aprendida (producto punto).
+    const { v } = AJUSTES.guanteEje;
+    const b = this.base ?? guante;
+    const avance = EJES.reduce((s, k, i) => s + diferencia(guante[k], b[k]) * v[i], 0);
+    return (this.g.sentido ?? 1) * avance;
   }
 
   /** Se llama cada cuadro. Devuelve { terminado, nota } al acabar. */
@@ -157,7 +161,7 @@ export class FaseGuante {
         this.ajustarUmbrales();
         let paso = 'listo';
         if (!AJUSTES.guanteCal?.boton) paso = 'boton';
-        else if (!AJUSTES.guanteEje) paso = 'giro';
+        else if (!AJUSTES.guanteEje?.v) paso = 'giro';
         Object.assign(this, {
           paso,
           desde: performance.now(),
@@ -181,7 +185,7 @@ export class FaseGuante {
       AJUSTES.guanteCal = { ...AJUSTES.guanteCal, boton: true };
       guardarAjustes();
       this.ui.sonar('bien');
-      Object.assign(this, { paso: AJUSTES.guanteEje ? 'listo' : 'giro', desde: ahora, giro: null });
+      Object.assign(this, { paso: AJUSTES.guanteEje?.v ? 'listo' : 'giro', desde: ahora, giro: null });
       return null;
     }
     if (ahora - b.desde > 10000) {
@@ -190,7 +194,7 @@ export class FaseGuante {
         'No sentí el botón: revisa que esté en la palma y que se apriete al cerrar la mano',
         'mal',
       );
-      Object.assign(this, { paso: AJUSTES.guanteEje ? 'listo' : 'giro', desde: ahora, giro: null });
+      Object.assign(this, { paso: AJUSTES.guanteEje?.v ? 'listo' : 'giro', desde: ahora, giro: null });
       return null;
     }
     this.dibujarCentro(
@@ -205,11 +209,12 @@ export class FaseGuante {
 
   // Aprende con qué eje y en qué sentido gira el guante al apretar (depende de cómo va puesto).
   pasoGiro(ahora) {
-    if (!this.giro) this.giro = { inicio: { ...guante }, max: { roll: 0, pitch: 0, yaw: 0 }, desde: ahora };
-    EJES.forEach((k) => {
-      const d = diferencia(guante[k], this.giro.inicio[k]);
-      if (Math.abs(d) > Math.abs(this.giro.max[k])) this.giro.max[k] = d;
-    });
+    if (!this.giro) this.giro = { inicio: { ...guante }, mejor: [0, 0, 0], norma: 0, desde: ahora };
+    // Se guarda el momento de mayor giro con sus TRES componentes: la dirección completa del
+    // gesto de apretar (un jalón real mezcla los ejes; medir uno solo pierde parte del giro).
+    const d = EJES.map((k) => diferencia(guante[k], this.giro.inicio[k]));
+    const norma = Math.hypot(...d);
+    if (norma > this.giro.norma) Object.assign(this.giro, { mejor: d, norma });
     const t = ahora - this.giro.desde;
     if (t < 4000) {
       this.dibujarCentro(
@@ -220,17 +225,20 @@ export class FaseGuante {
       this.dibujarDiagnostico();
       return null;
     }
-    const eje = EJES.reduce(
-      (a, k) => (Math.abs(this.giro.max[k]) > Math.abs(this.giro.max[a]) ? k : a),
-      'roll',
-    );
-    if (Math.abs(this.giro.max[eje]) < 15) {
+    const { mejor, norma: rango } = this.giro;
+    if (rango < 15) {
       this.giro = null; // no se movió lo suficiente: otra vez
       this.ui.decir('No sentí el giro: otra vez, gira más la mano');
       return null;
     }
-    // También cuánto gira cómodo la persona: el clic se pone a su alcance.
-    AJUSTES.guanteEje = { eje, signo: Math.sign(this.giro.max[eje]), rango: Math.abs(this.giro.max[eje]) };
+    // Dirección del gesto (vector unitario) y cuánto gira cómodo la persona (el clic queda a su alcance).
+    const k = mejor.reduce((a, x, i) => (Math.abs(x) > Math.abs(mejor[a]) ? i : a), 0);
+    AJUSTES.guanteEje = {
+      v: mejor.map((x) => x / rango),
+      rango,
+      eje: EJES[k],
+      signo: Math.sign(mejor[k]),
+    };
     guardarAjustes();
     this.ajustarUmbrales();
     Object.assign(this, { paso: 'listo', desde: ahora });
@@ -246,12 +254,11 @@ export class FaseGuante {
     if (this.paso === 'listo') {
       // Esperando: mientras la mano está quieta, el punto de partida la sigue (así no cuenta la
       // deriva del sensor). La aguja ya se mueve con la mano para que se vea que el guante la lee.
-      const { eje } = AJUSTES.guanteEje;
-      if (this.base == null) this.base = guante[eje];
+      if (this.base == null) this.base = { ...guante };
       const casiCero = Math.abs(this.giroActual()) < 3;
       if (guante.gmag < 4 && casiCero) {
         this.quietoDesde ||= ahora;
-        if (ahora - this.quietoDesde > 1000) this.base = guante[eje]; // corrige la deriva del sensor
+        if (ahora - this.quietoDesde > 1000) this.base = { ...guante }; // corrige la deriva del sensor
       } else this.quietoDesde = 0;
       this.avance = this.giroActual();
       led(guante.grip);
@@ -378,7 +385,7 @@ export class FaseGuante {
     const txt = [
       `Sensor · lado ${Math.round(guante.roll)}° · adelante ${Math.round(guante.pitch)}° · giro ${Math.round(guante.yaw)}° · movimiento ${Math.round(guante.gmag)} °/s · botón ${guante.grip ? 'sí' : 'no'}`,
       ej
-        ? `Aprendido: eje ${{ roll: 'lado', pitch: 'adelante', yaw: 'giro' }[ej.eje]} (${ej.signo > 0 ? '+' : '−'}) · tu giro cómodo ${Math.round(ej.rango ?? 0)}° · medido ahora ${Math.round(this.avance ?? 0)}° de ${this.u?.objetivo ?? '-'}°`
+        ? `Aprendido: gesto sobre todo ${{ roll: 'lado', pitch: 'adelante', yaw: 'giro' }[ej.eje]} (${ej.signo > 0 ? '+' : '−'}) · tu giro cómodo ${Math.round(ej.rango ?? 0)}° · medido ahora ${Math.round(this.avance ?? 0)}° de ${this.u?.objetivo ?? '-'}°`
         : 'Todavía no aprende tu giro',
     ];
     ctx.fillStyle = 'rgba(255,255,255,.08)';
