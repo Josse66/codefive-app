@@ -252,6 +252,13 @@ const modeloDe = (biblioteca, nombre) =>
   biblioteca.getObjectByName(nombre) ?? PROCEDURALES[nombre]?.() ?? null;
 
 // Copia de un modelo con materiales propios (para poder resaltarla sin tocar las demás) y sombras.
+// Nombre de la tarjeta de video ("" si el navegador no lo da).
+function nombreGpu(renderer) {
+  const gl = renderer.getContext();
+  const info = gl.getExtension('WEBGL_debug_renderer_info');
+  return info ? String(gl.getParameter(info.UNMASKED_RENDERER_WEBGL)) : '';
+}
+
 function copiaDe(original) {
   const copia = original.clone(true);
   copia.position.set(0, 0, 0);
@@ -301,7 +308,8 @@ function agregarExtras(bus, tipo, techo, biblioteca) {
   return extras;
 }
 
-function construirAutobus(tipo, alCargar = () => {}) {
+// `compilar(objeto)` prepara los shaders antes de mostrar el modelo (sin trabar la página).
+function construirAutobus(tipo, alCargar = () => {}, compilar = () => Promise.resolve()) {
   const bus = new THREE.Group();
   // Autobús de bloques: se ve mientras carga el modelo y se queda si el modelo no carga.
   const bloques = new THREE.Group();
@@ -356,7 +364,8 @@ function construirAutobus(tipo, alCargar = () => {}) {
         // ya no proyecta sombras en tiempo real, que era lo más pesado de la escena.
         p.traverse((n) => {
           const nodo = n;
-          if (nodo.isMesh) nodo.castShadow = false;
+          // Tampoco recibe: cada píxel del autobús leía el mapa de sombras sin que se notara.
+          if (nodo.isMesh) Object.assign(nodo, { castShadow: false, receiveShadow: false });
         });
         if (p.name.startsWith('rueda')) {
           p.scale.multiplyScalar(factor);
@@ -365,10 +374,16 @@ function construirAutobus(tipo, alCargar = () => {}) {
           p.scale.y *= factor;
         }
       });
-      bus.remove(bloques, extras);
-      bus.add(copia);
-      extras = agregarExtras(bus, tipo, TECHO, biblioteca);
-      alCargar();
+      const nuevosExtras = agregarExtras(new THREE.Group(), tipo, TECHO, biblioteca);
+      return compilar(copia)
+        .then(() => compilar(nuevosExtras))
+        .catch(() => {})
+        .then(() => {
+          bus.remove(bloques, extras);
+          bus.add(copia, nuevosExtras);
+          extras = nuevosExtras;
+          alCargar();
+        });
     })
     .catch(() => {});
   return bus;
@@ -385,7 +400,9 @@ export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos 
   let calidad = localStorage.getItem('calidad3d') ?? 'normal';
   const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  // PCF simple: la sombra del autobús ya viene horneada; la suave costaba muchas lecturas por píxel.
+  renderer.shadowMap.type = THREE.PCFShadowMap;
+  renderer.shadowMap.enabled = (localStorage.getItem('calidad3d') ?? 'normal') === 'normal';
   // Las sombras no cambian solas: se recalculan solo cuando algo se carga o se mueve.
   renderer.shadowMap.autoUpdate = false;
   contenedor.append(renderer.domElement);
@@ -454,14 +471,61 @@ export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos 
     })
     .catch(() => {});
 
-  // Aplica la calidad: resolución y sombras.
+  // Resolución dinámica (como en los juegos): el costo de la GPU crece con los píxeles, así que
+  // se limita el total de píxeles y, si los cuadros tardan, se baja la escala sola; si sobra
+  // tiempo, se sube poco a poco. Así la pantalla completa no traba una GPU integrada.
+  // Con GPU integrada (la de la mayoría de las laptops) el tope de píxeles es menor.
+  const integrada = /intel|integrated|radeon\(tm\) graphics|uhd|iris|mali|adreno/i.test(nombreGpu(renderer));
+  const PIXELES_MAX = integrada ? { normal: 1.5e6, ligero: 1e6 } : { normal: 2.4e6, ligero: 1.2e6 };
+  const resolucion = { escala: 1, promedio: 1 / 60, cuenta: 0, holgura: 0, bajadas: 0 };
+  function ajustarResolucion() {
+    const { clientWidth: ancho, clientHeight: alto } = contenedor;
+    if (!ancho || !alto) return;
+    const tope = Math.min(window.devicePixelRatio, calidad === 'normal' ? 1.5 : 1);
+    const porPixeles = Math.sqrt(PIXELES_MAX[calidad] / (ancho * alto));
+    const dpr = Math.max(0.5, Math.min(tope, porPixeles) * resolucion.escala);
+    if (Math.abs(renderer.getPixelRatio() - dpr) > 0.01) {
+      renderer.setPixelRatio(dpr);
+      renderer.setSize(ancho, alto, false);
+    }
+  }
+  // Se llama con la duración de cada cuadro dibujado seguido de otro (cámara moviéndose).
+  // Promedio móvil del tiempo por cuadro; se revisa cada 20 cuadros dibujados.
+  function vigilarCuadro(dt) {
+    resolucion.promedio = resolucion.promedio * 0.9 + Math.min(dt, 0.2) * 0.1;
+    resolucion.cuenta += 1;
+    if (resolucion.cuenta < 20) return;
+    resolucion.cuenta = 0;
+    if (resolucion.promedio > 1 / 45 && resolucion.escala > 0.55) {
+      resolucion.escala = Math.max(0.55, resolucion.escala * 0.85);
+      resolucion.holgura = 0;
+      resolucion.bajadas += 1;
+      ajustarResolucion();
+    } else if (resolucion.promedio < 1 / 57 && resolucion.escala < 1 && resolucion.bajadas < 3) {
+      // Sube solo tras varios chequeos holgados seguidos y deja de subir si ya bajó 3 veces:
+      // cada cambio de tamaño cuesta un cuadro, así que no debe oscilar.
+      resolucion.holgura += 1;
+      if (resolucion.holgura >= 8) {
+        resolucion.escala = Math.min(1, resolucion.escala * 1.1);
+        resolucion.holgura = 0;
+        ajustarResolucion();
+      }
+    } else {
+      resolucion.holgura = 0;
+    }
+  }
+
+  // Aplica la calidad: resolución y sombras. Cambiar las sombras obliga a recompilar materiales.
   function aplicarCalidad() {
     const normal = calidad === 'normal';
-    renderer.setPixelRatio(normal ? Math.min(window.devicePixelRatio, 1.5) : 1);
-    renderer.shadowMap.enabled = normal;
-    escena.traverse((n) => {
-      if (n.material) Object.assign(n.material, { needsUpdate: true });
-    });
+    resolucion.escala = 1;
+    ajustarResolucion();
+    if (renderer.shadowMap.enabled !== normal) {
+      renderer.shadowMap.enabled = normal;
+      escena.traverse((n) => {
+        if (n.material) Object.assign(n.material, { needsUpdate: true });
+      });
+    }
     pedirCuadro(true);
   }
 
@@ -497,7 +561,10 @@ export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos 
   controles.maxPolarAngle = Math.PI * 0.49;
   controles.update();
 
-  const bus = construirAutobus(autobus, () => pedirCuadro(true));
+  // compileAsync usa la compilación en paralelo del navegador: el modelo aparece ya listo
+  // en vez de congelar la página medio segundo en su primer cuadro.
+  const compilar = (objeto) => renderer.compileAsync(objeto, camara, escena);
+  const bus = construirAutobus(autobus, () => pedirCuadro(true), compilar);
   escena.add(bus);
 
   // Piezas del escenario: se pueden señalar y reciben herramientas.
@@ -799,12 +866,17 @@ export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos 
     cargarBiblioteca()
       .then((biblioteca) => {
         const original = modeloDe(biblioteca, `h_${id}`);
-        if (!original || herramientaActual !== id) return;
+        if (!original || herramientaActual !== id) return null;
         const modelo = copiaDe(original);
         modelo.scale.setScalar(2);
-        mano.clear();
-        mano.add(modelo);
-        pedirCuadro();
+        return compilar(modelo)
+          .catch(() => {})
+          .then(() => {
+            if (herramientaActual !== id) return;
+            mano.clear();
+            mano.add(modelo);
+            pedirCuadro();
+          });
       })
       .catch(() => {});
   }
@@ -948,6 +1020,8 @@ export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos 
 
   const reloj = new THREE.Clock();
   let activo = true;
+  let dibujoSeguido = false;
+  let ultimoDibujo = 0;
   function cuadro() {
     if (!activo) return;
     requestAnimationFrame(cuadro);
@@ -961,7 +1035,14 @@ export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos 
       [...mallasPieza.values()].some((m) => m.userData.cambio != null);
     // Caminar en primera persona o el amortiguado de la cámara también piden cuadros.
     const camaraMovida = moverPrimeraPersona(dt) || (!inmersivo.activo && controles.update());
-    if (!animando && !camaraMovida && !pendiente) return;
+    if (!animando && !camaraMovida && !pendiente) {
+      dibujoSeguido = false;
+      return;
+    }
+    // Solo cuenta para la resolución dinámica si el cuadro anterior también se dibujó.
+    if (dibujoSeguido) vigilarCuadro(reloj.elapsedTime - ultimoDibujo);
+    dibujoSeguido = true;
+    ultimoDibujo = reloj.elapsedTime;
     pendiente = false;
     if (!medicion.lista && llegada.t < 1) {
       medicion.cuadros += 1;
@@ -1071,6 +1152,7 @@ export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos 
     const { clientWidth: ancho, clientHeight: alto } = contenedor;
     if (!ancho || !alto) return;
     renderer.setSize(ancho, alto, false);
+    ajustarResolucion();
     renderer.domElement.style.width = '100%';
     renderer.domElement.style.height = '100%';
     camara.aspect = ancho / alto;
@@ -1094,12 +1176,23 @@ export function crearEscena(contenedor, { autobus, piezas = [], enfoque, grupos 
     lienzo: renderer.domElement,
     piezaEn,
     grupoEn,
-    resaltar: yRedibujar(resaltar),
+    // Solo redibuja si cambia la pieza resaltada (se llama en cada movimiento del mouse).
+    resaltar: (id) => {
+      if (id !== resaltada) {
+        resaltar(id);
+        pedirCuadro();
+      }
+    },
     marcarGrupo: yRedibujar(marcarGrupo),
     marcarPieza: yRedibujar(marcarPieza),
     enfocar: yRedibujar(enfocar),
     activarInmersivo: yRedibujar(activarInmersivo),
-    moverHerramienta: yRedibujar(moverHerramienta),
+    // En primera persona la herramienta va pegada a la cámara: mover el cursor no cambia la imagen.
+    moverHerramienta: (...args) => {
+      const r = moverHerramienta(...args);
+      if (!inmersivo.activo) pedirCuadro();
+      return r;
+    },
     elegirHerramienta: yRedibujar(elegirHerramienta),
     efecto: yRedibujar(efecto, true),
     nombrePieza: (id) => mallasPieza.get(id)?.userData.pieza.nombre ?? id,
