@@ -23,7 +23,8 @@
         "pasarse": 7,
         "tiron": 14,
         "muneca": 35,
-        "munecaGuante": 20
+        "munecaGuante": 20,
+        "textoJalar": "Jala hacia abajo, hacia ti, parejo"
       },
       "reglas": [
         {
@@ -68,6 +69,43 @@
         "https://stahlwille.com/en_gb/news/use-a-torque-wrench-correctly!/16518757768",
         "https://www.parktool.com/en-int/blog/repair-help/torque-wrench-use-and-care",
         "https://stacks.cdc.gov/view/cdc/185869"
+      ],
+      "punto": "Manos · torquímetro"
+    },
+    {
+      "id": "estrella",
+      "sistema": "suspension",
+      "punto": "Manos · en estrella",
+      "nombre": "Apretar las tuercas de la rueda en estrella",
+      "herramienta": "Torquímetro (secuencia)",
+      "tipo": "secuencia",
+      "porque": "Si las tuercas se aprietan en círculo, la rueda asienta chueca y una tuerca trabaja más que las otras. Se aprietan en estrella: cada una enfrente de la anterior, primero a la mitad del torque y luego completo.",
+      "pasos": [
+        "Cierra la mano sobre cualquier tuerca para empezar: esa es la 1.",
+        "Sigue con la de ENFRENTE, no con la de al lado.",
+        "Cada tuerca: mano cerrada encima hasta que suene el clic.",
+        "Así hasta apretar las 10."
+      ],
+      "parametros": {
+        "centro": [0.5, 0.5],
+        "radio": 0.3,
+        "tuercas": 10,
+        "radioTuerca": 0.055,
+        "sostener": 0.6,
+        "orden": [0, 5, 2, 7, 4, 9, 6, 1, 8, 3]
+      },
+      "reglas": [
+        {
+          "id": "orden",
+          "frase": "En estrella: sigue con la tuerca de enfrente (la que se ilumina)",
+          "detalle": "Tuercas de rueda: no siguió la secuencia en estrella",
+          "peso": 20
+        }
+      ],
+      "fuentes": [
+        "https://www.fleetmaintenance.com/equipment/brakes-tire-and-wheel/article/55308568/wheel-installation-101-basics-to-keep-your-shop-having-a-very-bad-day",
+        "https://www.manualslib.com/manual/744899/Ram-Truck-2011.html?page=373",
+        "https://dba.com.au/wp-content/uploads/2022/10/Technical_Bulletin_DBA_Over-Tightening-of-Wheel-Nuts.pdf"
       ]
     },
     {
@@ -116,6 +154,81 @@
         "https://www.fluke.com/en-in/learn/blog/safety/how-to-go-home-safely-at-the-end-of-the-day",
         "https://www.allaboutcircuits.com/textbook/direct-current/chpt-3/safe-meter-usage/",
         "https://ecmweb.com/safety/article/55332144/safety-best-practices-for-using-electrical-testing-equipment"
+      ],
+      "punto": "Manos · multímetro"
+    },
+    {
+      "id": "matraca",
+      "sistema": "motor",
+      "punto": "Manos · matraca",
+      "nombre": "Aflojar el tapón del cárter con la matraca",
+      "herramienta": "Matraca o barra de fuerza",
+      "tipo": "giro",
+      "porque": "Cuando el tapón se zafa de golpe, la mano sale disparada. Por eso se jala hacia ti; si no queda más que empujar, se empuja con la palma abierta: con el puño, los nudillos se golpean.",
+      "pasos": [
+        "Lleva la mano a la marca amarilla del mango y ciérrala.",
+        "Jala hacia ti (hacia abajo en la pantalla), parejo.",
+        "Si tuvieras que empujar: con la palma abierta, nunca con el puño.",
+        "Cuando el tapón se suelte, suelta el mango."
+      ],
+      "parametros": {
+        "pivote": [0.68, 0.4],
+        "largo": 0.48,
+        "inicial": 180,
+        "sentido": -1,
+        "clic": false,
+        "zona": [0.74, 0.98],
+        "ancho": 0.09,
+        "objetivo": 30,
+        "tiron": 14,
+        "muneca": 35,
+        "munecaGuante": 20,
+        "textoJalar": "Jala hacia abajo, hacia ti, parejo",
+        "textoFin": "¡Se aflojó! Suelta el mango"
+      },
+      "reglas": [
+        {
+          "id": "zona",
+          "frase": "Toma el mango en la marca amarilla: ahí tienes más palanca",
+          "detalle": "Matraca: tomó el mango fuera de la marca",
+          "peso": 10
+        },
+        {
+          "id": "agarre",
+          "frase": "Cierra toda la mano en el mango",
+          "detalle": "Matraca: soltó el agarre mientras jalaba",
+          "peso": 10
+        },
+        {
+          "id": "sentido",
+          "frase": "Jala hacia ti; empujar es más peligroso",
+          "detalle": "Matraca: empujó en lugar de jalar",
+          "peso": 15
+        },
+        {
+          "id": "puno",
+          "frase": "Si empujas, con la palma abierta: con el puño te golpeas los nudillos",
+          "detalle": "Matraca: empujó con el puño cerrado",
+          "peso": 30,
+          "critico": true
+        },
+        {
+          "id": "parejo",
+          "frase": "Más despacio y parejo, sin tirones",
+          "detalle": "Matraca: jalón con tirones",
+          "peso": 8
+        },
+        {
+          "id": "muneca",
+          "frase": "Endereza la muñeca: la mano en línea con el brazo",
+          "detalle": "Matraca: muñeca doblada al jalar",
+          "peso": 8
+        }
+      ],
+      "fuentes": [
+        "https://www.hagerty.com/media/?p=365531",
+        "https://www.cedars-sinai.org/health-topics/hand-tool-safety",
+        "https://engineerfix.com/how-to-use-a-breaker-bar-safely-and-effectively/"
       ]
     }
   ]

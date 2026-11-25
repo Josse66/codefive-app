@@ -74,6 +74,12 @@ const estado = {
   sosteniendo: 0,
   sinLapizDesde: 0,
   lectura: null,
+  // secuencia
+  base: null,
+  apretadas: [],
+  apretando: null,
+  desde: 0,
+  pista: 0,
 };
 
 function reiniciar() {
@@ -94,6 +100,11 @@ function reiniciar() {
     sosteniendo: 0,
     sinLapizDesde: 0,
     lectura: null,
+    base: null,
+    apretadas: [],
+    apretando: null,
+    desde: 0,
+    pista: 0,
   });
   $('resultado-manos').hidden = true;
   $('otra-vez').hidden = true;
@@ -273,9 +284,10 @@ function ciclo() {
   const lapiz = lapices.actualizar(Math.min(9, ...pinzas())) || (guante.conectado && guante.grip);
   dibujarPrincipal(ctx, lienzo.width, lienzo.height);
   if (EJ.tipo === 'giro') pasoGiro(manos, cerrada, ahora);
+  else if (EJ.tipo === 'secuencia') pasoSecuencia(manos, cerrada, ahora);
   else pasoPunta(manos, lapiz, ahora);
   manos.forEach(dibujarMano);
-  dibujarRecuadro(ctx, lienzo.width, lienzo.height, EJ.tipo === 'giro' ? cerrada : lapiz);
+  dibujarRecuadro(ctx, lienzo.width, lienzo.height, EJ.tipo === 'punta' ? lapiz : cerrada);
 }
 
 function pasoCalibracion(ahora) {
@@ -361,15 +373,23 @@ function circulo(p, r, relleno, borde) {
   }
 }
 
-// ---------- Tipo "giro": torquímetro ----------
+// ---------- Tipo "giro": torquímetro (apretar, con clic) y matraca (aflojar, sin clic) ----------
 // Cada ejercicio trae solo los parámetros de su tipo: los del otro tipo quedan vacíos.
+// inicial: hacia dónde apunta el mango al empezar (grados; 0 = a la derecha, 180 = a la izquierda).
+// sentido: 1 aprieta (gira como el reloj, en pantalla); -1 afloja.
 const punto = (par) => (par ? { x: par[0], y: par[1] } : null);
 const pivote = punto(P.pivote);
 const largoU = (P.largo ?? 0) * ASPECTO; // el largo se da en ancho de imagen
+const INICIAL = P.inicial ?? 0;
+const SENTIDO = P.sentido ?? 1;
+const CON_CLIC = P.clic !== false;
+const anguloMango = (avance) => INICIAL + SENTIDO * avance;
+const diferencia = (a, b) => ((a - b + 540) % 360) - 180; // sin el salto de 180 a -180
 
-function dibujarTorquimetro(anguloGrados, agarrado) {
+function dibujarTorquimetro(avance, agarrado) {
   const piv = aPx(pivote);
   const L = P.largo * lienzo.width;
+  const rad = (g) => (g * Math.PI) / 180;
   ctx.save();
   ctx.translate(piv.x, piv.y);
   // Tuerca y rueda (de fondo).
@@ -378,7 +398,7 @@ function dibujarTorquimetro(anguloGrados, agarrado) {
     const a = (k / 6) * Math.PI * 2;
     circulo({ x: Math.cos(a) * L * 0.13, y: Math.sin(a) * L * 0.13 }, L * 0.025, '#8e959c');
   }
-  ctx.rotate((anguloGrados * Math.PI) / 180);
+  ctx.rotate(rad(anguloMango(avance)));
   // Barra y cabeza.
   ctx.fillStyle = '#8e959c';
   ctx.fillRect(0, -L * 0.035, L, L * 0.07);
@@ -391,17 +411,20 @@ function dibujarTorquimetro(anguloGrados, agarrado) {
   ctx.fillRect(L * P.zona[0], -L * 0.06, L * (P.zona[1] - P.zona[0]), L * 0.12);
   ctx.globalAlpha = 1;
   ctx.restore();
-  // Escala de avance hasta el clic.
+  // Escala de avance hasta el clic (o hasta que la tuerca se suelta).
+  const desde = rad(INICIAL);
+  const hasta = rad(anguloMango(P.objetivo));
+  const lleno = rad(anguloMango(Math.max(0, Math.min(avance, P.objetivo))));
   ctx.save();
   ctx.translate(piv.x, piv.y);
-  ctx.strokeStyle = 'rgba(255,255,255,.35)';
   ctx.lineWidth = 6;
+  ctx.strokeStyle = 'rgba(255,255,255,.35)';
   ctx.beginPath();
-  ctx.arc(0, 0, L * 1.06, 0, (P.objetivo * Math.PI) / 180);
+  ctx.arc(0, 0, L * 1.06, desde, hasta, SENTIDO < 0);
   ctx.stroke();
   ctx.strokeStyle = COLOR.marca;
   ctx.beginPath();
-  ctx.arc(0, 0, L * 1.06, 0, (Math.max(0, Math.min(anguloGrados, P.objetivo)) * Math.PI) / 180);
+  ctx.arc(0, 0, L * 1.06, desde, lleno, SENTIDO < 0);
   ctx.stroke();
   ctx.restore();
 }
@@ -418,14 +441,14 @@ function pasoGiro(manos, cerrada, ahora) {
   }
   const c = U(palma(mano));
   const piv = U(pivote);
-  const { t, lejos } = sobreMango(c, piv, estado.angulo, largoU);
+  const { t, lejos } = sobreMango(c, piv, anguloMango(estado.angulo), largoU);
   const enMango = lejos < P.ancho && t > 0.15 && t < 1.15;
   const enZona = enMango && t >= P.zona[0] - 0.04 && t <= P.zona[1] + 0.08;
 
   if (estado.fase === 'acerca' || estado.fase === 'toma') {
     estado.fase = 'toma';
     if (enMango && cerrada && !enZona) {
-      // Tomó el mango, pero no en la marca: lee mal el torque.
+      // Tomó el mango, pero no en la marca: lee mal el torque (o se pierde palanca).
       if (!estado.zonaMalDesde) estado.zonaMalDesde = ahora;
       if (ahora - estado.zonaMalDesde > 500) fallar('zona');
     } else estado.zonaMalDesde = 0;
@@ -434,7 +457,8 @@ function pasoGiro(manos, cerrada, ahora) {
       if (ahora - estado.enZonaDesde > 400) {
         estado.fase = 'jala';
         estado.agarrado = true;
-        estado.inicio ??= anguloAlrededor(c, piv);
+        // Donde quedó el mango menos lo que ya avanzó: al volver a tomarlo no brinca.
+        estado.inicio = anguloAlrededor(c, piv) - SENTIDO * estado.angulo;
         guante.neutro = guante.conectado ? { roll: guante.roll, pitch: guante.pitch } : null;
         estado.historial = [];
         sonar('mano');
@@ -446,8 +470,8 @@ function pasoGiro(manos, cerrada, ahora) {
     return;
   }
 
-  // Jalando (o ya después del clic): el torquímetro sigue a la mano.
-  const avance = anguloAlrededor(c, piv) - estado.inicio;
+  // Jalando (o ya después del clic): la herramienta sigue a la mano.
+  const avance = SENTIDO * diferencia(anguloAlrededor(c, piv), estado.inicio);
   estado.angulo = Math.max(-25, Math.min(P.objetivo + 25, avance));
   estado.historial.push([ahora, avance]);
   while (estado.historial.length && ahora - estado.historial[0][0] > 150) estado.historial.shift();
@@ -458,14 +482,22 @@ function pasoGiro(manos, cerrada, ahora) {
   const abierta = estado.abiertaDesde && ahora - estado.abiertaDesde > 300;
 
   if (estado.fase === 'clic') {
-    estado.pasado = Math.max(estado.pasado, avance - P.objetivo);
-    if (estado.pasado > P.pasarse) fallar('clic');
+    if (CON_CLIC) {
+      estado.pasado = Math.max(estado.pasado, avance - P.objetivo);
+      if (estado.pasado > P.pasarse) fallar('clic');
+    }
     if (abierta || ahora - estado.tClic > 1600) terminar();
-    else frase('¡Clic! Suelta el mango', 'ok');
+    else frase(CON_CLIC ? '¡Clic! Suelta el mango' : (P.textoFin ?? '¡Listo!'), 'ok');
     return;
   }
 
-  if (abierta) {
+  const empuja = avance < -6;
+  if (empuja) {
+    fallar('sentido');
+    // Si de plano hay que empujar, con la palma abierta: con el puño, al zafarse, la mano se golpea.
+    if (cerrada) fallar('puno');
+  }
+  if (abierta && !empuja) {
     // Soltó a medio jalón: cuenta como agarre flojo y vuelve a tomarlo donde quedó.
     fallar('agarre');
     estado.fase = 'toma';
@@ -474,12 +506,11 @@ function pasoGiro(manos, cerrada, ahora) {
     return;
   }
   if (!enZona && enMango) fallar('zona');
-  if (avance < -6) fallar('sentido');
   const [, primero] = estado.historial[0] ?? [ahora, avance];
   if (Math.abs(avance - primero) > P.tiron) fallar('parejo');
   const torcida = guante.neutro
     ? desviacionGuante() > P.munecaGuante
-    : desviacionMuneca(mano, ASPECTO, estado.angulo) > P.muneca;
+    : desviacionMuneca(mano, ASPECTO, anguloMango(estado.angulo)) > P.muneca;
   if (torcida) {
     if (!estado.munecaDesde) estado.munecaDesde = ahora;
     if (ahora - estado.munecaDesde > 500) fallar('muneca');
@@ -488,14 +519,118 @@ function pasoGiro(manos, cerrada, ahora) {
   if (avance >= P.objetivo) {
     estado.fase = 'clic';
     estado.tClic = ahora;
-    sonar('clic');
+    sonar(CON_CLIC ? 'clic' : 'llave');
     return;
   }
   frase(
     avance < 2
-      ? 'Jala hacia abajo, hacia ti, parejo'
+      ? (P.textoJalar ?? 'Jala hacia ti, parejo')
       : `Sigue jalando parejo… ${Math.round((avance / P.objetivo) * 100)} %`,
   );
+}
+
+// ---------- Tipo "secuencia": apretar las tuercas de la rueda en estrella ----------
+// Se aprieta una tuerca poniendo la mano cerrada sobre ella (como al tomar la llave). La primera es
+// libre; las siguientes van en estrella, cada una "enfrente" de la anterior, para que la rueda
+// asiente pareja (Fleet Maintenance; manual Ram; DBA).
+const TUERCAS = P.tuercas ?? 10;
+const centroRueda = punto(P.centro);
+const posTuerca = (k) => {
+  const a = -Math.PI / 2 + (k / TUERCAS) * Math.PI * 2;
+  return { x: centroRueda.x + (Math.cos(a) * P.radio) / ASPECTO, y: centroRueda.y + Math.sin(a) * P.radio };
+};
+const esperada = () =>
+  estado.base == null ? null : (estado.base + P.orden[estado.apretadas.length]) % TUERCAS;
+
+function dibujarRueda(sobre, ahora) {
+  const c = aPx(centroRueda);
+  const R = P.radio * lienzo.height;
+  circulo(c, R * 1.45, 'rgba(51,64,76,.85)', '#c9d1d8');
+  circulo(c, R * 0.55, '#5b636b', COLOR.blanco);
+  const pista = estado.pista && ahora < estado.pista ? esperada() : null;
+  for (let k = 0; k < TUERCAS; k += 1) {
+    const p = aPx(posTuerca(k));
+    const n = estado.apretadas.indexOf(k);
+    let relleno = '#8e959c';
+    if (n >= 0) relleno = COLOR.ok;
+    else if (k === pista && Math.floor(ahora / 250) % 2) relleno = COLOR.marca;
+    else if (k === sobre) relleno = '#c9d1d8';
+    circulo(p, P.radioTuerca * lienzo.height, relleno, COLOR.blanco);
+    if (n >= 0) {
+      ctx.fillStyle = COLOR.blanco;
+      ctx.font = '700 22px Archivo, sans-serif';
+      ctx.fillText(String(n + 1), p.x - 7, p.y + 8);
+    }
+  }
+  // Avance de la tuerca que se está apretando.
+  if (estado.apretando != null && estado.desde) {
+    const p = aPx(posTuerca(estado.apretando));
+    const f = Math.min(1, (ahora - estado.desde) / (P.sostener * 1000));
+    ctx.strokeStyle = COLOR.marca;
+    ctx.lineWidth = 6;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, P.radioTuerca * lienzo.height + 8, -Math.PI / 2, -Math.PI / 2 + f * Math.PI * 2);
+    ctx.stroke();
+  }
+}
+
+function pasoSecuencia(manos, cerrada, ahora) {
+  const mano = manos[0];
+  const c = mano ? U(palma(mano)) : null;
+  // La tuerca bajo la mano (la más cercana, si está a menos de 1.6 radios de tuerca).
+  let sobre = null;
+  if (c) {
+    let mejor = Infinity;
+    for (let k = 0; k < TUERCAS; k += 1) {
+      const d = distancia(c, U(posTuerca(k)));
+      if (d < mejor && d < P.radioTuerca * 1.6) {
+        mejor = d;
+        sobre = k;
+      }
+    }
+  }
+  dibujarRueda(sobre, ahora);
+  if (estado.fase === 'resultado') return;
+  estado.fase = 'aprieta';
+  if (!mano) {
+    frase('Pon tu mano entre las dos cámaras');
+    return;
+  }
+  if (sobre == null || !cerrada) {
+    estado.apretando = null;
+    estado.desde = 0;
+    frase(
+      estado.apretadas.length
+        ? `Van ${estado.apretadas.length} de ${TUERCAS}: sigue en estrella, con la mano cerrada sobre la tuerca`
+        : 'Cierra la mano sobre cualquier tuerca para empezar',
+    );
+    return;
+  }
+  if (estado.apretadas.includes(sobre)) {
+    frase('Esa ya está apretada: busca la de enfrente');
+    return;
+  }
+  if (estado.apretando !== sobre) {
+    estado.apretando = sobre;
+    estado.desde = ahora;
+  }
+  if (ahora - estado.desde < P.sostener * 1000) {
+    frase('Aprieta…');
+    return;
+  }
+  // Ya la "apretó": ¿era la que tocaba en la estrella?
+  const toca = esperada();
+  estado.apretando = null;
+  estado.desde = 0;
+  if (toca != null && sobre !== toca) {
+    fallar('orden');
+    estado.pista = ahora + 2500; // se ilumina la que tocaba
+    return;
+  }
+  if (estado.base == null) estado.base = sobre;
+  estado.apretadas.push(sobre);
+  sonar('clic');
+  if (estado.apretadas.length >= TUERCAS) terminar();
 }
 
 // ---------- Tipo "punta": multímetro con una sola mano ----------
@@ -657,6 +792,8 @@ async function guardar(nota) {
     .then((r) => (r.ok ? r.json() : null))
     .catch(() => null);
   const p = datos?.progreso?.[EJ.sistema] ?? { conoce: [], encuentra: false, comprueba: null };
+  // La mejor calificación de cada ejercicio de manos del sistema (y la mejor de todas).
+  p.manosPor = { ...p.manosPor, [EJ.id]: Math.max(p.manosPor?.[EJ.id] ?? 0, nota) };
   p.manos = Math.max(p.manos ?? 0, nota);
   await enviar(`${API}/progreso/${EJ.sistema}`, 'PUT', { datos: p });
 }
