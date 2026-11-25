@@ -591,11 +591,71 @@ export function crearEscena(
   // La carrocería y la tapa del motor tapan lo de adentro (salvo con rayos X).
   const ocluyentes = [];
   let tapaMotor = null;
+  // Rayos X: la carrocería se vuelve casi transparente para ver motor, bajos e interior.
+  const rayosX = { activo: false };
+  // Tapa trasera del motor: gira sobre su bisagra de arriba.
+  const tapa = { t: 1, desde: 0, hasta: 0 };
+  // Para señalar, la carrocería se aproxima con dos cajas invisibles (cabina y compartimiento del
+  // motor): tapan igual que la malla real y el rayo cuesta casi nada (la malla tiene ~10 mil
+  // triángulos). Con la tapa abierta, la caja del motor deja de tapar.
+  const sinDibujar = new THREE.MeshBasicMaterial({ visible: false });
+  const cajaCabina = new THREE.Mesh(new THREE.BoxGeometry(10.45, 2.88, 2.55), sinDibujar);
+  cajaCabina.position.set(0.775, 1.76, 0);
+  const cajaMotor = new THREE.Mesh(new THREE.BoxGeometry(1.55, 2.88, 2.55), sinDibujar);
+  cajaMotor.position.set(-5.225, 1.76, 0);
+  escena.add(cajaCabina, cajaMotor);
+  const tapanRayo = () => (tapa.hasta !== 0 ? [cajaCabina] : [cajaCabina, cajaMotor]);
+  // Lo que va encerrado en el compartimiento del motor (atrás, arriba del piso) no se ve con la
+  // tapa cerrada y sin rayos X: no se dibuja. Ahorra ~80 llamadas de dibujo por cuadro.
+  const enMotor = [];
+  function actualizarOcultos() {
+    const seVe = rayosX.activo || tapa.hasta !== 0;
+    enMotor.forEach((n) => Object.assign(n, { visible: seVe }));
+  }
+
+  // Un solo material "fantasma" para toda la carrocería: cambiar a rayos X es solo cambiar de
+  // material (sin recompilar los de la carrocería, que trababa la página un instante).
+  const fantasma = new THREE.MeshBasicMaterial({
+    color: 0x9fb3c8,
+    transparent: true,
+    opacity: 0.12,
+    depthWrite: false,
+  });
+  // Una malla diminuta fuera de la vista hace que el material se prepare al cargar.
+  const precalentar = new THREE.Mesh(new THREE.PlaneGeometry(0.01, 0.01), fantasma);
+  precalentar.position.set(0, -50, 0);
+  escena.add(precalentar);
+  function verRayosX(encender) {
+    rayosX.activo = encender;
+    ocluyentes.forEach((o) =>
+      o.traverse((n) => {
+        if (!n.isMesh) return;
+        const malla = n;
+        malla.userData.materialOriginal ??= malla.material;
+        malla.material = encender ? fantasma : malla.userData.materialOriginal;
+      }),
+    );
+    actualizarOcultos();
+  }
+
+  function abrirTapa(abrir) {
+    if (!tapaMotor) return;
+    Object.assign(tapa, { t: 0, desde: tapaMotor.rotation.z, hasta: abrir ? -1.25 : 0 });
+    actualizarOcultos();
+  }
+
   function registrarModelo(copia) {
+    const caja3 = new THREE.Box3();
+    const centro = new THREE.Vector3();
+    copia.updateMatrixWorld(true);
     copia.traverse((n) => {
       const nodo = n;
       if (nodo.name === 'carroceria' || nodo.name === 'tapa_motor') ocluyentes.push(nodo);
       if (nodo.name === 'tapa_motor') tapaMotor = nodo;
+      if (nodo.name.startsWith('p_') && !nodo.name.includes('__')) {
+        caja3.setFromObject(nodo).getCenter(centro);
+        if (centro.x < -4.45 && centro.y > 0.45) enMotor.push(nodo);
+      }
       // Solo el nodo de la pieza (sus mallas se llaman "p_<id>__<material>").
       if (!completo || !nodo.name.startsWith('p_') || nodo.name.includes('__')) return;
       const id = nodo.name.slice(2);
@@ -605,6 +665,7 @@ export function crearEscena(
       nodo.userData.modelo = nodo;
       mallasPieza.set(id, nodo);
     });
+    actualizarOcultos();
     // Avisa a la página que ya puede pedir piezas.
     renderer.domElement.dispatchEvent(new CustomEvent('modelo-listo'));
   }
@@ -617,37 +678,6 @@ export function crearEscena(
     compilar,
   );
   escena.add(bus);
-
-  // Rayos X: la carrocería se vuelve casi transparente para ver motor, bajos e interior.
-  const rayosX = { activo: false };
-  function verRayosX(encender) {
-    rayosX.activo = encender;
-    ocluyentes.forEach((o) =>
-      o.traverse((n) => {
-        if (!n.isMesh) return;
-        (Array.isArray(n.material) ? n.material : [n.material]).forEach((material) => {
-          const mt = material;
-          mt.userData.original ??= {
-            transparent: mt.transparent,
-            opacity: mt.opacity,
-            depthWrite: mt.depthWrite,
-          };
-          Object.assign(
-            mt,
-            encender ? { transparent: true, opacity: 0.12, depthWrite: false } : mt.userData.original,
-          );
-          mt.needsUpdate = true;
-        });
-      }),
-    );
-  }
-
-  // Tapa trasera del motor: gira sobre su bisagra de arriba.
-  const tapa = { t: 1, desde: 0, hasta: 0 };
-  function abrirTapa(abrir) {
-    if (!tapaMotor) return;
-    Object.assign(tapa, { t: 0, desde: tapaMotor.rotation.z, hasta: abrir ? -1.25 : 0 });
-  }
 
   // Recuadros 1 a 9 para explorar por grupo de función.
   const recuadros = new Map();
@@ -843,7 +873,7 @@ export function crearEscena(
 
   function piezaEn(x, y) {
     // En el autobús completo la carrocería tapa lo de adentro (si no hay rayos X).
-    const tapan = completo && !rayosX.activo ? ocluyentes : [];
+    const tapan = completo && !rayosX.activo && !inmersivo.dentro ? tapanRayo() : [];
     const golpes = rayo(x, y).intersectObjects([...mallasPieza.values(), ...tapan], true);
     const primera = golpes.find((g) => g.object.isMesh);
     const nodo = primera && piezaDe(primera.object);
@@ -868,7 +898,7 @@ export function crearEscena(
 
   // Todas las piezas que atraviesa el rayo, de la más cercana a la más lejana (sin repetir).
   function piezasEn(x, y) {
-    const tapan = completo && !rayosX.activo ? ocluyentes : [];
+    const tapan = completo && !rayosX.activo && !inmersivo.dentro ? tapanRayo() : [];
     const ids = [];
     const golpes = rayo(x, y)
       .intersectObjects([...mallasPieza.values(), ...tapan], true)

@@ -730,7 +730,28 @@ const entradas = new InputBus();
 entradas.conectarMouse(escena.lienzo);
 const explorando = () => estado.modo === 'libre' || estado.modo === 'sistema';
 
+// Qué hay bajo el cursor se calcula a lo más una vez por cuadro, y nunca mientras se gira la
+// vista con el clic derecho (el rayo contra la carrocería es lo más caro de cada movimiento).
+let girando = false;
+escena.lienzo.addEventListener('pointerdown', (e) => {
+  if (e.button === 2) girando = true;
+});
+window.addEventListener('pointerup', (e) => {
+  if (e.button === 2) girando = false;
+});
+let poseUltima = null;
+let posePendiente = false;
 entradas.addEventListener('pose', ({ detail }) => {
+  poseUltima = detail;
+  if (posePendiente || girando) return;
+  posePendiente = true;
+  requestAnimationFrame(() => {
+    posePendiente = false;
+    if (!girando) atenderPose(poseUltima);
+  });
+});
+
+function atenderPose(detail) {
   const encima = escena.moverHerramienta(detail.x, detail.y, entradas.fuentes.guante ? detail : null)?.pieza;
   // Explorando, el cursor resalta y nombra; en las vueltas no se regala el nombre.
   if (explorando()) {
@@ -740,7 +761,7 @@ entradas.addEventListener('pose', ({ detail }) => {
   } else {
     $('etiqueta-pieza').hidden = true;
   }
-});
+}
 
 // La pieza que se busca ahora (si hay una), para aceptar el clic aunque otra quede enfrente.
 function buscada() {
