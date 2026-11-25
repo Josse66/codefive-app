@@ -608,9 +608,15 @@ export function crearEscena(
   // Lo que va encerrado en el compartimiento del motor (atrás, arriba del piso) no se ve con la
   // tapa cerrada y sin rayos X: no se dibuja. Ahorra ~80 llamadas de dibujo por cuadro.
   const enMotor = [];
+  // Lo de abajo (tanques, ejes, bolsas de aire, líneas) queda tapado por el faldón: desde afuera
+  // y sin rayos X tampoco se dibuja. Caminando sí, por si la persona se agacha a ver.
+  const enBajos = [];
+  const vista = { primeraPersona: false };
   function actualizarOcultos() {
-    const seVe = rayosX.activo || tapa.hasta !== 0;
-    enMotor.forEach((n) => Object.assign(n, { visible: seVe }));
+    const seVeMotor = rayosX.activo || tapa.hasta !== 0;
+    enMotor.forEach((n) => Object.assign(n, { visible: seVeMotor }));
+    const seVeAbajo = rayosX.activo || vista.primeraPersona;
+    enBajos.forEach((n) => Object.assign(n, { visible: seVeAbajo }));
   }
 
   // Un solo material "fantasma" para toda la carrocería: cambiar a rayos X es solo cambiar de
@@ -655,6 +661,7 @@ export function crearEscena(
       if (nodo.name.startsWith('p_') && !nodo.name.includes('__')) {
         caja3.setFromObject(nodo).getCenter(centro);
         if (centro.x < -4.45 && centro.y > 0.45) enMotor.push(nodo);
+        else if (centro.y < 0.9 && Math.abs(centro.z) < 1.15) enBajos.push(nodo);
       }
       // Solo el nodo de la pieza (sus mallas se llaman "p_<id>__<material>").
       if (!completo || !nodo.name.startsWith('p_') || nodo.name.includes('__')) return;
@@ -802,6 +809,8 @@ export function crearEscena(
       herramienta.rotation.set(0.2, -0.3, 0);
       herramienta.scale.setScalar(0.32);
       manoIzquierda.visible = true;
+      vista.primeraPersona = true;
+      actualizarOcultos();
     } else {
       mirando = false;
       teclas.clear();
@@ -809,6 +818,8 @@ export function crearEscena(
       herramienta.scale.setScalar(1);
       herramienta.rotation.set(0, 0, 0);
       manoIzquierda.visible = false;
+      vista.primeraPersona = false;
+      actualizarOcultos();
       camara.fov = 38;
       camara.updateProjectionMatrix();
       camara.position.copy(inmersivo.guardado.posicion);

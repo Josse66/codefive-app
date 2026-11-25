@@ -22,7 +22,8 @@
     "format": "prettier --write .",
     "db:reset": "node --disable-warning=ExperimentalWarning server/db/reset.js",
     "test": "node --disable-warning=ExperimentalWarning --test \"server/**/*.test.js\"",
-    "db:demo": "cross-env LOG_LEVEL=warn node --disable-warning=ExperimentalWarning server/db/demo.js"
+    "db:demo": "cross-env LOG_LEVEL=warn node --disable-warning=ExperimentalWarning server/db/demo.js",
+    "demo": "vite build && cross-env NODE_ENV=production node --disable-warning=ExperimentalWarning server/bin/www.js"
   },
   "engines": {
     "node": ">=22.13"

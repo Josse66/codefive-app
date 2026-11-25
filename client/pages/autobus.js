@@ -253,6 +253,24 @@ function tarjetaLibre() {
     lista.append(li);
   });
   partes.push(lista);
+  // Orden de taller del día: atajo directo a reparar.
+  const conOrden = SISTEMAS.find((x) => x.orden_taller);
+  if (conOrden) {
+    const caja = el('div', 'grid gap-2 border-2 border-tinta bg-placa p-3');
+    caja.append(
+      el(
+        'p',
+        'font-narrow text-xs font-bold uppercase tracking-wider text-tinta-3',
+        'Orden de taller del día',
+      ),
+      el('p', 'font-semibold', `${conOrden.orden_taller.titulo} · ${conOrden.nombre}`),
+      boton('Abrir la orden →', 'boton w-fit px-4 py-2', () => {
+        abrirSistema(conOrden);
+        empezarOrden();
+      }),
+    );
+    partes.push(caja);
+  }
   if (estado.vista) partes.push(fichaPieza(estado.vista, true));
   else
     partes.push(
@@ -390,11 +408,15 @@ function tarjetaSistema() {
         mejor != null ? `Tu mejor calificación: ${mejor}` : 'Diagnostica, desarma, cambia y prueba.',
       ),
     );
-    if (conocidas)
-      caja.append(
-        boton(mejor != null ? 'Repetir la orden' : 'Abrir la orden', 'boton w-fit px-4 py-2', empezarOrden),
-      );
-    else caja.append(el('span', 'text-xs text-tinta-3', 'Primero termina Conoce'));
+    // Siempre abierta: quien ya sabe puede ir directo a reparar; se recomienda después de Conoce.
+    caja.append(
+      boton(
+        mejor != null ? 'Repetir la orden' : 'Abrir la orden',
+        `${conocidas ? 'boton' : 'boton-linea'} w-fit px-4 py-2`,
+        empezarOrden,
+      ),
+    );
+    if (!conocidas) caja.append(el('span', 'text-xs text-tinta-3', 'Te conviene hacer Conoce antes.'));
     partes.push(caja);
   }
   if (sistema.practica) {
