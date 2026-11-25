@@ -61,17 +61,33 @@ export async function alternarConexion() {
 // ---------- Respuesta en la mano ----------
 // El puerto deja una sola escritura a la vez: si choca con otra, ese aviso se pierde y ya.
 const enviar = (c) => serial.enviar(c).catch(() => {});
-export const pitar = () => activo() && enviar('B');
-export function pitarDoble() {
-  if (!activo()) return;
-  enviar('B');
-  setTimeout(() => enviar('B'), 220);
-}
+// El guante del equipo no trae zumbador: la respuesta en la mano es con el LED (el sonido sale de
+// la laptop). Mientras destella, el LED no sigue al agarre; al terminar vuelve a como estaba.
 let ledPrendido = null;
+let destellando = false;
+function destellar(veces) {
+  if (!activo() || destellando) return;
+  destellando = true;
+  const pasos = [];
+  for (let k = 0; k < veces; k += 1) pasos.push('1', '0');
+  pasos.forEach((c, k) => setTimeout(() => enviar(c), k * 130));
+  setTimeout(
+    () => {
+      destellando = false;
+      if (ledPrendido) enviar('1');
+    },
+    pasos.length * 130 + 50,
+  );
+}
+/** Clic del torquímetro o tuerca apretada: un destello. */
+export const pitar = () => destellar(1);
+/** Error: tres destellos rápidos. */
+export const pitarDoble = () => destellar(3);
+/** LED fijo mientras el agarre es bueno. */
 export function led(prender) {
   if (!activo() || ledPrendido === prender) return;
   ledPrendido = prender;
-  enviar(prender ? '1' : '0');
+  if (!destellando) enviar(prender ? '1' : '0');
 }
 
 // ---------- Muñeca ----------
