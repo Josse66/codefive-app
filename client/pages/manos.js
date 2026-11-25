@@ -34,7 +34,17 @@ import {
   volteo,
 } from '../manos/camaras.js';
 import { Calibracion } from '../manos/calibracion.js';
-import { SerialGlove } from '../entradas/serialGlove.js';
+import {
+  activo as guanteActivo,
+  alCambiar as alCambiarGuante,
+  alternarConexion,
+  calibrarMuneca,
+  desviacion as desviacionGuante,
+  guante,
+  led,
+  pitar,
+  pitarDoble,
+} from '../manos/guante.js';
 import { hablar } from '../accesibilidad/voz.js';
 import { sonar } from '../escena/sonidos.js';
 
@@ -120,6 +130,7 @@ function fallar(id) {
   if (!estado.fallas.has(id)) {
     estado.fallas.add(id);
     sonar(regla.critico ? 'critico' : 'mal');
+    pitarDoble();
   }
 }
 
@@ -148,31 +159,54 @@ function frase(guia, tono = 'guia') {
   else decir(guia, tono);
 }
 
-// ---------- Guante (opcional): muñeca con el giroscopio y agarre con su sensor ----------
-const guante = { conectado: false, roll: 0, pitch: 0, grip: false, neutro: null };
-const serial = new SerialGlove();
-serial.addEventListener('dato', ({ detail }) => {
-  Object.assign(guante, { roll: detail.roll ?? 0, pitch: detail.pitch ?? 0, grip: Boolean(detail.grip) });
-});
-serial.addEventListener('estado', ({ detail }) => {
-  guante.conectado = detail.conectado;
-  $('estado-guante').textContent = detail.conectado
-    ? 'Guante conectado: mide la muñeca y el agarre.'
-    : 'Sin guante: todo se revisa con la cámara.';
-  $('guante').textContent = detail.conectado ? 'Desconectar guante' : 'Conectar guante';
-});
+// ---------- Guante (manos/guante.js): estado y lecturas en vivo ----------
+function pintarGuante() {
+  const ok = guante.conectado;
+  $('guante').textContent = ok ? 'Desconectar guante' : 'Conectar guante';
+  $('muneca-recta').hidden = !ok;
+  $('lectura-guante').hidden = !ok;
+  let texto = 'Sin guante: todo se revisa con la cámara.';
+  if (ok && guante.neutro) texto = 'Guante conectado y calibrado: mide la muñeca, el agarre y los tirones.';
+  else if (ok) texto = 'Guante conectado. Calibra la mano recta para medir la muñeca.';
+  $('estado-guante').textContent = guante.error || texto;
+}
+alCambiarGuante(pintarGuante);
 $('guante').addEventListener('click', async () => {
   try {
-    if (guante.conectado) await serial.desconectar();
-    else await serial.conectar();
+    await alternarConexion();
   } catch (error) {
-    $('estado-guante').textContent = error.message;
+    $('estado-guante').textContent =
+      error.name === 'NotFoundError'
+        ? 'No elegiste un puerto. Conecta el guante por USB y vuelve a intentar.'
+        : error.message;
   }
 });
-const desviacionGuante = () =>
-  guante.neutro
-    ? Math.max(Math.abs(guante.roll - guante.neutro.roll), Math.abs(guante.pitch - guante.neutro.pitch))
-    : 0;
+$('muneca-recta').addEventListener('click', async () => {
+  $('estado-guante').textContent = 'Deja la mano recta, en línea con el brazo, y quieta…';
+  await calibrarMuneca();
+  pintarGuante();
+});
+// Lecturas en vivo (5 veces por segundo).
+setInterval(() => {
+  if (!guante.conectado) return;
+  const fresco = guanteActivo();
+  $('lectura-guante').replaceChildren(
+    ...[
+      ['Muñeca', guante.neutro ? `${Math.round(desviacionGuante())}° de la recta` : 'sin calibrar'],
+      ['Agarre (botón)', guante.grip ? 'apretado' : 'suelto'],
+      ['Movimiento', `${Math.round(guante.gmag)} °/s`],
+      ['Señal', fresco ? 'llegando' : 'sin datos: revisa el cable'],
+    ].map(([k, v]) => {
+      const fila = document.createElement('div');
+      fila.className = 'flex justify-between gap-2';
+      fila.append(
+        Object.assign(document.createElement('span'), { textContent: k }),
+        Object.assign(document.createElement('strong'), { textContent: v }),
+      );
+      return fila;
+    }),
+  );
+}, 200);
 
 // ---------- Cámaras (manos/camaras.js) y calibración (manos/calibracion.js) ----------
 const umbral = (k, defecto) => AJUSTES.umbrales?.[k] ?? defecto;
@@ -303,8 +337,11 @@ function ciclo() {
   const manos = manosEnPantalla(camPosicion(), ahora);
   // Agarre con la vista de abajo (ve la palma); el guante, si está, también cuenta.
   const ag = agarre();
-  const cerrada = (ag ? puno.actualizar(ag.apertura) : false) || (guante.conectado && guante.grip);
-  const lapiz = lapices.actualizar(Math.min(9, ...pinzas())) || (guante.conectado && guante.grip);
+  const conGuante = guanteActivo() && guante.grip;
+  const cerrada = (ag ? puno.actualizar(ag.apertura) : false) || conGuante;
+  const lapiz = lapices.actualizar(Math.min(9, ...pinzas())) || conGuante;
+  // LED del guante: prendido mientras el agarre es bueno.
+  led(estado.agarrado || (EJ.tipo !== 'giro' && (EJ.tipo === 'punta' ? lapiz : cerrada)));
   dibujarPrincipal(ctx, lienzo.width, lienzo.height);
   if (verificando) pasoVerificar(manos, ag, cerrada, lapiz);
   else if (EJ.tipo === 'giro') pasoGiro(manos, cerrada, ahora);
@@ -423,6 +460,13 @@ function pasoCalibracion(ahora) {
     pintarElegirArriba(false);
     verificando = true;
     pintarVerificar(true, r.ok ? '' : 'Ojo: el puño casi no se distingue.');
+    if (guanteActivo()) {
+      avisoCamaras(`${r.aviso} Ahora el guante: deja la mano recta, en línea con el brazo, y quieta…`);
+      calibrarMuneca().then(() => {
+        avisoCamaras(`${r.aviso} Guante calibrado.`);
+        pintarGuante();
+      });
+    }
     return;
   }
   pintarElegirArriba(calibracion.paso === 'rol' && r.fase !== 'ok');
@@ -636,7 +680,7 @@ function pasoGiro(manos, cerrada, ahora) {
         estado.agarrado = true;
         // Donde quedó el mango menos lo que ya avanzó: al volver a tomarlo no brinca.
         estado.inicio = anguloAlrededor(c, piv) - SENTIDO * estado.angulo;
-        guante.neutro = guante.conectado ? { roll: guante.roll, pitch: guante.pitch } : null;
+        if (guanteActivo() && !guante.neutro) guante.neutro = { roll: guante.roll, pitch: guante.pitch };
         estado.historial = [];
         sonar('mano');
       }
@@ -685,9 +729,12 @@ function pasoGiro(manos, cerrada, ahora) {
   if (!enZona && enMango) fallar('zona');
   const [, primero] = estado.historial[0] ?? [ahora, avance];
   if (Math.abs(avance - primero) > P.tiron) fallar('parejo');
-  const torcida = guante.neutro
-    ? desviacionGuante() > P.munecaGuante
-    : desviacionMuneca(mano, ASPECTO, anguloMango(estado.angulo)) > P.muneca;
+  // Tirones: con el guante, por la velocidad de giro de la mano (mucho más fina que la cámara).
+  if (guanteActivo() && guante.gmag > (P.tironGuante ?? 220)) fallar('parejo');
+  const torcida =
+    guanteActivo() && guante.neutro
+      ? desviacionGuante() > P.munecaGuante
+      : desviacionMuneca(mano, ASPECTO, anguloMango(estado.angulo)) > P.muneca;
   if (torcida) {
     if (!estado.munecaDesde) estado.munecaDesde = ahora;
     if (ahora - estado.munecaDesde > 500) fallar('muneca');
@@ -697,6 +744,7 @@ function pasoGiro(manos, cerrada, ahora) {
     estado.fase = 'clic';
     estado.tClic = ahora;
     sonar(CON_CLIC ? 'clic' : 'llave');
+    pitar(); // en la mano, como un torquímetro de verdad
     return;
   }
   frase(
@@ -806,6 +854,7 @@ function pasoSecuencia(manos, cerrada, ahora) {
   if (estado.base == null) estado.base = sobre;
   estado.apretadas.push(sobre);
   sonar('clic');
+  pitar();
   if (estado.apretadas.length >= TUERCAS) terminar();
 }
 
