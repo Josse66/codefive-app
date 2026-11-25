@@ -226,6 +226,7 @@ function pintar() {
       conoce: tarjetaConoce,
       encuentra: tarjetaEncuentra,
       comprueba: tarjetaComprueba,
+      orden: tarjetaOrden,
     }[estado.modo](),
   );
   pintarSistemas();
@@ -372,6 +373,30 @@ function tarjetaSistema() {
     lista.append(li);
   });
   partes.push(lista);
+  if (sistema.orden_taller) {
+    const o = sistema.orden_taller;
+    const mejor = p.orden;
+    const caja = el('div', `grid gap-2 border-2 p-3 ${conocidas ? 'border-tinta' : 'border-placa-linea'}`);
+    caja.append(
+      el(
+        'p',
+        'font-narrow text-xs font-bold uppercase tracking-wider text-tinta-3',
+        'Orden de taller · ahora repáralo',
+      ),
+      el('p', 'font-semibold', o.titulo),
+      el(
+        'p',
+        'text-xs text-tinta-3',
+        mejor != null ? `Tu mejor calificación: ${mejor}` : 'Diagnostica, desarma, cambia y prueba.',
+      ),
+    );
+    if (conocidas)
+      caja.append(
+        boton(mejor != null ? 'Repetir la orden' : 'Abrir la orden', 'boton w-fit px-4 py-2', empezarOrden),
+      );
+    else caja.append(el('span', 'text-xs text-tinta-3', 'Primero termina Conoce'));
+    partes.push(caja);
+  }
   if (sistema.practica) {
     const practica = el('div', 'grid gap-2 border border-placa-linea bg-placa p-3');
     practica.append(el('p', 'text-sm font-semibold', 'Práctica de taller'));
@@ -725,6 +750,283 @@ function revisarComprueba(baseTocada) {
   pintar();
 }
 
+// ---------- Orden de taller: diagnosticar y reparar (tipo simulador de taller) ----------
+// Fases: sintoma → inspeccion (revisas piezas con su herramienta y ves su estado real) →
+// causa (eliges qué está mal; cambiar algo sano cuesta) → reparar (pasos en orden, con
+// errores críticos de seguridad) → resultado (calificación con 91 para aprobar).
+const PENALIZACION = { error: 5, critico: 30, cambioDeMas: 15, inspeccionDeMas: 2 };
+const INSPECCIONES_LIBRES = 8;
+const pesos = (n) => `$${Number(n).toLocaleString('es-MX')}`;
+
+function empezarOrden() {
+  const o = estado.sistema.orden_taller;
+  escena.reiniciarPiezas();
+  escena.quitarMarcas();
+  escena.resaltar(null);
+  escena.elegirHerramienta(null);
+  Object.assign(estado, {
+    modo: 'orden',
+    fase: 'sintoma',
+    herramienta: null,
+    revisadas: new Map(),
+    i: 0,
+    errores: 0,
+    criticos: 0,
+    cambiosDeMas: [],
+    gasto: 0,
+    retro: null,
+    inicio: Date.now(),
+    orden: o,
+    guardado: false,
+  });
+  irA(estado.sistema);
+  pintar();
+}
+
+function estadoDe(base) {
+  const o = estado.orden;
+  return o.estados[base] ?? { estado: 'bien', hallazgo: ficha(base).hazlo.resultado };
+}
+
+function bitacora() {
+  const lista = el('ul', 'grid gap-1 text-sm');
+  estado.revisadas.forEach((hallazgo, base) => {
+    const { estado: e } = estadoDe(base);
+    const marca = { bien: '✓', atencion: '!', mal: '✗' }[e];
+    const color = { bien: 'text-ok', atencion: 'text-med-texto', mal: 'text-mal' }[e];
+    const li = el('li', 'grid grid-cols-[1.2rem_1fr] gap-1');
+    li.append(el('span', `font-bold ${color}`, marca), el('span', '', `${ficha(base).nombre}: ${hallazgo}`));
+    lista.append(li);
+  });
+  return lista;
+}
+
+function tarjetaOrden() {
+  const { sistema, orden: o } = estado;
+  const partes = [encabezado(sistema, 'Orden de taller')];
+  const hoja = el('div', 'grid gap-1 border-2 border-tinta bg-placa p-3');
+  hoja.append(
+    el('p', 'text-xs text-tinta-3', o.cliente),
+    el('p', 'font-sans text-lg font-semibold leading-snug', o.titulo),
+    el('p', 'text-sm text-tinta-2', o.sintoma),
+  );
+  partes.push(hoja);
+
+  if (estado.fase === 'sintoma') {
+    partes.push(
+      el(
+        'p',
+        'text-[15px]',
+        'Antes de cambiar nada, encuentra la causa. Revisa las piezas que creas que tienen que ver, cada una con su herramienta: verás su estado real.',
+      ),
+    );
+    partes.push(
+      boton('Empezar a revisar →', 'boton w-fit px-6', () => {
+        estado.fase = 'inspeccion';
+        pintar();
+      }),
+    );
+    return partes;
+  }
+
+  if (estado.fase === 'inspeccion') {
+    partes.push(
+      el('p', 'text-sm font-semibold', `Revisa piezas del motor (${estado.revisadas.size} revisadas)`),
+    );
+    partes.push(bandeja());
+    if (estado.retro) partes.push(estado.retro);
+    if (estado.revisadas.size) partes.push(el('p', 'text-sm font-semibold', 'Bitácora'), bitacora());
+    partes.push(
+      boton('Ya sé la causa →', `${estado.revisadas.size ? 'boton' : 'boton-linea'} w-fit px-6`, () => {
+        estado.fase = 'causa';
+        estado.retro = null;
+        pintar();
+      }),
+    );
+    return partes;
+  }
+
+  if (estado.fase === 'causa') {
+    partes.push(el('h2', 'font-sans text-xl font-semibold tracking-normal', '¿Qué pieza cambias?'));
+    partes.push(
+      el('p', 'text-sm text-tinta-3', 'Cambiar una pieza sana cuesta dinero al cliente y no arregla nada.'),
+    );
+    if (estado.retro) partes.push(estado.retro);
+    const opciones = el('div', 'grid grid-cols-2 gap-2');
+    sistema.orden
+      .filter((b) => !estado.cambiosDeMas.includes(b))
+      .forEach((b) =>
+        opciones.append(
+          boton(
+            ficha(b).nombre,
+            'border border-tinta px-3 py-2 text-left text-sm font-semibold hover:bg-placa',
+            () => elegirCausa(b),
+          ),
+        ),
+      );
+    partes.push(opciones);
+    partes.push(
+      boton('← Seguir revisando', 'w-fit text-sm text-tinta-2 underline', () => {
+        estado.fase = 'inspeccion';
+        estado.retro = null;
+        pintar();
+      }),
+    );
+    return partes;
+  }
+
+  if (estado.fase === 'reparar') {
+    const paso = o.pasos[estado.i];
+    partes.push(
+      el('p', 'text-sm text-tinta-2', `Reparación · paso ${estado.i + 1} de ${o.pasos.length}`),
+      barra(estado.i, o.pasos.length),
+    );
+    partes.push(el('h2', 'font-sans text-lg font-semibold leading-snug tracking-normal', paso.texto));
+    partes.push(bandeja());
+    if (estado.retro) partes.push(estado.retro);
+    return partes;
+  }
+
+  // Resultado
+  const minutos = Math.max(1, Math.round((Date.now() - estado.inicio) / 60000));
+  const inspeccionesDeMas = Math.max(0, estado.revisadas.size - INSPECCIONES_LIBRES);
+  const calificacion = Math.max(
+    0,
+    100 -
+      estado.errores * PENALIZACION.error -
+      estado.criticos * PENALIZACION.critico -
+      estado.cambiosDeMas.length * PENALIZACION.cambioDeMas -
+      inspeccionesDeMas * PENALIZACION.inspeccionDeMas,
+  );
+  if (!estado.guardado) {
+    const p = progresoDe(sistema.id);
+    p.orden = Math.max(p.orden ?? 0, calificacion);
+    guardar();
+    estado.guardado = true;
+  }
+  const aprobado = calificacion >= APROBACION;
+  partes.push(
+    aviso(
+      aprobado ? 'ok' : 'mal',
+      `${calificacion} de 100 · ${aprobado ? 'Orden aprobada' : 'Todavía no'}`,
+      o.pasos.at(-1).resultado,
+    ),
+  );
+  const tabla = el('ul', 'grid gap-1 text-sm');
+  [
+    ['Tiempo', `${minutos} min`],
+    ['Piezas revisadas', String(estado.revisadas.size)],
+    ['Errores de procedimiento', String(estado.errores)],
+    ['Errores críticos de seguridad', String(estado.criticos)],
+    [
+      'Refacciones cambiadas de más',
+      estado.cambiosDeMas.length ? estado.cambiosDeMas.map((b) => ficha(b).nombre).join(', ') : 'Ninguna',
+    ],
+    ['Gasto en refacciones', pesos(estado.gasto)],
+  ].forEach(([a, b]) => {
+    const li = el('li', 'flex justify-between gap-3 border-b border-placa-linea py-1');
+    li.append(el('span', 'text-tinta-2', a), el('strong', '', b));
+    tabla.append(li);
+  });
+  partes.push(tabla);
+  partes.push(
+    boton(aprobado ? 'Volver al sistema →' : 'Repetir la orden', 'boton w-fit px-6', () =>
+      aprobado ? abrirSistema(sistema) : empezarOrden(),
+    ),
+  );
+  return partes;
+}
+
+// La cámara va a donde se hace el paso que sigue (la orden enseña el procedimiento, no a buscar).
+function irPaso() {
+  const base = estado.orden.pasos[estado.i]?.correcta.split('>')[1];
+  if (base) irA(estado.sistema, base);
+}
+
+function elegirCausa(base) {
+  const o = estado.orden;
+  const costo = o.costos[base] ?? o.costo_otra;
+  if (base !== o.causa) {
+    estado.cambiosDeMas.push(base);
+    estado.gasto += costo;
+    estado.retro = aviso(
+      'mal',
+      `Cambiaste: ${ficha(base).nombre} (${pesos(costo)})`,
+      'Probaste el autobús y sigue perdiendo fuerza. Esa pieza estaba bien: revisa más antes de cambiar.',
+    );
+    pintar();
+    return;
+  }
+  estado.gasto += costo;
+  Object.assign(estado, {
+    fase: 'reparar',
+    i: 0,
+    retro: aviso('ok', `Diagnóstico correcto: ${ficha(base).nombre}`, 'Ahora repáralo en orden.'),
+  });
+  irPaso();
+  pintar();
+}
+
+function revisarOrden(baseTocada) {
+  const o = estado.orden;
+  if (!estado.herramienta) {
+    estado.retro = aviso(
+      'pista',
+      'Primero elige una herramienta',
+      'Está en la lista (o usa las teclas 1 a 6).',
+    );
+    pintar();
+    return;
+  }
+  if (estado.fase === 'inspeccion') {
+    const f = ficha(baseTocada);
+    if (estado.herramienta !== f.hazlo.herramienta) {
+      estado.retro = aviso('mal', `Con eso no se revisa: ${f.nombre}`, f.revisa);
+    } else {
+      const { estado: e, hallazgo } = estadoDe(baseTocada);
+      if (!estado.revisadas.has(baseTocada)) estado.revisadas.set(baseTocada, hallazgo);
+      const id = instancias.get(baseTocada)?.[0];
+      escena.efecto(estado.herramienta === 'jabon' ? 'burbujas' : 'uso', id);
+      escena.marcarPieza(id, { bien: 'ok', atencion: 'atencion', mal: 'mal' }[e]);
+      estado.retro = aviso({ bien: 'ok', atencion: 'pista', mal: 'mal' }[e], f.nombre, hallazgo);
+    }
+    pintar();
+    return;
+  }
+  if (estado.fase !== 'reparar') return;
+  const paso = o.pasos[estado.i];
+  const accion = `${estado.herramienta}>${baseTocada}`;
+  if (accion === paso.correcta) {
+    const id = instancias.get(baseTocada)?.[0];
+    if (paso.efecto === 'retirar' || paso.efecto === 'montar') escena.efecto(paso.efecto, id);
+    // La pieza nueva ya está bien.
+    if (paso.efecto === 'montar') {
+      escena.quitarMarcas(id);
+      escena.marcarPieza(id, 'ok');
+    } else escena.efecto('uso', id);
+    estado.i += 1;
+    estado.retro = aviso('ok', 'Bien', paso.resultado ?? '');
+    if (estado.i >= o.pasos.length) estado.fase = 'resultado';
+    else irPaso();
+    pintar();
+    return;
+  }
+  const error = paso.errores?.[accion];
+  if (error?.critico) {
+    estado.criticos += 1;
+    escena.efecto('golpe');
+    estado.retro = aviso('mal', 'Error crítico de seguridad: se detiene el trabajo', error.mensaje);
+  } else {
+    estado.errores += 1;
+    estado.retro = aviso(
+      'mal',
+      'Ese no es el paso',
+      error?.mensaje ?? `Haz lo que pide la orden: ${paso.texto}`,
+    );
+  }
+  pintar();
+}
+
 // ---------- Entradas: mouse hoy; cámara y guante se conectan al mismo bus ----------
 const entradas = new InputBus();
 entradas.conectarMouse(escena.lienzo);
@@ -766,6 +1068,8 @@ function atenderPose(detail) {
 // La pieza que se busca ahora (si hay una), para aceptar el clic aunque otra quede enfrente.
 function buscada() {
   if (estado.modo === 'conoce') return estado.sistema.orden[estado.i];
+  if (estado.modo === 'orden' && estado.fase === 'reparar')
+    return estado.orden.pasos[estado.i]?.correcta.split('>')[1];
   if (estado.modo === 'encuentra' || estado.modo === 'comprueba') return estado.cola[estado.i];
   return null;
 }
@@ -778,6 +1082,8 @@ entradas.addEventListener('grab', ({ detail }) => {
   if (estado.modo === 'conoce' && estado.paso === 'hazlo' && !estado.hecho) revisarConoce(base);
   else if (estado.modo === 'encuentra' && estado.i < estado.cola.length) revisarEncuentra(base);
   else if (estado.modo === 'comprueba' && estado.i < estado.cola.length) revisarComprueba(base);
+  else if (estado.modo === 'orden' && (estado.fase === 'inspeccion' || estado.fase === 'reparar'))
+    revisarOrden(base);
   else if (explorando()) {
     estado.vista = base;
     if (estado.modo === 'sistema') estado.modo = 'libre';
@@ -790,7 +1096,8 @@ window.addEventListener('keydown', (e) => {
     e.preventDefault();
     return;
   }
-  if (estado.modo === 'conoce' && estado.paso === 'hazlo' && /^Digit[1-6]$/.test(e.code)) {
+  const conBandeja = (estado.modo === 'conoce' && estado.paso === 'hazlo') || estado.modo === 'orden';
+  if (conBandeja && /^Digit[1-6]$/.test(e.code)) {
     elegir(HERRAMIENTAS[Number(e.code.slice(5)) - 1].id);
   }
 });
@@ -798,4 +1105,5 @@ window.addEventListener('keydown', (e) => {
 pintar();
 
 // Solo en desarrollo: para probar el flujo desde la consola.
-if (import.meta.env.DEV) window.simDepuracion = { escena, estado, datos: DATOS, instancias: () => instancias };
+if (import.meta.env.DEV)
+  window.simDepuracion = { escena, estado, datos: DATOS, instancias: () => instancias };

@@ -999,6 +999,31 @@ export function crearEscena(
   const movimientos = [];
   // Lugar en el piso de cada pieza retirada: en fila junto al autobús para no encimarse.
   const enElPiso = new Map();
+  // Autobús completo: banco de trabajo detrás del autobús, del lado izquierdo; lo que se retira
+  // queda en su charola (3 por fila).
+  const BANCO = { x: -7.7, y: 0.92, z: -0.9 };
+  if (completo) {
+    const banco = new THREE.Group();
+    const gris = new THREE.MeshStandardMaterial({ color: 0x3b4148, roughness: 0.6, metalness: 0.4 });
+    const tabla = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.06, 0.9), gris);
+    tabla.position.y = BANCO.y - 0.03;
+    banco.add(tabla);
+    [-0.6, 0.6].forEach((dx) =>
+      [-0.4, 0.4].forEach((dz) => {
+        const pata = new THREE.Mesh(new THREE.BoxGeometry(0.05, BANCO.y, 0.05), gris);
+        pata.position.set(dx, BANCO.y / 2, dz);
+        banco.add(pata);
+      }),
+    );
+    const charola = new THREE.Mesh(
+      new THREE.BoxGeometry(1.1, 0.04, 0.7),
+      new THREE.MeshStandardMaterial({ color: 0xd9480f, roughness: 0.5 }),
+    );
+    charola.position.y = BANCO.y + 0.02;
+    banco.add(charola);
+    banco.position.set(BANCO.x, 0, BANCO.z);
+    escena.add(banco);
+  }
   function moverPieza(piezaId, retirar) {
     const objeto = mallasPieza.get(piezaId);
     if (!objeto) return;
@@ -1008,11 +1033,17 @@ export function crearEscena(
     if (retirar && !enElPiso.has(piezaId)) enElPiso.set(piezaId, enElPiso.size);
     if (!retirar) enElPiso.delete(piezaId);
     const lugar = enElPiso.get(piezaId) ?? 0;
-    const fuera = new THREE.Vector3(
-      base.x + 1.1 - lugar * 1.15,
-      objeto.userData.pieza.tipo === 'rueda' ? base.y : alto / 2 + 0.02,
-      base.z + 1.7,
-    );
+    const fuera = completo
+      ? new THREE.Vector3(
+          BANCO.x - 0.35 + (lugar % 3) * 0.35,
+          BANCO.y + 0.16,
+          BANCO.z - 0.2 + Math.floor(lugar / 3) * 0.4,
+        )
+      : new THREE.Vector3(
+          base.x + 1.1 - lugar * 1.15,
+          objeto.userData.pieza.tipo === 'rueda' ? base.y : alto / 2 + 0.02,
+          base.z + 1.7,
+        );
     const hasta = retirar ? fuera : base.clone();
     const delta = hasta.clone().sub(objeto.position);
     movimientos.push({ obj: objeto, desde: objeto.position.clone(), hasta, t: 0 });
@@ -1101,17 +1132,34 @@ export function crearEscena(
   function marcarPieza(id, tipo = 'ok') {
     const malla = mallasPieza.get(id);
     if (!malla) return;
-    const marca = etiqueta(tipo === 'candado' ? 'L' : '✓', {
-      fondo: tipo === 'candado' ? '#b3121f' : '#2f7d43',
-      tamano: 0.32,
-    });
+    const [texto, fondo] = {
+      ok: ['✓', '#2f7d43'],
+      candado: ['L', '#b3121f'],
+      mal: ['!', '#b3121f'],
+      atencion: ['!', '#c98a00'],
+    }[tipo] ?? ['✓', '#2f7d43'];
+    // En el autobús completo las piezas son chicas: la marca también.
+    const marca = etiqueta(texto, { fondo, tamano: completo ? 0.2 : 0.32 });
     marca.position.set(0, (malla.geometry?.parameters.height ?? 0.4) / 2 + 0.25, 0);
     marca.userData.marca = true;
     malla.add(marca);
   }
 
-  function quitarMarcas() {
-    mallasPieza.forEach((malla) => malla.remove(...malla.children.filter((h) => h.userData.marca)));
+  // Regresa a su lugar todo lo que se retiró (para empezar una orden de nuevo).
+  function reiniciarPiezas() {
+    movimientos.length = 0;
+    enElPiso.clear();
+    mallasPieza.forEach((malla) => {
+      if (malla.userData.base) malla.position.copy(malla.userData.base);
+    });
+  }
+
+  // Sin id quita todas las marcas; con id, solo las de esa pieza.
+  function quitarMarcas(id = null) {
+    mallasPieza.forEach((malla, clave) => {
+      if (id && clave !== id) return;
+      malla.remove(...malla.children.filter((h) => h.userData.marca));
+    });
   }
 
   // Botón de calidad en la esquina del lienzo.
@@ -1319,6 +1367,7 @@ export function crearEscena(
     marcarGrupo: yRedibujar(marcarGrupo),
     marcarPieza: yRedibujar(marcarPieza),
     quitarMarcas: yRedibujar(quitarMarcas),
+    reiniciarPiezas: yRedibujar(reiniciarPiezas, true),
     enfocar: yRedibujar(enfocar),
     activarInmersivo: yRedibujar(activarInmersivo),
     // En primera persona la herramienta va pegada a la cámara: mover el cursor no cambia la imagen.

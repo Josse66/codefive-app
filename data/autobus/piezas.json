@@ -74,7 +74,90 @@
         "deposito_refrigerante",
         "banda_accesorios",
         "volante_motor"
-      ]
+      ],
+      "orden_taller": {
+        "id": "motor-pierde-fuerza",
+        "titulo": "Pierde fuerza al acelerar",
+        "cliente": "Ruta 34 · unidad 112 (datos de demostración)",
+        "sintoma": "El operador reporta que el autobús pierde fuerza al subir pendientes y a veces se apaga al acelerar con carga. No echa humo negro y no hay ruidos raros.",
+        "causa": "filtro_combustible",
+        "estados": {
+          "filtro_combustible": {
+            "estado": "mal",
+            "hallazgo": "El filtro está saturado: la restricción es alta y el diésel casi no pasa. Esto explica la pérdida de fuerza."
+          },
+          "separador_agua": {
+            "estado": "atencion",
+            "hallazgo": "Hay un poco de agua en el vaso. Hay que purgarla, pero sola no explica la pérdida de fuerza."
+          },
+          "inyectores": {
+            "estado": "bien",
+            "hallazgo": "Los inyectores están balanceados, pero la presión de combustible cae al acelerar: el problema está antes, en el suministro."
+          },
+          "turbo": {
+            "estado": "bien",
+            "hallazgo": "Gira libre y sin juego: el turbo está bien."
+          },
+          "multiple_admision": {
+            "estado": "bien",
+            "hallazgo": "Abrazaderas firmes, sin fugas de aire."
+          },
+          "enfriador_aire": {
+            "estado": "bien",
+            "hallazgo": "Panal limpio, sin aceite: no hay fuga de aire de carga."
+          }
+        },
+        "costos": {
+          "filtro_combustible": 650,
+          "turbo": 38000,
+          "inyectores": 42000,
+          "multiple_admision": 9500,
+          "enfriador_aire": 14000,
+          "separador_agua": 1200
+        },
+        "costo_otra": 3000,
+        "pasos": [
+          {
+            "texto": "Por seguridad, apaga el motor y corta la corriente con el interruptor maestro.",
+            "correcta": "mano>interruptor_maestro",
+            "errores": {
+              "llave>filtro_combustible": {
+                "critico": true,
+                "mensaje": "Abriste el sistema de combustible con el motor encendido: el diésel sale a presión sobre el motor caliente y puede incendiarse."
+              }
+            }
+          },
+          {
+            "texto": "Retira el filtro de combustible con la llave. Pon una charola: escurre diésel.",
+            "correcta": "llave>filtro_combustible",
+            "efecto": "retirar"
+          },
+          {
+            "texto": "Pon el filtro nuevo: lubrica el empaque con diésel limpio y apriétalo a mano.",
+            "correcta": "mano>filtro_combustible",
+            "efecto": "montar",
+            "errores": {
+              "llave>filtro_combustible": {
+                "critico": false,
+                "mensaje": "El filtro nuevo se aprieta a mano: con la llave se daña el empaque y luego fuga."
+              }
+            }
+          },
+          {
+            "texto": "Purga el agua del separador y saca el aire del sistema con su bomba manual.",
+            "correcta": "mano>separador_agua"
+          },
+          {
+            "texto": "Enciende el interruptor maestro y arranca el motor.",
+            "correcta": "mano>interruptor_maestro"
+          },
+          {
+            "texto": "Comprueba con el escáner: presión de combustible y códigos de falla.",
+            "correcta": "escaner>inyectores",
+            "resultado": "Presión de combustible normal al acelerar y sin códigos. El autobús recuperó la fuerza."
+          }
+        ]
+      }
     },
     {
       "id": "combustible",
