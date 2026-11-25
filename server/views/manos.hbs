@@ -15,6 +15,7 @@
         <p class="text-lg">Usa las dos cámaras USB (arriba y abajo). Solo ven tus manos; no se graba ni se manda nada.</p>
         <button id="encender" type="button" class="boton mx-auto bg-white px-8 py-4 text-lg text-tinta hover:bg-placa">Encender la cámara</button>
         <p id="error-camara" class="text-sm text-mal-suave" hidden></p>
+        {{#if ejercicio.guante}}<button id="solo-guante" type="button" class="mx-auto text-sm text-white underline">Practicar solo con el guante</button>{{/if}}
       </div>
       <p id="estado-manos" class="absolute inset-x-0 bottom-0 bg-tinta/85 px-4 py-3 text-center text-lg font-semibold text-white" aria-live="polite"></p>
     </div>
@@ -29,6 +30,14 @@
         {{/each}}
       </ol>
       <div id="resultado-manos" class="grid gap-2" hidden></div>
+      {{#if ejercicio.guante}}
+        <div id="pasos-guante" class="grid gap-2 border-2 border-tinta p-3" hidden>
+          <p class="font-semibold">Parte 2 · Ponte el guante</p>
+          <p class="text-sm text-tinta-2">{{ejercicio.guante.que}}</p>
+          <button id="siguiente-guante" type="button" class="boton w-full px-4 py-3">Siguiente: con el guante →</button>
+          <button id="sin-guante" type="button" class="boton-linea w-full px-4 py-2 text-sm">Terminar sin guante</button>
+        </div>
+      {{/if}}
       <div class="flex flex-wrap gap-2">
         <button id="otra-vez" type="button" class="boton px-5 py-3" hidden>Otra vez</button>
         <a href="/tecnicos/{{tecnico.id}}/camino" class="boton-linea px-5 py-3 no-underline">Volver a Mi camino</a>

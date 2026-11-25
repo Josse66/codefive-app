@@ -35,6 +35,7 @@ import {
   volteo,
 } from '../manos/camaras.js';
 import { Calibracion } from '../manos/calibracion.js';
+import { FaseGuante } from '../manos/faseGuante.js';
 import {
   activo as guanteActivo,
   alCambiar as alCambiarGuante,
@@ -95,7 +96,17 @@ const estado = {
   pista: 0,
 };
 
+// Dos partes por práctica: 1) cámaras con la mano libre (dónde y en qué orden); 2) guante (con qué
+// fuerza y postura). Cada una se califica aparte; la final es el promedio de las que se hicieron.
+let modo = 'camaras'; // 'camaras' | 'guante'
+const partes = { camaras: null, guante: null }; // { nota, fallas: [ids] }
+let faseGuante = null;
+
 function reiniciar() {
+  modo = 'camaras';
+  partes.camaras = null;
+  partes.guante = null;
+  $('pasos-guante').hidden = true;
   Object.assign(estado, {
     fase: 'acerca',
     fallas: new Set(),
@@ -245,7 +256,7 @@ async function encender() {
     ajustarGeometria();
     if (calibrada()) reiniciar();
     else empezarCalibracion();
-    requestAnimationFrame(ciclo);
+    arrancarCiclo();
   } catch (error) {
     boton.disabled = false;
     boton.textContent = 'Intentar otra vez';
@@ -255,7 +266,19 @@ async function encender() {
   }
 }
 $('encender').addEventListener('click', encender);
-$('otra-vez').addEventListener('click', reiniciar);
+// Otra vez: si se practica solo con el guante (sin cámaras), vuelve directo a esa parte.
+$('otra-vez').addEventListener('click', () => {
+  reiniciar();
+  if (!camaras.length && EJ.guante) empezarGuante();
+});
+$('siguiente-guante').addEventListener('click', empezarGuante);
+$('sin-guante').addEventListener('click', finalizar);
+// Practicar solo la parte del guante (sin cámaras).
+$('solo-guante').addEventListener('click', () => {
+  reiniciar();
+  empezarGuante();
+  arrancarCiclo();
+});
 $('recalibrar').addEventListener('click', () => {
   verificando = false;
   pintarVerificar(false);
@@ -314,6 +337,14 @@ function pintarAjustes(dispositivos) {
   caja.append(usar, mejorar, recalibrar);
 }
 
+// Un solo ciclo de dibujo aunque se encienda la cámara y también se use el guante.
+let corriendo = false;
+function arrancarCiclo() {
+  if (corriendo) return;
+  corriendo = true;
+  requestAnimationFrame(ciclo);
+}
+
 let verificando = false;
 const ultimaVista = { manos: [], en: 0 };
 
@@ -331,6 +362,12 @@ function revisarImagen(ahora) {
 function ciclo() {
   requestAnimationFrame(ciclo);
   const ahora = performance.now();
+  if (modo === 'guante') {
+    const r = faseGuante.actualizar(ahora);
+    if (r?.terminado) terminarGuante(r);
+    return;
+  }
+  if (!camaras.length) return;
   revisarImagen(ahora);
   if (!detectar(ahora)) return;
   if (calibracion.activa) {
@@ -987,7 +1024,7 @@ function pasoPunta(manos, lapizVisto, ahora) {
 }
 
 // ---------- Resultado y guardado ----------
-async function guardar(nota) {
+async function guardar(nota, fallasCamara, fallasGuante) {
   const enviar = (url, metodo, cuerpo) =>
     fetch(url, {
       method: metodo,
@@ -995,9 +1032,13 @@ async function guardar(nota) {
       body: JSON.stringify(cuerpo),
     }).catch(() => null);
   const intento = Date.now();
-  const acciones = estado.fallas.size
-    ? [...estado.fallas].map((id) => {
-        const r = EJ.reglas.find((x) => x.id === id);
+  const todas = [
+    ...fallasCamara.map((id) => EJ.reglas.find((x) => x.id === id)),
+    ...fallasGuante.map((id) => EJ.guante.reglas.find((x) => x.id === id)),
+  ].filter(Boolean);
+  const acciones = todas.length
+    ? todas.map((r) => {
+        const { id } = r;
         return {
           sistema: EJ.sistema,
           actividad: 'manos',
@@ -1028,13 +1069,67 @@ async function guardar(nota) {
   // La mejor calificación de cada ejercicio de manos del sistema (y la mejor de todas).
   p.manosPor = { ...p.manosPor, [EJ.id]: Math.max(p.manosPor?.[EJ.id] ?? 0, nota) };
   p.manos = Math.max(p.manos ?? 0, nota);
+  // Cada parte por separado (para el panel: técnica visible y técnica de fuerza y postura).
+  p.manosPartes = {
+    ...p.manosPartes,
+    [EJ.id]: { camaras: partes.camaras?.nota ?? null, guante: partes.guante?.nota ?? null },
+  };
   await enviar(`${API}/progreso/${EJ.sistema}`, 'PUT', { datos: p });
 }
 
+function lista(fallas, reglas, siVacia) {
+  const ul = document.createElement('ul');
+  ul.className = 'grid gap-1 text-[15px]';
+  (fallas.length ? fallas.map((id) => `• ${reglas.find((r) => r.id === id).frase}`) : [siVacia]).forEach(
+    (t) => ul.append(Object.assign(document.createElement('li'), { textContent: t })),
+  );
+  return ul;
+}
+
+// Fin de la parte 1 (cámaras).
 function terminar() {
   estado.fase = 'resultado';
   estado.agarrado = false;
   const nota = calificar(EJ.reglas, estado.fallas);
+  partes.camaras = { nota, fallas: [...estado.fallas] };
+  if (!EJ.guante) {
+    finalizar();
+    return;
+  }
+  sonar(nota >= APROBACION ? 'bien' : 'mal');
+  decir(`Parte 1 lista: ${nota} de 100. Ahora ponte el guante`, nota >= APROBACION ? 'ok' : 'guia');
+  const caja = $('resultado-manos');
+  caja.replaceChildren(
+    Object.assign(document.createElement('p'), {
+      className: 'font-sans text-xl font-semibold',
+      textContent: `Parte 1 · Cámaras: ${nota} de 100`,
+    }),
+    lista(partes.camaras.fallas, EJ.reglas, 'Dónde y en qué orden: correcto.'),
+  );
+  caja.hidden = false;
+  $('pasos-guante').hidden = false;
+}
+
+function empezarGuante() {
+  modo = 'guante';
+  faseGuante = new FaseGuante(EJ, { ctx, lienzo, decir, sonar });
+  faseGuante.empezar(performance.now());
+  $('pasos-guante').hidden = true;
+  $('arranque').hidden = true;
+}
+
+// Fin de la parte 2 (guante).
+function terminarGuante(r) {
+  modo = 'camaras';
+  partes.guante = { nota: r.nota, fallas: r.fallas };
+  finalizar();
+}
+
+// Resultado final: cada parte y el promedio de las que se hicieron.
+function finalizar() {
+  estado.fase = 'resultado';
+  const hechas = [partes.camaras, partes.guante].filter(Boolean);
+  const nota = Math.round(hechas.reduce((a, p) => a + p.nota, 0) / hechas.length);
   const aprobado = nota >= APROBACION;
   sonar(aprobado ? 'bien' : 'mal');
   decir(
@@ -1044,28 +1139,41 @@ function terminar() {
     aprobado ? 'ok' : 'mal',
   );
   const caja = $('resultado-manos');
-  caja.replaceChildren();
-  const titulo = document.createElement('p');
-  titulo.className = `font-sans text-2xl font-semibold ${aprobado ? 'text-ok' : 'text-mal'}`;
-  titulo.textContent = `${nota} de 100 · ${aprobado ? 'Aprobado' : 'Todavía no'}`;
-  caja.append(titulo);
-  const lista = document.createElement('ul');
-  lista.className = 'grid gap-1 text-[15px]';
-  if (estado.fallas.size) {
-    [...estado.fallas].forEach((id) => {
-      const li = document.createElement('li');
-      li.textContent = `• ${EJ.reglas.find((r) => r.id === id).frase}`;
-      lista.append(li);
-    });
-  } else {
-    const li = document.createElement('li');
-    li.textContent = 'Postura correcta en todo el intento.';
-    lista.append(li);
+  caja.replaceChildren(
+    Object.assign(document.createElement('p'), {
+      className: `font-sans text-2xl font-semibold ${aprobado ? 'text-ok' : 'text-mal'}`,
+      textContent: `${nota} de 100 · ${aprobado ? 'Aprobado' : 'Todavía no'}`,
+    }),
+  );
+  if (partes.camaras) {
+    caja.append(
+      Object.assign(document.createElement('p'), {
+        className: 'mt-2 font-semibold',
+        textContent: `Parte 1 · Cámaras (dónde y en qué orden): ${partes.camaras.nota}`,
+      }),
+      lista(partes.camaras.fallas, EJ.reglas, 'Correcto.'),
+    );
   }
-  caja.append(lista);
+  if (partes.guante) {
+    caja.append(
+      Object.assign(document.createElement('p'), {
+        className: 'mt-2 font-semibold',
+        textContent: `Parte 2 · Guante (fuerza y postura): ${partes.guante.nota}`,
+      }),
+      lista(partes.guante.fallas, EJ.guante.reglas, 'Correcto.'),
+    );
+  } else if (EJ.guante) {
+    caja.append(
+      Object.assign(document.createElement('p'), {
+        className: 'mt-2 text-sm text-tinta-3',
+        textContent: 'Parte 2 · Guante: no se hizo.',
+      }),
+    );
+  }
   caja.hidden = false;
   $('otra-vez').hidden = false;
-  guardar(nota);
+  $('pasos-guante').hidden = true;
+  guardar(nota, partes.camaras?.fallas ?? [], partes.guante?.fallas ?? []);
 }
 
 // Botones para elegir a mano cuál cámara está arriba (además de la detección automática).

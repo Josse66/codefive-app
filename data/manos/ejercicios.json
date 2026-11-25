@@ -71,7 +71,48 @@
         "https://www.parktool.com/en-int/blog/repair-help/torque-wrench-use-and-care",
         "https://stacks.cdc.gov/view/cdc/185869"
       ],
-      "punto": "Manos · torquímetro"
+      "punto": "Manos · torquímetro",
+      "guante": {
+        "tipo": "jalon",
+        "que": "El guante mide lo que la cámara no ve: qué tan firme tomas el mango, si la muñeca va recta, si jalas parejo y si paras en el clic.",
+        "objetivo": 30,
+        "pasarse": 7,
+        "repeticiones": 1,
+        "tiron": 220,
+        "muneca": 20,
+        "reglas": [
+          {
+            "id": "g-agarre",
+            "frase": "Aprieta el mango con toda la mano: el botón del guante debe quedar apretado",
+            "detalle": "Torquímetro con guante: soltó el agarre a medio jalón",
+            "peso": 15
+          },
+          {
+            "id": "g-muneca",
+            "frase": "Endereza la muñeca: la mano en línea con el brazo",
+            "detalle": "Torquímetro con guante: muñeca doblada al jalar",
+            "peso": 15
+          },
+          {
+            "id": "g-parejo",
+            "frase": "Más despacio y parejo: el guante sintió un tirón",
+            "detalle": "Torquímetro con guante: tirón al jalar",
+            "peso": 10
+          },
+          {
+            "id": "g-sentido",
+            "frase": "Jala hacia ti; estás empujando",
+            "detalle": "Torquímetro con guante: empujó en lugar de jalar",
+            "peso": 20
+          },
+          {
+            "id": "g-clic",
+            "frase": "Para en el clic: seguiste girando",
+            "detalle": "Torquímetro con guante: siguió girando después del clic",
+            "peso": 15
+          }
+        ]
+      }
     },
     {
       "id": "estrella",
@@ -109,7 +150,43 @@
         "https://www.fleetmaintenance.com/equipment/brakes-tire-and-wheel/article/55308568/wheel-installation-101-basics-to-keep-your-shop-having-a-very-bad-day",
         "https://www.manualslib.com/manual/744899/Ram-Truck-2011.html?page=373",
         "https://dba.com.au/wp-content/uploads/2022/10/Technical_Bulletin_DBA_Over-Tightening-of-Wheel-Nuts.pdf"
-      ]
+      ],
+      "guante": {
+        "tipo": "jalon",
+        "que": "La cámara ya revisó el orden. Ahora el guante revisa cómo aprietas cada tuerca: agarre firme, muñeca recta, jalón parejo y parar en el clic. La pantalla te marca qué tuerca sigue.",
+        "objetivo": 20,
+        "pasarse": 6,
+        "repeticiones": 4,
+        "estrella": true,
+        "tiron": 220,
+        "muneca": 20,
+        "reglas": [
+          {
+            "id": "g-agarre",
+            "frase": "Aprieta el mango con toda la mano: el botón del guante debe quedar apretado",
+            "detalle": "Tuercas con guante: soltó el agarre a medio jalón",
+            "peso": 15
+          },
+          {
+            "id": "g-muneca",
+            "frase": "Endereza la muñeca: la mano en línea con el brazo",
+            "detalle": "Tuercas con guante: muñeca doblada al jalar",
+            "peso": 15
+          },
+          {
+            "id": "g-parejo",
+            "frase": "Más despacio y parejo: el guante sintió un tirón",
+            "detalle": "Tuercas con guante: tirón al jalar",
+            "peso": 10
+          },
+          {
+            "id": "g-clic",
+            "frase": "Para en el clic: seguiste girando",
+            "detalle": "Tuercas con guante: siguió girando después del clic",
+            "peso": 15
+          }
+        ]
+      }
     },
     {
       "id": "multimetro",
@@ -158,7 +235,28 @@
         "https://www.allaboutcircuits.com/textbook/direct-current/chpt-3/safe-meter-usage/",
         "https://ecmweb.com/safety/article/55332144/safety-best-practices-for-using-electrical-testing-equipment"
       ],
-      "punto": "Manos · multímetro"
+      "punto": "Manos · multímetro",
+      "guante": {
+        "tipo": "firme",
+        "que": "Con la punta en el borne, el guante mide si la mano se queda quieta y la muñeca recta: una punta que se mueve resbala y toca donde no debe.",
+        "segundos": 3,
+        "movimiento": 35,
+        "muneca": 25,
+        "reglas": [
+          {
+            "id": "g-firme",
+            "frase": "Quédate quieto: la punta se está moviendo",
+            "detalle": "Multímetro con guante: punta inestable al medir",
+            "peso": 20
+          },
+          {
+            "id": "g-muneca",
+            "frase": "Endereza la muñeca para sostener la punta",
+            "detalle": "Multímetro con guante: muñeca doblada al medir",
+            "peso": 15
+          }
+        ]
+      }
     },
     {
       "id": "matraca",
@@ -233,7 +331,50 @@
         "https://www.hagerty.com/media/?p=365531",
         "https://www.cedars-sinai.org/health-topics/hand-tool-safety",
         "https://engineerfix.com/how-to-use-a-breaker-bar-safely-and-effectively/"
-      ]
+      ],
+      "guante": {
+        "tipo": "jalon",
+        "que": "El guante siente si empujas con el puño cerrado (el botón queda apretado mientras empujas), si la muñeca va recta y si el jalón es parejo.",
+        "objetivo": 30,
+        "sentido": -1,
+        "clic": false,
+        "repeticiones": 1,
+        "tiron": 220,
+        "muneca": 20,
+        "reglas": [
+          {
+            "id": "g-agarre",
+            "frase": "Cierra la mano en el mango para jalar",
+            "detalle": "Matraca con guante: soltó el agarre a medio jalón",
+            "peso": 10
+          },
+          {
+            "id": "g-muneca",
+            "frase": "Endereza la muñeca: la mano en línea con el brazo",
+            "detalle": "Matraca con guante: muñeca doblada al jalar",
+            "peso": 15
+          },
+          {
+            "id": "g-parejo",
+            "frase": "Más despacio y parejo: el guante sintió un tirón",
+            "detalle": "Matraca con guante: tirón al jalar",
+            "peso": 10
+          },
+          {
+            "id": "g-sentido",
+            "frase": "Jala hacia ti; empujar es más peligroso",
+            "detalle": "Matraca con guante: empujó en lugar de jalar",
+            "peso": 15
+          },
+          {
+            "id": "g-puno",
+            "frase": "Si empujas, con la palma abierta: con el puño te golpeas los nudillos",
+            "detalle": "Matraca con guante: empujó con el puño cerrado",
+            "peso": 30,
+            "critico": true
+          }
+        ]
+      }
     }
   ]
 }
