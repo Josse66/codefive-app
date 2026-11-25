@@ -108,6 +108,35 @@ function etiqueta(texto, { fondo = '#141c24', tinta = '#ffffff', tamano = 0.42 }
   return sprite;
 }
 
+// Rótulo con el nombre de una pieza para el despiece: fondo de tinta, texto blanco, ancho a la medida.
+function rotulo(texto) {
+  const lienzo = document.createElement('canvas');
+  const ctx = lienzo.getContext('2d');
+  const fuente = '600 44px "Archivo Narrow", Archivo, sans-serif';
+  ctx.font = fuente;
+  lienzo.width = Math.ceil(ctx.measureText(texto).width) + 40;
+  lienzo.height = 72;
+  ctx.fillStyle = 'rgba(20,28,36,0.92)';
+  ctx.fillRect(0, 0, lienzo.width, lienzo.height);
+  ctx.fillStyle = '#7dff9a';
+  ctx.fillRect(0, 0, 6, lienzo.height);
+  ctx.font = fuente;
+  ctx.fillStyle = '#ffffff';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(texto, 22, 38);
+  const textura = new THREE.CanvasTexture(lienzo);
+  textura.colorSpace = THREE.SRGBColorSpace;
+  const sprite = new THREE.Sprite(
+    new THREE.SpriteMaterial({ map: textura, depthTest: false, transparent: true, sizeAttenuation: false }),
+  );
+  // Tamaño fijo en pantalla (no crece al acercarse): fracción del alto de la vista.
+  const alto = 0.024;
+  sprite.scale.set((alto * lienzo.width) / lienzo.height, alto, 1);
+  sprite.center.set(0.5, 1);
+  sprite.renderOrder = 11;
+  return sprite;
+}
+
 // Modelo realista del autobús (GLB hecho en Blender, 12 m de largo, frente hacia +x, puerta en +z).
 // Es el autobús urbano diésel completo (Volvo Access sobre chasis B8R LE): carrocería, interior, motor, transmisión, frenos,
 // suspensión, sistema eléctrico. Cada pieza que se aprende es un nodo "p_<id>".
@@ -1326,6 +1355,106 @@ export function crearEscena(
     volarA(controles.target.clone().add(d));
   }
 
+  // Despiece (como la lámina del manual): las piezas del sistema salen hacia afuera y hacia arriba
+  // desde su centro común, cada una con su nombre. Con Rayos X para verlas a través de la carrocería.
+  const despiece = { activo: false, ids: [], rotulos: [] };
+  function quitarRotulos() {
+    despiece.rotulos.forEach(({ sprite }) => {
+      escena.remove(sprite);
+      sprite.material.map.dispose();
+      sprite.material.dispose();
+    });
+    despiece.rotulos = [];
+  }
+  function separar(ids) {
+    // Primero regresan a su lugar las que estaban separadas.
+    despiece.ids.forEach((id) => {
+      const nodo = mallasPieza.get(id);
+      if (!nodo?.userData.base) return;
+      movimientos.push({ obj: nodo, desde: nodo.position.clone(), hasta: nodo.userData.base.clone(), t: 0 });
+    });
+    quitarRotulos();
+    const nodos = (ids ?? []).map((id) => mallasPieza.get(id)).filter(Boolean);
+    // Una pieza por tipo (los discos de las 4 ruedas se llaman igual): las repetidas se quedan en su lugar.
+    const unicas = [];
+    nodos.forEach((n) => {
+      if (!unicas.some((u) => u.userData.pieza.nombre === n.userData.pieza.nombre)) unicas.push(n);
+    });
+    Object.assign(despiece, { activo: unicas.length > 0, ids: unicas.map((n) => n.userData.pieza.id) });
+    if (!unicas.length) return;
+    unicas.forEach((n) => {
+      const { userData } = n;
+      userData.base ??= n.position.clone();
+    });
+    // Lámina del despiece: una cuadrícula de frente a la cámara, encima del sistema. Cada pieza sube
+    // desde su lugar real a su casilla, con su nombre abajo.
+    const caja3 = new THREE.Box3();
+    const centro = unicas
+      .reduce((a, n) => a.add(caja3.setFromObject(n).getCenter(new THREE.Vector3())), new THREE.Vector3())
+      .divideScalar(unicas.length);
+    const haciaCamara = camara.position.clone().sub(controles.target).setY(0).normalize();
+    const derecha = new THREE.Vector3(0, 1, 0).cross(haciaCamara).normalize();
+    const columnas = Math.ceil(Math.sqrt(unicas.length / 1.3));
+    const filas = Math.ceil(unicas.length / columnas);
+    // Casillas a la medida de las piezas (la mediana de su lado mayor), con lugar para el nombre.
+    const lados = unicas
+      .map((n) => {
+        const t = caja3.setFromObject(n).getSize(new THREE.Vector3());
+        return Math.max(t.x, t.y, t.z);
+      })
+      .sort((a, b) => a - b);
+    const PASO_X = THREE.MathUtils.clamp(lados[Math.floor(lados.length / 2)] * 2.4, 0.8, 1.5);
+    const PASO_Y = PASO_X * 0.72;
+    const base = centro
+      .clone()
+      .setY(Math.max(centro.y, 0.6) + 1.2)
+      .addScaledVector(haciaCamara, 1.2);
+    unicas.forEach((nodo, i) => {
+      const c = i % columnas;
+      const f = Math.floor(i / columnas);
+      const casilla = base
+        .clone()
+        .addScaledVector(derecha, (c - (columnas - 1) / 2) * PASO_X)
+        .add(new THREE.Vector3(0, ((filas - 1) / 2 - f) * PASO_Y, 0));
+      // Se mueve el centro de la pieza (no su origen) a la casilla.
+      const centroPieza = caja3.setFromObject(nodo).getCenter(new THREE.Vector3());
+      const origen = nodo.getWorldPosition(new THREE.Vector3());
+      const hasta = nodo.parent.worldToLocal(origen.add(casilla.sub(centroPieza)));
+      movimientos.push({ obj: nodo, desde: nodo.position.clone(), hasta, t: 0 });
+      const sprite = rotulo(nodo.userData.pieza.nombre);
+      escena.add(sprite);
+      despiece.rotulos.push({ sprite, nodo });
+    });
+    // La cámara se pone de frente a la lámina, a la distancia en que cabe completa.
+    const ancho = columnas * PASO_X;
+    const alto = filas * PASO_Y + 0.6;
+    const lejos = THREE.MathUtils.clamp(Math.max(ancho * 1.5, alto * 2.1) + 1, 3.5, 22);
+    const mira = base.clone();
+    Object.assign(llegada, {
+      t: 0,
+      duracion: menosMovimiento ? 0.01 : 1.1,
+      desde: camara.position.clone(),
+      hasta: mira
+        .clone()
+        .addScaledVector(haciaCamara, lejos)
+        .setY(mira.y + lejos * 0.18),
+      miraDesde: controles.target.clone(),
+      miraHasta: mira,
+    });
+  }
+  // Cada cuadro: el rótulo va justo abajo de su pieza (centrado).
+  function moverRotulos() {
+    const caja3 = new THREE.Box3();
+    despiece.rotulos.forEach(({ sprite, nodo }) => {
+      caja3.setFromObject(nodo);
+      sprite.position.set(
+        (caja3.min.x + caja3.max.x) / 2,
+        caja3.min.y - 0.08,
+        (caja3.min.z + caja3.max.z) / 2,
+      );
+    });
+  }
+
   function marcarPieza(id, tipo = 'ok') {
     const malla = mallasPieza.get(id);
     if (!malla) return;
@@ -1345,6 +1474,8 @@ export function crearEscena(
   // Regresa a su lugar todo lo que se retiró (para empezar una orden de nuevo).
   function reiniciarPiezas() {
     movimientos.length = 0;
+    quitarRotulos();
+    Object.assign(despiece, { activo: false, ids: [] });
     enElPiso.clear();
     mallasPieza.forEach((malla) => {
       if (malla.userData.base) malla.position.copy(malla.userData.base);
@@ -1552,6 +1683,7 @@ export function crearEscena(
         renderer.shadowMap.needsUpdate = true;
       }
     }
+    if (despiece.rotulos.length) moverRotulos();
     // Herramienta: al usarla empuja hacia la pieza y regresa.
     if (uso < 1) {
       uso = Math.min(1, uso + dt / 0.45);
@@ -1639,6 +1771,8 @@ export function crearEscena(
     verRayosX: yRedibujar(verRayosX),
     abrirTapa: yRedibujar(abrirTapa),
     rayosXActivo: () => rayosX.activo,
+    separar: yRedibujar(separar, true),
+    despieceActivo: () => despiece.activo,
     idsPiezas: () => [...mallasPieza.keys()],
     // Dónde se ve la pieza en el lienzo (x, y de 0 a 1).
     fijarMargenes(izquierda, derecha) {

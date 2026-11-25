@@ -282,6 +282,14 @@ $('vista-fuera').addEventListener('click', () => caminar(false));
 $('vista-dentro').addEventListener('click', () => caminar(true));
 $('vista-rayos').addEventListener('click', () => rayosX(!escena.rayosXActivo()));
 $('vista-tapa').addEventListener('click', () => tapa(!tapaAbierta));
+// Despiece del sistema abierto: sus piezas se separan en el aire con su nombre (con Rayos X).
+function despiece(encender) {
+  const ids = encender && estado.sistema ? estado.sistema.orden.flatMap((b) => instancias.get(b) ?? []) : [];
+  escena.separar(ids);
+  if (ids.length) rayosX(true);
+  marcarVista('vista-despiece', ids.length > 0);
+}
+$('vista-despiece').addEventListener('click', () => despiece(!escena.despieceActivo()));
 // Experiencia Paso a paso: botones grandes en lugar de arrastrar con el mouse o usar el teclado.
 if (MAYOR) {
   $('controles-mayor').hidden = false;
@@ -357,6 +365,8 @@ function leerTarjeta(forzar = false) {
 }
 
 function pintar() {
+  // El despiece es solo para mirar el sistema abierto: en una vuelta o en una orden, todo en su lugar.
+  if (escena.despieceActivo() && estado.modo !== 'sistema') despiece(false);
   const t = $('tarjeta');
   t.replaceChildren(
     ...{
@@ -496,6 +506,7 @@ function fichaPieza(base, conBoton) {
 }
 
 function abrirSistema(sistema) {
+  if (escena.despieceActivo()) despiece(false);
   Object.assign(estado, { sistema, modo: 'sistema', vista: null, herramienta: null });
   escena.quitarMarcas();
   escena.elegirHerramienta(null);
