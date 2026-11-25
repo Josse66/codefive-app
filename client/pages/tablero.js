@@ -565,6 +565,51 @@ function tarjetaIndice(sigla, nombre, valorIndice, meta, componentes, formula) {
 }
 
 let graficaPareto = null;
+// Tarjeta por herramienta: calificación y una barra por parte (cámaras y guante).
+function pintarManos(manos, metas) {
+  const barra = (etiqueta, v) => {
+    const fila = document.createElement('div');
+    fila.className = 'grid grid-cols-[64px_minmax(0,1fr)_36px] items-center gap-2 text-xs';
+    const pista = document.createElement('div');
+    pista.className = 'h-2 bg-placa-2';
+    const lleno = document.createElement('div');
+    lleno.className = v == null ? '' : 'h-full';
+    lleno.style.width = `${v ?? 0}%`;
+    lleno.style.background = (v ?? 0) >= metas.aprobacion ? '#2f7d43' : '#c98a00';
+    pista.append(lleno);
+    fila.append(
+      Object.assign(document.createElement('span'), { textContent: etiqueta, className: 'text-tinta-3' }),
+      pista,
+      Object.assign(document.createElement('span'), {
+        textContent: v == null ? '—' : String(v),
+        className: 'text-right font-semibold',
+      }),
+    );
+    return fila;
+  };
+  $('indices-manos').replaceChildren(
+    ...manos.map((m) => {
+      const t = document.createElement('article');
+      t.className = 'grid gap-2 border border-placa-linea p-3';
+      const cabeza = document.createElement('div');
+      cabeza.className = 'flex items-baseline justify-between gap-2';
+      cabeza.append(
+        Object.assign(document.createElement('strong'), { textContent: m.herramienta }),
+        Object.assign(document.createElement('span'), {
+          textContent: m.nota == null ? 'sin intentos' : String(m.nota),
+          className: `codigo text-2xl ${m.nota != null && m.nota >= metas.aprobacion ? 'text-ok' : 'text-tinta'}`,
+        }),
+      );
+      const pie = Object.assign(document.createElement('p'), {
+        className: 'text-xs text-tinta-3',
+        textContent: `${m.sistema} · ${m.tecnicos} técnico${m.tecnicos === 1 ? '' : 's'} · ${m.errores} errores${m.criticos ? ` (${m.criticos} críticos)` : ''}`,
+      });
+      t.append(cabeza, barra('Cámaras', m.camaras), barra('Guante', m.guante), pie);
+      return t;
+    }),
+  );
+}
+
 function pintarIndices(d) {
   const { red, metas } = d;
   // Antes (diagnóstico), después (Comprueba) y a 30 días, por sistema del autobús.
@@ -672,6 +717,7 @@ function pintarIndices(d) {
         })
       : [Object.assign(document.createElement('li'), { textContent: 'Sin errores críticos.' })]),
   );
+  pintarManos(d.manos ?? [], metas);
   const corto = (texto) => (texto.length > 48 ? `${texto.slice(0, 46)}…` : texto);
   graficaPareto?.destroy();
   graficaPareto = new Chart($('grafica-pareto'), {

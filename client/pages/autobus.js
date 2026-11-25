@@ -288,6 +288,9 @@ function despiece(encender) {
   escena.separar(ids);
   if (ids.length) rayosX(true);
   marcarVista('vista-despiece', ids.length > 0);
+  $('ctrl-despiece').textContent = ids.length
+    ? '🔩 Regresar las piezas a su lugar'
+    : '🔩 Separar las piezas de este sistema';
 }
 $('vista-despiece').addEventListener('click', () => despiece(!escena.despieceActivo()));
 // Experiencia Paso a paso: botones grandes en lugar de arrastrar con el mouse o usar el teclado.
@@ -299,6 +302,7 @@ if (MAYOR) {
   $('ctrl-girar-der').addEventListener('click', () => escena.girar(-0.5));
   $('ctrl-rayos').addEventListener('click', () => rayosX(!escena.rayosXActivo()));
   $('ctrl-motor').addEventListener('click', () => tapa(!tapaAbierta));
+  $('ctrl-despiece').addEventListener('click', () => despiece(!escena.despieceActivo()));
 }
 marcarVista('vista-sonido', sonidoActivo());
 $('vista-sonido').addEventListener('click', () => marcarVista('vista-sonido', alternarSonido()));
@@ -365,6 +369,8 @@ function leerTarjeta(forzar = false) {
 }
 
 function pintar() {
+  // Paso a paso: el botón grande de despiece solo aparece con un sistema abierto.
+  if (MAYOR) $('ctrl-despiece').hidden = !(estado.sistema && estado.modo === 'sistema');
   // El despiece es solo para mirar el sistema abierto: en una vuelta o en una orden, todo en su lugar.
   if (escena.despieceActivo() && estado.modo !== 'sistema') despiece(false);
   const t = $('tarjeta');

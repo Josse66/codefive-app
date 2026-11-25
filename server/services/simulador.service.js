@@ -14,6 +14,9 @@ import { obtenerTecnico } from '#services/tecnicos.service.js';
 
 const DATOS = JSON.parse(fs.readFileSync(path.resolve('data', 'autobus', 'piezas.json'), 'utf8'));
 export const SISTEMAS = DATOS.sistemas.map(({ id, nombre, grupo }) => ({ id, nombre, grupo }));
+const EJERCICIOS_MANOS = JSON.parse(
+  fs.readFileSync(path.resolve('data', 'manos', 'ejercicios.json'), 'utf8'),
+).ejercicios;
 const IDS_SISTEMA = new Set(SISTEMAS.map((s) => s.id));
 
 export const APROBACION = 91;
@@ -320,6 +323,55 @@ function resumenGrupo(filas) {
 }
 
 /** IEF, ICO e IEFI de cada técnico con práctica, por taller y por experiencia; Pareto de la red. */
+/**
+ * Entrena tus manos en la red: por herramienta, la calificación promedio de cada parte (cámaras:
+ * dónde y en qué orden; guante: muñeca y agarre), cuántos técnicos y cuántos intentos con error.
+ */
+function resumenManos() {
+  const partes = new Map(EJERCICIOS_MANOS.map((e) => [e.id, { camaras: [], guante: [], mejor: [] }]));
+  db.prepare('SELECT datos FROM sim_progreso')
+    .all()
+    .forEach(({ datos }) => {
+      let d;
+      try {
+        d = JSON.parse(datos);
+      } catch {
+        return;
+      }
+      Object.entries(d.manosPor ?? {}).forEach(([id, nota]) => partes.get(id)?.mejor.push(nota));
+      Object.entries(d.manosPartes ?? {}).forEach(([id, p]) => {
+        const m = partes.get(id);
+        if (!m) return;
+        if (p.camaras != null) m.camaras.push(p.camaras);
+        if (p.guante != null) m.guante.push(p.guante);
+      });
+    });
+  const errores = new Map(
+    db
+      .prepare(
+        `SELECT herramienta, COUNT(*) AS veces, SUM(resultado = 'critico') AS criticos
+         FROM sim_acciones WHERE actividad = 'manos' AND resultado IN ('error', 'critico') GROUP BY herramienta`,
+      )
+      .all()
+      .map((f) => [f.herramienta, f]),
+  );
+  const media = (xs) => (xs.length ? Math.round(xs.reduce((a, b) => a + b, 0) / xs.length) : null);
+  return EJERCICIOS_MANOS.map((e) => {
+    const m = partes.get(e.id);
+    return {
+      id: e.id,
+      herramienta: e.herramienta,
+      sistema: SISTEMAS.find((x) => x.id === e.sistema)?.nombre ?? e.sistema,
+      tecnicos: m.mejor.length,
+      nota: media(m.mejor),
+      camaras: media(m.camaras),
+      guante: media(m.guante),
+      errores: errores.get(e.id)?.veces ?? 0,
+      criticos: errores.get(e.id)?.criticos ?? 0,
+    };
+  });
+}
+
 export function indicesRed() {
   const tecnicos = db.prepare('SELECT id, nombre, taller, experiencia FROM tecnicos ORDER BY nombre').all();
   const conPractica = new Set(
@@ -395,6 +447,7 @@ export function indicesRed() {
     }),
     pareto,
     criticos,
+    manos: resumenManos(),
     metas: { ief: 90, ico: 90, iefi: 100, aprobacion: APROBACION },
     lineaBaseHoras: LINEA_BASE_HORAS,
   };

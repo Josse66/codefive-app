@@ -11,6 +11,9 @@ import logger from '#config/logger.js';
 const DATOS = JSON.parse(fs.readFileSync(path.resolve('data', 'autobus', 'piezas.json'), 'utf8'));
 const SISTEMAS = DATOS.sistemas;
 const ORDEN = SISTEMAS.find((s) => s.orden_taller);
+const MANOS = JSON.parse(
+  fs.readFileSync(path.resolve('data', 'manos', 'ejercicios.json'), 'utf8'),
+).ejercicios;
 
 // Generador con semilla: sale igual cada vez.
 function generador(semilla) {
@@ -51,6 +54,11 @@ if (!tecnicos.length) {
   );
   const experiencia = db.prepare("UPDATE tecnicos SET experiencia = 'mayor' WHERE id = ?");
   const fichas = DATOS.piezas;
+  const leerProgreso = db.prepare('SELECT datos FROM sim_progreso WHERE tecnico_id = ? AND sistema = ?');
+  const guardarProgreso = db.prepare(
+    `INSERT INTO sim_progreso (tecnico_id, sistema, datos) VALUES (?, ?, ?)
+     ON CONFLICT (tecnico_id, sistema) DO UPDATE SET datos = excluded.datos, actualizado = datetime('now')`,
+  );
 
   db.exec('BEGIN');
   tecnicos.forEach((t, n) => {
@@ -158,6 +166,46 @@ if (!tecnicos.length) {
       const nota = Math.max(0, 100 - errores * 15 - (critico ? 30 : 0));
       evaluacion.run(t.id, ORDEN.id, 'orden', nota, 0);
     }
+
+    // Entrena tus manos: dos o tres herramientas, con parte de cámaras y parte de guante.
+    // La postura mejora con el oficio, pero la muñeca (guante) es lo que más se le escapa a todos.
+    const herramientas = [...MANOS].sort(() => azar() - 0.5).slice(0, 2 + Math.floor(entre(0, 2)));
+    herramientas.forEach((ej) => {
+      const intento = n * 100 + MANOS.indexOf(ej);
+      const fallasCam = ej.reglas.filter(() => azar() > habilidad + 0.1);
+      const fallasGuante = (ej.guante?.reglas ?? []).filter(() => azar() > habilidad);
+      const calificar = (fallas) =>
+        Math.max(0, 100 - fallas.reduce((a, r) => a + (r.critico ? 40 : 12), 0) - Math.round(entre(0, 6)));
+      const camaras = calificar(fallasCam);
+      const guante = ej.guante ? calificar(fallasGuante) : null;
+      const nota = guante == null ? camaras : Math.round((camaras + guante) / 2);
+      const fallas = [...fallasCam, ...fallasGuante];
+      const resultadoDe = (r) => {
+        if (!r) return 'correcta';
+        return r.critico ? 'critico' : 'error';
+      };
+      (fallas.length ? fallas : [null]).forEach((r) =>
+        accion.run(
+          t.id,
+          ej.sistema,
+          'manos',
+          intento,
+          null,
+          ej.id,
+          r?.id ?? 'postura',
+          resultadoDe(r),
+          0,
+          r?.detalle ?? `${ej.herramienta}: postura correcta`,
+          dias,
+        ),
+      );
+      const fila = leerProgreso.get(t.id, ej.sistema);
+      const p = fila ? JSON.parse(fila.datos) : { conoce: [], encuentra: false, comprueba: null };
+      p.manosPor = { ...p.manosPor, [ej.id]: nota };
+      p.manos = Math.max(p.manos ?? 0, nota);
+      p.manosPartes = { ...p.manosPartes, [ej.id]: { camaras, guante } };
+      guardarProgreso.run(t.id, ej.sistema, JSON.stringify(p));
+    });
   });
   db.exec('COMMIT');
   const total = db.prepare('SELECT COUNT(*) AS n FROM sim_acciones').get().n;
