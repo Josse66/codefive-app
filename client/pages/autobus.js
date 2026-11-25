@@ -9,6 +9,7 @@
 //   3. Comprueba (solo): señalas y eliges con qué se revisa, sin pistas. Se aprueba con 91.
 import { crearEscena } from '../escena/autobus3d.js';
 import { InputBus } from '../entradas/inputBus.js';
+import { alternarSonido, sonar, sonidoActivo } from '../escena/sonidos.js';
 import DATOS from '../../data/autobus/piezas.json';
 import GRUPOS from '../../data/grupos.json';
 
@@ -128,6 +129,9 @@ function barra(actual, total) {
 }
 
 function aviso(tipo, titulo, texto) {
+  // Suena una vez, cuando se crea (la tarjeta se vuelve a pintar con el mismo aviso).
+  if (tipo === 'ok') sonar('bien');
+  if (tipo === 'mal') sonar('mal');
   const clase = {
     ok: 'border-ok bg-ok-suave',
     mal: 'border-mal bg-mal-suave',
@@ -170,6 +174,8 @@ $('vista-fuera').addEventListener('click', () => caminar(false));
 $('vista-dentro').addEventListener('click', () => caminar(true));
 $('vista-rayos').addEventListener('click', () => rayosX(!escena.rayosXActivo()));
 $('vista-tapa').addEventListener('click', () => tapa(!tapaAbierta));
+marcarVista('vista-sonido', sonidoActivo());
+$('vista-sonido').addEventListener('click', () => marcarVista('vista-sonido', alternarSonido()));
 
 // Lleva la cámara al sistema (o a una pieza con la vista del sistema) y prepara rayos X y tapa.
 function irA(sistema, base = null) {
@@ -584,6 +590,7 @@ function revisarConoce(baseTocada) {
     estado.hecho = true;
     estado.retro = aviso('ok', 'Hecho', f.hazlo.resultado);
     // La herramienta empuja hacia la pieza; con agua jabonosa salen burbujas.
+    sonar(estado.herramienta);
     escena.efecto(estado.herramienta === 'jabon' ? 'burbujas' : 'uso', instancias.get(base)?.[0]);
     const p = progresoDe(estado.sistema.id);
     if (!p.conoce.includes(base)) p.conoce.push(base);
@@ -1008,6 +1015,7 @@ function revisarOrden(baseTocada) {
       const { estado: e, hallazgo } = estadoDe(baseTocada);
       if (!estado.revisadas.has(baseTocada)) estado.revisadas.set(baseTocada, hallazgo);
       const id = instancias.get(baseTocada)?.[0];
+      sonar(estado.herramienta);
       escena.efecto(estado.herramienta === 'jabon' ? 'burbujas' : 'uso', id);
       escena.marcarPieza(id, { bien: 'ok', atencion: 'atencion', mal: 'mal' }[e]);
       estado.retro = aviso({ bien: 'ok', atencion: 'pista', mal: 'mal' }[e], f.nombre, hallazgo);
@@ -1020,6 +1028,7 @@ function revisarOrden(baseTocada) {
   const accion = `${estado.herramienta}>${baseTocada}`;
   if (accion === paso.correcta) {
     const id = instancias.get(baseTocada)?.[0];
+    sonar(paso.sonido ?? paso.efecto ?? estado.herramienta);
     if (paso.efecto === 'retirar' || paso.efecto === 'montar') escena.efecto(paso.efecto, id);
     // La pieza nueva ya está bien.
     if (paso.efecto === 'montar') {
@@ -1036,6 +1045,7 @@ function revisarOrden(baseTocada) {
   const error = paso.errores?.[accion];
   if (error?.critico) {
     estado.criticos += 1;
+    sonar('critico');
     escena.efecto('golpe');
     estado.retro = aviso('mal', 'Error crítico de seguridad: se detiene el trabajo', error.mensaje);
   } else {

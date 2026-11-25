@@ -5,6 +5,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { HDRLoader } from 'three/examples/jsm/loaders/HDRLoader.js';
+import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
 const COLOR = {
   papel: 0xeef1f3,
@@ -513,7 +514,7 @@ export function crearEscena(
   controles.mouseButtons = { LEFT: null, MIDDLE: THREE.MOUSE.DOLLY, RIGHT: THREE.MOUSE.ROTATE };
   controles.enablePan = false;
   controles.minDistance = 3;
-  controles.maxDistance = 34;
+  controles.maxDistance = completo ? 16 : 34;
   controles.maxPolarAngle = Math.PI * 0.49;
   controles.update();
 
@@ -1010,6 +1011,54 @@ export function crearEscena(
   const movimientos = [];
   // Lugar en el piso de cada pieza retirada: en fila junto al autobús para no encimarse.
   const enElPiso = new Map();
+  // Autobús completo: el taller alrededor. Pocas mallas (las lámparas van unidas en una sola)
+  // para no sumar llamadas de dibujo.
+  if (completo) {
+    const cuarto = new THREE.Mesh(
+      new THREE.BoxGeometry(40, 8, 26),
+      new THREE.MeshStandardMaterial({ color: 0x8f989f, roughness: 0.95, side: THREE.BackSide }),
+    );
+    cuarto.position.y = 3.99;
+    escena.add(cuarto);
+    // Franja de seguridad amarilla en la parte baja de las paredes.
+    // Solo las 4 caras de las paredes (una caja pondría también un "piso" amarillo).
+    const caras = [
+      [40, 0, -12.95, 0],
+      [40, 0, 12.95, Math.PI],
+      [26, -19.95, 0, Math.PI / 2],
+      [26, 19.95, 0, -Math.PI / 2],
+    ].map(([ancho, x, z, giro]) => {
+      const g = new THREE.PlaneGeometry(ancho, 0.5);
+      g.rotateY(giro);
+      g.translate(x, 0.6, z);
+      return g;
+    });
+    escena.add(
+      new THREE.Mesh(mergeGeometries(caras), new THREE.MeshStandardMaterial({ color: 0xe0a800, roughness: 0.7 })),
+    );
+    const lamparas = [];
+    [-12, -4, 4, 12].forEach((x) =>
+      [-4, 4].forEach((z) => {
+        const g = new THREE.BoxGeometry(3, 0.08, 0.35);
+        g.translate(x, 7.9, z);
+        lamparas.push(g);
+      }),
+    );
+    escena.add(
+      new THREE.Mesh(
+        mergeGeometries(lamparas),
+        new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xffffff, emissiveIntensity: 1.2 }),
+      ),
+    );
+    // Gabinete de herramientas rojo junto al banco.
+    const gabinete = new THREE.Mesh(
+      new THREE.BoxGeometry(0.6, 1.1, 1.4),
+      new THREE.MeshStandardMaterial({ color: 0xb3121f, roughness: 0.4, metalness: 0.3 }),
+    );
+    gabinete.position.set(-8.9, 0.55, -2.6);
+    escena.add(gabinete);
+  }
+
   // Autobús completo: banco de trabajo detrás del autobús, del lado izquierdo; lo que se retira
   // queda en su charola (3 por fila).
   const BANCO = { x: -7.7, y: 0.92, z: -0.9 };
@@ -1317,6 +1366,8 @@ export function crearEscena(
     if (uso < 1) {
       uso = Math.min(1, uso + dt / 0.45);
       mano.position.set(0, 0, -Math.sin(uso * Math.PI) * 0.3);
+      // La llave gira de ida y vuelta, como matraca.
+      mano.rotation.z = herramientaActual === 'llave' ? Math.sin(uso * Math.PI * 3) * 0.9 : 0;
     }
     if (tapa.t < 1 && tapaMotor) {
       tapa.t = Math.min(1, tapa.t + dt / (menosMovimiento ? 0.01 : 0.8));

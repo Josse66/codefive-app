@@ -149,7 +149,8 @@
           },
           {
             "texto": "Enciende el interruptor maestro y arranca el motor.",
-            "correcta": "mano>interruptor_maestro"
+            "correcta": "mano>interruptor_maestro",
+            "sonido": "arranque"
           },
           {
             "texto": "Comprueba con el escáner: presión de combustible y códigos de falla.",
