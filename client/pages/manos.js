@@ -4,22 +4,34 @@
 // tipo: "giro" (torquímetro: tomar en la marca, jalar parejo, parar en el clic) y "punta"
 // (multímetro: una sola mano, punta como lápiz, borne correcto). Se corrige una cosa a la vez y
 // cada intento va a la bitácora del técnico (Pareto, ICO, alerta crítica en el panel).
-import { FilesetResolver, HandLandmarker } from '@mediapipe/tasks-vision';
 import DATOS from '../../data/manos/ejercicios.json';
 import {
   Histeresis,
   anguloAlrededor,
-  apertura,
   calificar,
   dentro,
   desviacionMuneca,
   distancia,
   enUnidades,
   palma,
-  pinza,
   sobreMango,
 } from '../manos/reglas.js';
-import { OneEuro } from '../manos/oneEuro.js';
+import {
+  AJUSTES,
+  agarre,
+  calibrada,
+  camaras,
+  camPosicion,
+  detectar,
+  dibujarPrincipal,
+  dibujarRecuadro,
+  encenderCamaras,
+  guardarAjustes,
+  manosEnPantalla,
+  motivo,
+  pinzas,
+} from '../manos/camaras.js';
+import { Calibracion } from '../manos/calibracion.js';
 import { SerialGlove } from '../entradas/serialGlove.js';
 import { hablar } from '../accesibilidad/voz.js';
 import { sonar } from '../escena/sonidos.js';
@@ -149,146 +161,39 @@ const desviacionGuante = () =>
     ? Math.max(Math.abs(guante.roll - guante.neutro.roll), Math.abs(guante.pitch - guante.neutro.pitch))
     : 0;
 
-// ---------- Cámaras y MediaPipe (modelo y wasm locales: funciona sin internet) ----------
-// Como en hand-lab: hasta dos cámaras USB (una arriba y otra abajo) en lugar de la de la laptop.
-// Cada una tiene su detector; se usa la vista que mejor ve la mano y, a medio jalón o mientras se
-// sostiene la punta, no se cambia de vista (las coordenadas de cada cámara son distintas).
-const CAMBIO_MARGEN = 0.1; // la otra vista debe superar a la actual por este margen de confianza
-const AJUSTES = JSON.parse(localStorage.getItem('manosCamaras') ?? '{}'); // { ids: [], voltear: { id: { x, y } } }
-const DE_LAPTOP = /integrated|integrada|hd webcam|facetime|ir camera|infrarroj|front|frontal/i;
-const PREFERIDAS = /general|usb/i;
-const camaras = []; // { id, etiqueta, video, detector, ultimo, r, score, suaves }
-let activa = 0;
-const pinzas = [0, 1].map(() => new Histeresis(0.35, 0.5));
-const puños = [0, 1].map(() => new Histeresis(1.35, 1.6));
-const nuevosSuaves = () =>
-  [0, 1].map(() => Array.from({ length: 42 }, () => new OneEuro({ minCutoff: 1.2, beta: 6 })));
+// ---------- Cámaras (manos/camaras.js) y calibración (manos/calibracion.js) ----------
+const umbral = (k, defecto) => AJUSTES.umbrales?.[k] ?? defecto;
+const puno = new Histeresis(...umbral('puno', [1.35, 1.6]));
+const lapices = new Histeresis(...umbral('pinza', [0.35, 0.5]));
+const calibracion = new Calibracion();
 
-/** Cuáles abrir: las elegidas en Ajustes; si no, las USB ("GENERAL", "USB"); si no, cualquiera. */
-async function elegirCamaras() {
-  const lista = async () =>
-    (await navigator.mediaDevices.enumerateDevices()).filter((d) => d.kind === 'videoinput');
-  let dispositivos = await lista();
-  if (dispositivos.some((d) => !d.label)) {
-    // Sin permiso todavía no hay nombres: se pide una vez y se vuelve a listar.
-    const prueba = await navigator.mediaDevices.getUserMedia({ video: true });
-    prueba.getTracks().forEach((t) => t.stop());
-    dispositivos = await lista();
-  }
-  const guardadas = (AJUSTES.ids ?? [])
-    .map((id) => dispositivos.find((d) => d.deviceId === id))
-    .filter(Boolean);
-  if (guardadas.length) return { elegidas: guardadas, dispositivos };
-  const externas = dispositivos.filter((d) => !DE_LAPTOP.test(d.label));
-  const ordenadas = [
-    ...externas.filter((d) => PREFERIDAS.test(d.label)),
-    ...externas.filter((d) => !PREFERIDAS.test(d.label)),
-  ];
-  return { elegidas: (ordenadas.length ? ordenadas : dispositivos).slice(0, 2), dispositivos };
+function avisoCamaras(texto) {
+  $('aviso-camaras').hidden = !texto;
+  $('aviso-camaras').textContent = texto;
 }
 
-// Como en hand-lab: cada paso con límite de tiempo (una cámara que no responde no congela todo),
-// se abren una por una (dos USB a la vez se pelean el ancho de banda) y si una resolución no
-// entra se pide otra más chica.
-function conLimite(promesa, ms, que) {
-  let reloj;
-  const limite = new Promise((_, no) => {
-    reloj = setTimeout(() => no(new Error(`${que} no respondió en ${ms / 1000} s`)), ms);
-  });
-  return Promise.race([promesa, limite]).finally(() => clearTimeout(reloj));
+function empezarCalibracion() {
+  calibracion.empezar();
+  $('resultado-manos').hidden = true;
+  $('otra-vez').hidden = true;
 }
-const INTENTOS = [{ width: 640, height: 480, frameRate: 30 }, { width: 320, height: 240, frameRate: 30 }, {}];
-const POR_QUE = {
-  NotReadableError:
-    'la está usando otro programa o pestaña (cierra hand-lab, la app Cámara, Teams o la pestaña de entrar con gafete)',
-  AbortError: 'la está usando otro programa o pestaña',
-  OverconstrainedError: 'no acepta la resolución pedida',
-  NotFoundError: 'no está conectada',
-  NotAllowedError: 'no hay permiso',
-};
-const motivo = (e) => POR_QUE[e.name] ?? e.message;
-
-async function abrirVideo(dispositivo) {
-  let ultimoError = null;
-  /* eslint-disable no-await-in-loop -- cada intento depende de que el anterior falle */
-  for (let k = 0; k < INTENTOS.length; k += 1) {
-    const intento = INTENTOS[k];
-    let stream = null;
-    try {
-      stream = await conLimite(
-        navigator.mediaDevices.getUserMedia({
-          video: { deviceId: { exact: dispositivo.deviceId }, ...intento },
-        }),
-        8000,
-        dispositivo.label,
-      );
-      const v = document.createElement('video');
-      Object.assign(v, { srcObject: stream, muted: true, playsInline: true });
-      await conLimite(v.play(), 5000, `El video de ${dispositivo.label}`);
-      return v;
-    } catch (error) {
-      stream?.getTracks().forEach((t) => t.stop());
-      ultimoError = error;
-    }
-  }
-  /* eslint-enable no-await-in-loop */
-  throw ultimoError;
-}
-
-function crearDetector(vision) {
-  const crear = (delegate) =>
-    HandLandmarker.createFromOptions(vision, {
-      baseOptions: { modelAssetPath: '/mediapipe/hand_landmarker.task', delegate },
-      runningMode: 'VIDEO',
-      numHands: 2,
-      minHandDetectionConfidence: 0.4,
-      minHandPresenceConfidence: 0.4,
-      minTrackingConfidence: 0.4,
-    });
-  return crear('GPU').catch(() => crear('CPU'));
-}
-
-const volteo = (cam) => AJUSTES.voltear?.[cam.id] ?? { x: false, y: false };
 
 async function encender() {
-  $('encender').disabled = true;
-  $('error-camara').hidden = true;
   const boton = $('encender');
+  boton.disabled = true;
+  $('error-camara').hidden = true;
   try {
-    boton.textContent = 'Pidiendo permiso de cámara…';
-    const { elegidas, dispositivos } = await conLimite(elegirCamaras(), 15000, 'El permiso de cámara');
-    boton.textContent = 'Cargando el detector de manos…';
-    const vision = await FilesetResolver.forVisionTasks('/mediapipe/wasm');
-    const fallas = [];
-    /* eslint-disable no-await-in-loop -- una por una, como hand-lab */
-    for (let k = 0; k < elegidas.length; k += 1) {
-      const d = elegidas[k];
-      boton.textContent = `Abriendo ${d.label}…`;
-      try {
-        const video = await abrirVideo(d);
-        camaras.push({
-          id: d.deviceId,
-          etiqueta: d.label || 'Cámara',
-          video,
-          detector: await crearDetector(vision),
-          ultimo: -1,
-          r: null,
-          score: 0,
-          suaves: nuevosSuaves(),
-        });
-      } catch (error) {
-        fallas.push(`${d.label}: ${motivo(error)}`);
-      }
-    }
-    /* eslint-enable no-await-in-loop */
+    const { fallas, dispositivos, pedidas } = await encenderCamaras((t) => {
+      boton.textContent = t;
+    });
     pintarAjustes(dispositivos);
     if (!camaras.length) throw new Error(fallas.join(' · ') || 'no hay cámaras conectadas');
-    $('aviso-camaras').hidden = !fallas.length;
-    $('aviso-camaras').textContent = fallas.length
-      ? `Se abrió ${camaras.length} de ${elegidas.length} cámaras. ${fallas.join(' · ')}`
-      : '';
+    avisoCamaras(
+      fallas.length ? `Se abrió ${camaras.length} de ${pedidas} cámaras. ${fallas.join(' · ')}` : '',
+    );
     $('arranque').hidden = true;
-    reiniciar();
+    if (calibrada()) reiniciar();
+    else empezarCalibracion();
     requestAnimationFrame(ciclo);
   } catch (error) {
     boton.disabled = false;
@@ -300,8 +205,14 @@ async function encender() {
 }
 $('encender').addEventListener('click', encender);
 $('otra-vez').addEventListener('click', reiniciar);
+// En el paso "¿cuál está arriba?" se toca la imagen de la izquierda o de la derecha.
+lienzo.addEventListener('click', (e) => {
+  if (!calibracion.activa || calibracion.paso !== 'rol') return;
+  const r = lienzo.getBoundingClientRect();
+  calibracion.elegirArriba((e.clientX - r.left) / r.width < 0.5 ? 0 : 1);
+});
 
-// Ajustes: qué cámaras usar y si alguna se ve volteada (la de abajo suele verse de cabeza).
+// Ajustes: qué cámaras usar, mejorar la imagen con poca luz y volver a calibrar.
 function pintarAjustes(dispositivos) {
   const caja = $('ajustes-camaras');
   caja.replaceChildren();
@@ -311,37 +222,10 @@ function pintarAjustes(dispositivos) {
     fila.textContent = `Cámara ${n + 1}`;
     const sel = document.createElement('select');
     sel.className = 'border border-tinta bg-white px-2 py-1.5';
-    sel.dataset.n = String(n);
     sel.append(new Option('(ninguna)', ''));
     dispositivos.forEach((d) => sel.append(new Option(d.label || d.deviceId.slice(0, 8), d.deviceId)));
     sel.value = camaras[n]?.id ?? '';
     fila.append(sel);
-    caja.append(fila);
-  });
-  camaras.forEach((cam) => {
-    const fila = document.createElement('div');
-    fila.className = 'flex flex-wrap items-center gap-3 text-sm';
-    fila.append(
-      Object.assign(document.createElement('span'), {
-        className: 'font-semibold',
-        textContent: cam.etiqueta,
-      }),
-    );
-    ['x', 'y'].forEach((eje) => {
-      const etiqueta = document.createElement('label');
-      etiqueta.className = 'flex items-center gap-1';
-      const caja2 = Object.assign(document.createElement('input'), {
-        type: 'checkbox',
-        checked: volteo(cam)[eje],
-      });
-      caja2.addEventListener('change', () => {
-        AJUSTES.voltear = { ...AJUSTES.voltear, [cam.id]: { ...volteo(cam), [eje]: caja2.checked } };
-        localStorage.setItem('manosCamaras', JSON.stringify(AJUSTES));
-        Object.assign(cam, { suaves: nuevosSuaves() });
-      });
-      etiqueta.append(caja2, eje === 'x' ? 'Voltear de lado' : 'Voltear de cabeza');
-      fila.append(etiqueta);
-    });
     caja.append(fila);
   });
   const usar = Object.assign(document.createElement('button'), {
@@ -351,74 +235,95 @@ function pintarAjustes(dispositivos) {
   });
   usar.addEventListener('click', () => {
     AJUSTES.ids = [...caja.querySelectorAll('select')].map((s) => s.value).filter(Boolean);
-    localStorage.setItem('manosCamaras', JSON.stringify(AJUSTES));
+    guardarAjustes();
     window.location.reload();
   });
-  caja.append(usar);
+  const mejorar = document.createElement('label');
+  mejorar.className = 'flex items-center gap-2 text-sm';
+  const casilla = Object.assign(document.createElement('input'), {
+    type: 'checkbox',
+    checked: Boolean(AJUSTES.mejorar),
+  });
+  casilla.addEventListener('change', () => {
+    AJUSTES.mejorar = casilla.checked;
+    guardarAjustes();
+  });
+  mejorar.append(casilla, 'Mejorar la imagen con poca luz');
+  const recalibrar = Object.assign(document.createElement('button'), {
+    type: 'button',
+    className: 'boton-linea w-fit px-4 py-2 text-sm',
+    textContent: 'Calibrar otra vez (25 s)',
+  });
+  recalibrar.addEventListener('click', empezarCalibracion);
+  caja.append(usar, mejorar, recalibrar);
 }
 
-// Puntos de una cámara con su volteo (por defecto en espejo, como verse en un espejo) y sin temblor.
-function manosDe(cam, ahora) {
-  const v = volteo(cam);
-  return (cam.r?.landmarks ?? []).map((m, k) =>
-    m.map((p, i) => ({
-      x: cam.suaves[k][i * 2].filter(v.x ? p.x : 1 - p.x, ahora / 1000),
-      y: cam.suaves[k][i * 2 + 1].filter(v.y ? 1 - p.y : p.y, ahora / 1000),
-    })),
-  );
-}
-
-let vuelta = 0;
 function ciclo() {
   requestAnimationFrame(ciclo);
   const ahora = performance.now();
-  vuelta += 1;
-  const sinManoActiva = !camaras[activa]?.r?.landmarks?.length;
-  let nuevo = false;
-  camaras.forEach((cam, i) => {
-    // La vista secundaria se revisa cada 3 vueltas, salvo que la activa no vea la mano.
-    if (i !== activa && !sinManoActiva && vuelta % 3) return;
-    if (cam.video.currentTime === cam.ultimo || cam.video.readyState < 2) return;
-    const r = cam.detector.detectForVideo(cam.video, ahora);
-    Object.assign(cam, { ultimo: cam.video.currentTime, r, score: r.handedness?.[0]?.[0]?.score ?? 0 });
-    if (!cam.r.landmarks?.length) cam.suaves.flat().forEach((f) => f.reset());
-    if (i === activa) nuevo = true;
-  });
-  // Cambiar de vista solo si la otra ve claramente mejor y no se está a medio movimiento.
-  const bloqueada = ['jala', 'clic'].includes(estado.fase) || estado.sosteniendo;
-  if (!bloqueada && camaras.length > 1) {
-    const mejor = camaras.reduce((m, c, i) => (c.score > camaras[m].score ? i : m), activa);
-    if (camaras[mejor].score > camaras[activa].score + CAMBIO_MARGEN) activa = mejor;
+  if (!detectar(ahora)) return;
+  if (calibracion.activa) {
+    pasoCalibracion(ahora);
+    return;
   }
-  if (!nuevo) return;
-  const cam = camaras[activa];
-  const manos = manosDe(cam, ahora);
-  dibujarVideo(cam);
-  const mundo = cam.r?.worldLandmarks ?? [];
-  if (EJ.tipo === 'giro') pasoGiro(manos, mundo, ahora);
-  else pasoPunta(manos, mundo, ahora);
+  const manos = manosEnPantalla(camPosicion(), ahora);
+  // Agarre con la vista de abajo (ve la palma); el guante, si está, también cuenta.
+  const ag = agarre();
+  const cerrada = (ag ? puno.actualizar(ag.apertura) : false) || (guante.conectado && guante.grip);
+  const lapiz = lapices.actualizar(Math.min(9, ...pinzas())) || (guante.conectado && guante.grip);
+  dibujarPrincipal(ctx, lienzo.width, lienzo.height);
+  if (EJ.tipo === 'giro') pasoGiro(manos, cerrada, ahora);
+  else pasoPunta(manos, lapiz, ahora);
   manos.forEach(dibujarMano);
-  if (camaras.length > 1) {
-    ctx.fillStyle = 'rgba(20,28,36,.75)';
-    ctx.fillRect(10, 10, 300, 30);
-    ctx.fillStyle = COLOR.blanco;
-    ctx.font = '600 16px Archivo, sans-serif';
-    ctx.fillText(`Viendo: cámara ${activa + 1} · ${cam.etiqueta.slice(0, 24)}`, 18, 31);
+  dibujarRecuadro(ctx, lienzo.width, lienzo.height, EJ.tipo === 'giro' ? cerrada : lapiz);
+}
+
+function pasoCalibracion(ahora) {
+  const r = calibracion.actualizar(ahora);
+  if (r.listo) {
+    Object.assign(puno, { bajo: umbral('puno', [1.35, 1.6])[0], alto: umbral('puno', [1.35, 1.6])[1] });
+    Object.assign(lapices, { bajo: umbral('pinza', [0.35, 0.5])[0], alto: umbral('pinza', [0.35, 0.5])[1] });
+    avisoCamaras(r.aviso);
+    sonar('bien');
+    reiniciar();
+    return;
   }
+  if (calibracion.paso === 'rol') dibujarDosVistas();
+  else {
+    dibujarPrincipal(ctx, lienzo.width, lienzo.height);
+    manosEnPantalla(camPosicion(), ahora).forEach(dibujarMano);
+  }
+  // Barra de avance del paso.
+  ctx.fillStyle = 'rgba(255,255,255,.25)';
+  ctx.fillRect(0, 0, lienzo.width, 10);
+  ctx.fillStyle = COLOR.marca;
+  ctx.fillRect(0, 0, lienzo.width * Math.min(1, r.progreso), 10);
+  decir(`Calibración · ${r.texto}`);
+}
+
+// Las dos cámaras lado a lado para elegir cuál está arriba.
+function dibujarDosVistas() {
+  const w = lienzo.width / 2;
+  ctx.fillStyle = COLOR.tinta;
+  ctx.fillRect(0, 0, lienzo.width, lienzo.height);
+  camaras.slice(0, 2).forEach((cam, k) => {
+    const h = (w * 3) / 4;
+    const y = (lienzo.height - h) / 2;
+    ctx.save();
+    ctx.translate(k * w + w, y);
+    ctx.scale(-1, 1);
+    ctx.drawImage(cam.video, 0, 0, w, h);
+    ctx.restore();
+    ctx.strokeStyle = COLOR.marca;
+    ctx.lineWidth = 4;
+    ctx.strokeRect(k * w + 2, y, w - 4, h);
+    ctx.fillStyle = COLOR.blanco;
+    ctx.font = '700 22px Archivo, sans-serif';
+    ctx.fillText(`${k + 1} · ${cam.etiqueta.slice(0, 22)}`, k * w + 14, y + 32);
+  });
 }
 
 // ---------- Dibujo ----------
-function dibujarVideo(cam) {
-  const v = volteo(cam);
-  ctx.save();
-  // Espejo por defecto; "voltear de lado" lo quita y "de cabeza" invierte arriba y abajo.
-  ctx.translate(v.x ? 0 : lienzo.width, v.y ? lienzo.height : 0);
-  ctx.scale(v.x ? 1 : -1, v.y ? -1 : 1);
-  ctx.drawImage(cam.video, 0, 0, lienzo.width, lienzo.height);
-  ctx.restore();
-  ctx.fillStyle = 'rgba(20,28,36,.25)';
-  ctx.fillRect(0, 0, lienzo.width, lienzo.height);
-}
 
 const HUESOS = [
   [0, 1, 2, 3, 4],
@@ -501,19 +406,18 @@ function dibujarTorquimetro(anguloGrados, agarrado) {
   ctx.restore();
 }
 
-function pasoGiro(manos, mundo, ahora) {
+function pasoGiro(manos, cerrada, ahora) {
   const mano = manos[0];
   dibujarTorquimetro(estado.angulo, estado.agarrado);
   if (estado.fase === 'resultado') return;
   if (!mano) {
     if (estado.fase === 'jala' || estado.fase === 'clic')
-      frase('No veo tu mano: ponla otra vez frente a la cámara');
-    else frase('Pon tu mano frente a la cámara, abierta');
+      frase('No veo tu mano desde arriba: ponla otra vez entre las cámaras');
+    else frase('Pon tu mano entre las dos cámaras, abierta');
     return;
   }
   const c = U(palma(mano));
   const piv = U(pivote);
-  const cerrada = puños[0].actualizar(apertura(mundo[0])) || (guante.conectado && guante.grip);
   const { t, lejos } = sobreMango(c, piv, estado.angulo, largoU);
   const enMango = lejos < P.ancho && t > 0.15 && t < 1.15;
   const enZona = enMango && t >= P.zona[0] - 0.04 && t <= P.zona[1] + 0.08;
@@ -654,15 +558,13 @@ function dibujarCircuito(punta, lectura) {
   }
 }
 
-function pasoPunta(manos, mundo, ahora) {
+function pasoPunta(manos, lapizVisto, ahora) {
   // La mano que mide: la que tiene el índice más cerca del borne positivo.
   const conPunta = manos
     .map((m, k) => ({ m, k, punta: m[8], d: distancia(U(m[8]), U(positivo)) }))
     .sort((a, b) => a.d - b.d);
   const mide = conPunta[0];
-  const lapiz = mide
-    ? pinzas[mide.k].actualizar(pinza(mundo[mide.k])) || (guante.conectado && guante.grip)
-    : false;
+  const lapiz = Boolean(mide) && lapizVisto;
   dibujarCircuito(mide && lapiz ? mide.punta : null, estado.lectura);
   if (estado.fase === 'resultado') return;
   estado.fase = 'mide';
