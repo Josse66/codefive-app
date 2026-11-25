@@ -40,6 +40,7 @@ import {
   activo as guanteActivo,
   alCambiar as alCambiarGuante,
   alternarConexion,
+  simular as simularGuante,
   calibrarMuneca,
   desviacion as desviacionGuante,
   guante,
@@ -175,11 +176,17 @@ function frase(guia, tono = 'guia') {
 function pintarGuante() {
   const ok = guante.conectado;
   modoGuante(ok);
-  $('guante').textContent = ok ? 'Desconectar guante' : 'Conectar guante';
+  $('guante').textContent = ok && !guante.simulado ? 'Desconectar guante' : 'Conectar guante';
+  $('guante').hidden = Boolean(guante.simulado);
+  $('guante-demo').textContent = guante.simulado ? 'Salir de la demostración' : 'Modo demostración';
   $('muneca-recta').hidden = !ok;
   $('lectura-guante').hidden = !ok;
   let texto = 'Sin guante: todo se revisa con la cámara.';
-  if (ok && guante.neutro) texto = 'Guante conectado y calibrado: mide la muñeca, el agarre y los tirones.';
+  if (guante.simulado)
+    texto =
+      'Demostración: mueve el mouse a los lados para girar la muñeca; arriba y abajo la doblas. Barra espaciadora = apretar el mango.';
+  else if (ok && guante.neutro)
+    texto = 'Guante conectado y calibrado: mide la muñeca, el agarre y los tirones.';
   else if (ok) texto = 'Guante conectado. Calibra la mano recta para medir la muñeca.';
   $('estado-guante').textContent = guante.error || texto;
 }
@@ -193,6 +200,13 @@ $('guante').addEventListener('click', async () => {
         ? 'No elegiste un puerto. Conecta el guante por USB y vuelve a intentar.'
         : error.message;
   }
+});
+$('guante-demo').addEventListener('click', () => {
+  // Demostración sin hardware: se aprende el giro de nuevo con el mouse.
+  delete AJUSTES.guanteEje;
+  delete AJUSTES.guanteCal;
+  guardarAjustes();
+  simularGuante(!guante.simulado);
 });
 $('muneca-recta').addEventListener('click', async () => {
   // Además se olvida el giro y el botón: la parte del guante los vuelve a medir.

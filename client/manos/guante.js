@@ -116,3 +116,62 @@ export const desviacion = () =>
   guante.neutro
     ? Math.max(Math.abs(guante.roll - guante.neutro.roll), Math.abs(guante.pitch - guante.neutro.pitch))
     : 0;
+
+// ---------- Modo demostración (sin guante) ----------
+// Para presentar sin depender del hardware: el mouse hace de muñeca y la barra espaciadora (o
+// mantener el clic sobre la imagen) hace de botón de la palma. Llega el mismo tipo de lecturas que
+// manda el guante, así que el ejercicio, los avisos y la calificación funcionan igual.
+//   - Mover el mouse a los lados = girar la muñeca (como con la llave).
+//   - Mover el mouse arriba y abajo = doblar la muñeca (sirve para mostrar el error).
+let reloj = null;
+const sim = { x: 0.5, y: 0.5, espacio: false, clic: false, ultimo: 0 };
+const alMover = (e) =>
+  Object.assign(sim, { x: e.clientX / window.innerWidth, y: e.clientY / window.innerHeight });
+const alTecla = (abajo) => (e) => {
+  if (e.code !== 'Space' || e.target.closest?.('input, textarea')) return;
+  e.preventDefault();
+  sim.espacio = abajo;
+  if (abajo) sim.ultimo = performance.now();
+};
+const teclaAbajo = alTecla(true);
+const teclaArriba = alTecla(false);
+const clicAbajo = (e) => {
+  if (e.target.id === 'lienzo-manos') Object.assign(sim, { clic: true, ultimo: performance.now() });
+};
+const clicArriba = () => {
+  sim.clic = false;
+};
+
+export function simular(prender) {
+  clearInterval(reloj);
+  ['mousemove', 'keydown', 'keyup', 'mousedown', 'mouseup'].forEach((t, k) =>
+    window.removeEventListener(t, [alMover, teclaAbajo, teclaArriba, clicAbajo, clicArriba][k]),
+  );
+  Object.assign(guante, { simulado: prender, conectado: prender, neutro: null, error: '' });
+  if (prender) {
+    window.addEventListener('mousemove', alMover);
+    window.addEventListener('keydown', teclaAbajo);
+    window.addEventListener('keyup', teclaArriba);
+    window.addEventListener('mousedown', clicAbajo);
+    window.addEventListener('mouseup', clicArriba);
+    let antes = performance.now();
+    reloj = setInterval(() => {
+      const ahora = performance.now();
+      const dt = Math.max(0.001, (ahora - antes) / 1000);
+      antes = ahora;
+      const temblor = () => (Math.random() - 0.5) * 0.4;
+      const roll = guante.roll + ((sim.x - 0.5) * 140 - guante.roll) * 0.35 + temblor();
+      const pitch = guante.pitch + ((sim.y - 0.5) * 50 - guante.pitch) * 0.35 + temblor();
+      const gmag = Math.hypot(roll - guante.roll, pitch - guante.pitch) / dt;
+      Object.assign(guante, {
+        roll,
+        pitch,
+        yaw: 0,
+        gmag,
+        grip: sim.espacio || sim.clic || ahora - sim.ultimo < 250,
+        en: ahora,
+      });
+    }, 33);
+  }
+  avisos.dispatchEvent(new Event('cambio'));
+}
